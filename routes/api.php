@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\LanguageController;
 use App\Http\Controllers\API\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -20,4 +21,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 Route::group(['namespace' => 'API' , 'prefix' => 'v1'],function(){
     Route::post('login',[UserController::class,'login'])->name('user.login');
+});
+
+
+Route::controller(LanguageController::class)->group(function () {
+    Route::post('/addLanguage', 'storeLanguage');
+    Route::get('/showAllLanguage', 'showAllLanguage');
 });

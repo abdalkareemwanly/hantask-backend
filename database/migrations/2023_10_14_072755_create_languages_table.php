@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('slug');
             $table->string('direction')->nullable();
             $table->string('status')->nullable();
-            $table->integer('default',false,true)->nullable();
+            $table->integer('default',false,true)->default(false);
             $table->timestamps();
         });
     }
