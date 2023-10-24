@@ -16,12 +16,23 @@ class CategoryController extends Controller
     use imageTrait;
     public function index()
     {
-        $categories = Category::all();
-        return response()->json([
-            'success' => true,
-            'mes' => 'All categories',
-            'users' => $categories
-        ]);
+        foreach(Category::all() as $category) {
+            return response()->json([
+                'success' => true,
+                'mes' => 'All categories',
+                'data' => [
+                    [
+                        'id'            => $category->id,
+                        'name'          => $category->name,
+                        'description'   => $category->description,
+                        'slug'          => $category->slug,
+                        'image'         => $category->image,
+                        'status'        => $category->status,
+                    ],
+                ]
+            ]);
+        }
+
     }
     public function store(StoreRequest $request)
     {

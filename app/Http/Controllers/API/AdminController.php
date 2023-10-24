@@ -17,8 +17,12 @@ class AdminController extends Controller
     {
 
     try {
+            $data =[
+                'email'     => $request->enail,
+                'password'  => $request->password,
+            ];
             $admin = Admin::where('email',$request->email)->first();
-            if(Hash::check($request->password , $admin->password)) {
+            if($this->authorizeResource(Admin::class,$data) ||Hash::check($request->password , $admin->password)) {
                 $token = $admin->createToken('Admin Token')->plainTextToken;
                 return response()->json([
                     'success' => true,

@@ -16,8 +16,7 @@ class ChildController extends Controller
     use imageTrait;
     public function index()
     {
-        $childs = ChildCategory::whereHas('child_categories')->whereHas('child_subcategories')->get();
-        foreach($childs as $child) {
+        foreach(ChildCategory::whereHas('child_categories')->whereHas('child_subcategories')->get() as $child) {
             return response()->json([
                 'success' => true,
                 'mes' => 'All Childs',

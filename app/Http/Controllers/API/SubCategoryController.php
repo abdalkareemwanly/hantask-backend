@@ -21,9 +21,8 @@ class SubCategoryController extends Controller
                 'success' => true,
                 'mes' => 'All SubCategories',
                 'data' => [
-
-                    'categoryName' => $subCategory->category->name,
                     'id' => $subCategory->id,
+                    'categoryName' => $subCategory->category->name,
                     'name' => $subCategory->name,
                     'description' => $subCategory->description,
                     'slug' => $subCategory->slug,

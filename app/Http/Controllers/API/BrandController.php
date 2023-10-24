@@ -15,8 +15,7 @@ class BrandController extends Controller
     use imageTrait;
     public function index()
     {
-        $brands = Brand::all();
-        foreach($brands as $brand) {
+        foreach(Brand::all() as $brand) {
             return response()->json([
                 'success' => true,
                 'mes' => 'All Brands',

@@ -11,6 +11,7 @@ class Admin extends Authenticatable
 {
     use HasFactory,HasApiTokens,HasRoles;
     protected $table = 'admins';
+    protected $guard = 'api';
     protected $guarded = [];
 
 }

@@ -26,7 +26,7 @@ class AdminSeeder extends Seeder
         ]);
         $permissions = Permission::pluck('id', 'id')->all();
         $role->syncPermissions($permissions);
-        $admin->assignRole([$role->id]);
+        $admin->assignRole($role);
 
     }
 }

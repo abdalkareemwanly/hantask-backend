@@ -26,7 +26,7 @@ class RoleController extends Controller
         try {
                 DB::beginTransaction();
                 $role = Role::create(['name' => $request->name,'guard_name' => 'api']);
-                $role->syncPermissions($request->permission);
+                $role->givePermissionTo($request->permission);
                 return response()->json([
                     'success' => true,
                     'mes' => 'Store Role Successfully',
