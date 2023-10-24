@@ -3,32 +3,90 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\LanguageRequest;
-use App\Http\Resources\LanguageResource;
+use App\Http\Requests\Language\storeRequest;
+use App\Http\Requests\Language\updateRequest;
 use App\Models\Language;
-use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class LanguageController extends Controller
 {
-    public function storeLanguage(LanguageRequest $request)
+    public function index()
     {
-        $data = $request->validated();
-        $language = Language::create($data);
-        if ($language) {
-            return response()->json(['message' => 'Language saved successfully']);
-        } else {
-            return response()->json(['error' => 'Language could not be saved'], 500);
+        foreach(Language::all() as  $language) {
+            return response()->json([
+                'success' => true,
+                'mes' => 'All Languages',
+                'data' => [
+                    [
+                        'id'            => $language->id,
+                        'name'          => $language->name,
+                        'slug'          => $language->slug,
+                        'direction'     => $language->direction,
+                        'status'        => $language->status,
+                        'default'       => $language->default,
+                    ]
+                ]
+            ]);
         }
     }
-
-    public function showAllLanguage()
+    public function store(storeRequest $request)
     {
-        $languages = Language::all();
-
-        if ($languages->isEmpty()) {
-            return response()->json(['message' => 'No languages found.'], 404);
+        DB::beginTransaction();
+        $data = $request->all();
+        Language::create($data);
+        DB::commit();
+        return response()->json([
+            'success' => true,
+            'mes' => 'Store Language Successfully'
+        ]);
+    }
+    public function update(updateRequest $request , $id)
+    {
+        DB::beginTransaction();
+        $record = Language::find($id);
+        $record->update([
+            'name'               => $request->name ?? $record->name,
+            'slug'               => $request->slug ?? $record->slug,
+            'direction'          => $request->direction ?? $record->direction,
+            'status'             => $request->status ?? $record->status,
+            'default'            => $request->default ?? $record->default,
+        ]);
+        DB::commit();
+        return response()->json([
+            'success' => true,
+            'mes' => 'Update Language Successfully',
+        ]);
+        DB::rollBack();
+    }
+    public function update_default($id)
+    {
+        $record = Language::find($id);
+        if($record->default == 1) {
+            $update = Language::where('id',$id)->update([
+                'default' => 0
+            ]);
+            return response()->json([
+                'success' => true,
+                'mes' => 'The Default Mode Has Been Deactivated Successfully',
+            ]);
+        } elseif($record->default == 0) {
+            $update = Language::where('id',$id)->update([
+                'default' => 1
+            ]);
+            return response()->json([
+                'success' => true,
+                'mes' => 'The Default Mode Has Been Activated  Successfully',
+            ]);
         }
-
-        return $languages;
+    }
+    public function delete($id)
+    {
+        $record = Language::find($id);
+        $record->delete();
+        return response()->json([
+            'success' => true,
+            'mes' => 'Deleted Language Successfully',
+        ]);
     }
 }
