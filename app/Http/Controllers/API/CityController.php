@@ -3,68 +3,67 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Country\ExcelRequest;
-use App\Http\Requests\Country\storeRequest;
-use App\Http\Requests\Country\updateRequest;
+use App\Http\Requests\City\ExcelRequest;
+use App\Http\Requests\City\storeRequest;
+use App\Http\Requests\City\updateRequest;
 use App\Models\Country;
+use App\Models\ServiceCity;
+use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx as ReaderXlsx;
 
-class CountryController extends Controller
+
+class CityController extends Controller
 {
     public function index()
     {
         $data = [];
-        foreach(Country::all() as $country) {
+        foreach(ServiceCity::whereHas('country')->get() as $city) {
             $data[] = [
-                'id'                => $country->id,
-                'country'           => $country->country,
-                'country_code'      => $country->country_code,
-                'zone_status'       => $country->zone_status,
-                'latitude'          => $country->latitude,
-                'longitude'         => $country->longitude,
-                'created_at'        => $country->created_at,
+                'id'                => $city->id,
+                'service_city'      => $city->service_city,
+                'country'           => $city->country->country,
+                'status'            => $city->status,
             ];
-
         }
         return response()->json([
             'success' => true,
-            'mes' => 'All Languages',
+            'mes' => 'All ServiceCity',
             'data' => $data
         ]);
     }
     public function store(storeRequest $request)
     {
         $data = $request->all();
-        Country::create($data);
+        ServiceCity::create($data);
         return response()->json([
             'success' => true,
-            'mes' => 'Store Country Successfully'
+            'mes' => 'Store ServiceCity Successfully'
         ]);
     }
     public function update(updateRequest $request , $id)
     {
-        $record = Country::find($id);
+        $record = ServiceCity::find($id);
         $record->update([
-            'country'               => $request->country ?? $record->country,
-            'country_code'          => $request->country_code ?? $record->country_code,
+            'service_city'          => $request->service_city ?? $record->service_city,
+            'country_id'            => $request->country_id ?? $record->country_id,
         ]);
         return response()->json([
             'success' => true,
-            'mes' => 'Update Country Successfully',
+            'mes' => 'Update ServiceCity Successfully',
         ]);
     }
     public function delete($id)
     {
-        $record = Country::find($id);
+        $record = ServiceCity::find($id);
         $record->delete();
         return response()->json([
             'success' => true,
-            'mes' => 'Deleted Country Successfully',
+            'mes' => 'Deleted ServiceCity Successfully',
         ]);
     }
     public function excel()
     {
-        $file = '/uploads/excel/Countrys.xlsx';
+        $file = '/uploads/excel/Citys.xlsx';
         return response()->json([
             'url' => $file
         ]);
@@ -77,11 +76,13 @@ class CountryController extends Controller
         $sheet = $spreadsheet->getActiveSheet();
         $highestRow = $spreadsheet->getActiveSheet()->getHighestRow('A');
         for($i = 2 ; $i <= $highestRow ; $i++) {
-            $country        = $sheet->getCell("A{$i}")->getValue();
-            $country_code   = $sheet->getCell("B{$i}")->getValue();
-            $store = Country::create([
-                'country'           => $country,
-                'country_code'      => $country_code,
+            $service_city        = $sheet->getCell("A{$i}")->getValue();
+            $country_name        = $sheet->getCell("B{$i}")->getValue();
+            $country = Country::where('country',$country_name)->first();
+            // dd($country->id);
+            $store = ServiceCity::create([
+                'service_city'           => $service_city,
+                'country_id'             => $country->id,
             ]);
         }
         return response()->json([

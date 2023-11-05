@@ -15,18 +15,18 @@ class AdminSeeder extends Seeder
      */
     public function run(): void
     {
-        $role = Role::create(['name' => 'SuperAdmin','guard_name' => 'api']);
+
         $admin = Admin::create([
             'name' => 'mohamad',
             'username' => 'mohamad',
             'email' => 'mohamad@gmail.com',
             'password' => Hash::make('123456'),
             'status' => 1,
-            'role' => $role->name
+            'role' => 'SuperAdmin'
         ]);
+        $role = Role::create(['name' => 'SuperAdmin','guard_name' => 'sanctum']);
         $permissions = Permission::pluck('id', 'id')->all();
         $role->syncPermissions($permissions);
-        $admin->assignRole($role);
-
+        $admin->assignRole([$role->id]);
     }
 }

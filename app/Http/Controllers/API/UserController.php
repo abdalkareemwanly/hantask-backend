@@ -18,11 +18,21 @@ class UserController extends Controller
     use imageTrait;
     public function index()
     {
-        $users = User::select('id','name','email','username')->get();
+        $data = [];
+        foreach(User::all() as $user) {
+            $data[] = [
+                'id'            => $user->id,
+                'name'          => $user->name,
+                'email'         => $user->email,
+                'username'      => $user->username,
+                'phone'         => $user->phone,
+                'image'         => $user->image,
+            ];
+        }
         return response()->json([
             'success' => true,
             'mes' => 'All Users',
-            'users' => $users
+            'data' => $data
         ]);
     }
     public function store(StoreRequest $request)

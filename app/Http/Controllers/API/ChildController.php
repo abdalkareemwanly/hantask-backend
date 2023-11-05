@@ -16,21 +16,23 @@ class ChildController extends Controller
     use imageTrait;
     public function index()
     {
+        $data = [];
         foreach(ChildCategory::whereHas('child_categories')->whereHas('child_subcategories')->get() as $child) {
-            return response()->json([
-                'success' => true,
-                'mes' => 'All Childs',
-                'data' => [
-                    'categoryName' => $child->child_categories->name,
-                    'subcategoryName' => $child->child_subcategories->name,
-                    'id' => $child->id,
-                    'name' => $child->name,
-                    'description' => $child->description,
-                    'slug' => $child->slug,
-                    'image' => $child->image,
-                ],
-            ]);
+            $data[] = [
+                'id' => $child->id,
+                'name' => $child->name,
+                'description' => $child->description,
+                'slug' => $child->slug,
+                'image' => $child->image,
+                'categoryName' => $child->child_categories->name,
+                'subcategoryName' => $child->child_subcategories->name,
+            ];
         }
+        return response()->json([
+            'success' => true,
+            'mes' => 'All Childs',
+            'data' => $data
+        ]);
     }
     public function store(StoreRequest $request)
     {

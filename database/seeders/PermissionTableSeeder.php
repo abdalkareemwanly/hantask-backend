@@ -17,7 +17,7 @@ class PermissionTableSeeder extends Seeder
             'dashboard','testing','orders'
         ];
         foreach ($permissions as $permission) {
-            Permission::create(['name' => $permission,'guard_name' => 'api']);
+            Permission::create(['name' => $permission , 'guard_name' => 'sanctum']);
         }
     }
 }

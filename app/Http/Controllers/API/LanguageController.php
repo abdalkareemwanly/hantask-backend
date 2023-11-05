@@ -13,22 +13,23 @@ class LanguageController extends Controller
 {
     public function index()
     {
+        $data = [];
         foreach(Language::all() as  $language) {
-            return response()->json([
-                'success' => true,
-                'mes' => 'All Languages',
-                'data' => [
-                    [
-                        'id'            => $language->id,
-                        'name'          => $language->name,
-                        'slug'          => $language->slug,
-                        'direction'     => $language->direction,
-                        'status'        => $language->status,
-                        'default'       => $language->default,
-                    ]
-                ]
-            ]);
+            $data[] = [
+                'id'            => $language->id,
+                'name'          => $language->name,
+                'slug'          => $language->slug,
+                'direction'     => $language->direction,
+                'status'        => $language->status,
+                'default'       => $language->default,
+            ];
+
         }
+        return response()->json([
+            'success' => true,
+            'mes' => 'All Languages',
+            'data' => $data
+        ]);
     }
     public function store(storeRequest $request)
     {

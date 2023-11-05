@@ -5,7 +5,8 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
-class RoleRequest extends FormRequest
+
+class UpdateRoleRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,8 +24,8 @@ class RoleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|unique:roles,name',
-            'permission' => 'required',
+            'name' => 'nullable',
+            'permission' => 'nullable',
         ];
     }
     public function failedValidation(Validator $validator)

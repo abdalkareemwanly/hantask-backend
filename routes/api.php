@@ -1,13 +1,17 @@
 <?php
 
 use App\Http\Controllers\API\AdminController;
+use App\Http\Controllers\API\AreaController;
 use App\Http\Controllers\API\BrandController;
 use App\Http\Controllers\API\CategoryController;
 use App\Http\Controllers\API\ChildController;
+use App\Http\Controllers\API\CityController;
 use App\Http\Controllers\API\CountryController;
 use App\Http\Controllers\API\LanguageController;
+use App\Http\Controllers\API\ProfileController;
 use App\Http\Controllers\API\RoleController;
 use App\Http\Controllers\API\SubCategoryController;
+use App\Http\Controllers\API\TaxeController;
 use App\Http\Controllers\API\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -29,10 +33,24 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::group(['namespace' => 'API' , 'prefix' => 'admin'],function(){
     Route::post('login',[AdminController::class,'login'])->name('admin.login');
 });
+
+// Start Profile Controller
+Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth:sanctum'],function(){
+    Route::get('/profile',[ProfileController::class,'index'])->name('admin.profile.index');
+    Route::post('/profile/update',[ProfileController::class,'update'])->name('admin.profile.update');
+    Route::post('/profile/password_change',[ProfileController::class,'password_change'])->name('admin.profile.password_change');
+    Route::get('/profile/logout',[ProfileController::class,'logout'])->name('admin.profile.logout');
+});
+
+// End Profile Controller
+
 // Start Role Controller
 Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth:sanctum'],function(){
     Route::get('/roles',[RoleController::class,'index'])->name('admin.role.index');
     Route::post('/role/store',[RoleController::class,'store'])->name('admin.role.store');
+    Route::get('/role/show/{id}',[RoleController::class,'show'])->name('admin.role.show');
+    Route::post('/role/update/{id}',[RoleController::class,'update'])->name('admin.role.update');
+    Route::get('/role/delete/{id}',[RoleController::class,'delete'])->name('admin.role.delete');
 });
 // End Role Controller
 
@@ -120,7 +138,47 @@ Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth
     Route::get('/country/delete/{id}',[CountryController::class,'delete'])->name('admin.country.delete');
     Route::get('/country/excel',[CountryController::class,'excel'])->name('admin.country.excel');
     Route::post('/country/import',[CountryController::class,'import'])->name('admin.country.import');
-
 });
 
 // End Country Controller
+
+// Start City Controller
+
+Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth:sanctum'],function(){
+    Route::get('/citys',[CityController::class,'index'])->name('admin.city.index');
+    Route::post('/city/store',[CityController::class,'store'])->name('admin.city.store');
+    Route::post('/city/update/{id}',[CityController::class,'update'])->name('admin.city.update');
+    Route::get('/city/delete/{id}',[CityController::class,'delete'])->name('admin.city.delete');
+    Route::get('/city/excel',[CityController::class,'excel'])->name('admin.city.excel');
+    Route::post('/city/import',[CityController::class,'import'])->name('admin.city.import');
+});
+
+// End City Controller
+
+// Start Area Controller
+
+Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth:sanctum'],function(){
+    Route::get('/areas',[AreaController::class,'index'])->name('admin.area.index');
+    Route::post('/area/store',[AreaController::class,'store'])->name('admin.area.store');
+    Route::post('/area/update/{id}',[AreaController::class,'update'])->name('admin.area.update');
+    Route::get('/area/delete/{id}',[AreaController::class,'delete'])->name('admin.area.delete');
+    Route::get('/area/excel',[AreaController::class,'excel'])->name('admin.area.excel');
+    Route::post('/area/import',[AreaController::class,'import'])->name('admin.area.import');
+});
+
+// Start Area Controller
+
+
+
+// Start Taxe Controller
+
+Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth:sanctum'],function(){
+    Route::get('/taxes',[TaxeController::class,'index'])->name('admin.taxe.index');
+    Route::post('/taxe/store',[TaxeController::class,'store'])->name('admin.taxe.store');
+    Route::post('/taxe/update/{id}',[TaxeController::class,'update'])->name('admin.taxe.update');
+    Route::get('/taxe/delete/{id}',[TaxeController::class,'delete'])->name('admin.taxe.delete');
+    Route::get('/taxe/excel',[TaxeController::class,'excel'])->name('admin.taxe.excel');
+    Route::post('/taxe/import',[TaxeController::class,'import'])->name('admin.taxe.import');
+});
+
+// Start Taxe Controller

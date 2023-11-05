@@ -16,21 +16,23 @@ class SubCategoryController extends Controller
     use imageTrait;
     public function index()
     {
+        $data = [];
         foreach(Subcategory::whereHas('category')->get() as $subCategory) {
-            return response()->json([
-                'success' => true,
-                'mes' => 'All SubCategories',
-                'data' => [
-                    'id' => $subCategory->id,
-                    'categoryName' => $subCategory->category->name,
-                    'name' => $subCategory->name,
-                    'description' => $subCategory->description,
-                    'slug' => $subCategory->slug,
-                    'image' => $subCategory->image,
-                ],
-            ]);
-        }
+            $data[] = [
+                'id' => $subCategory->id,
+                'categoryName' => $subCategory->category->name,
+                'name' => $subCategory->name,
+                'description' => $subCategory->description,
+                'slug' => $subCategory->slug,
+                'image' => $subCategory->image,
+            ];
 
+        }
+        return response()->json([
+            'success' => true,
+            'mes' => 'All SubCategories',
+            'data' => $data
+        ]);
     }
     public function store(StoreRequest $request)
     {

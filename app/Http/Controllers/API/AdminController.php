@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AdminRequest;
 use App\Models\Admin;
+use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,33 +16,27 @@ class AdminController extends Controller
 {
     public function login(AdminRequest $request)
     {
-
-    try {
-            $data =[
-                'email'     => $request->enail,
-                'password'  => $request->password,
-            ];
-            $admin = Admin::where('email',$request->email)->first();
-            if($this->authorizeResource(Admin::class,$data) ||Hash::check($request->password , $admin->password)) {
-                $token = $admin->createToken('Admin Token')->plainTextToken;
-                return response()->json([
-                    'success' => true,
-                    'mes' => 'Login Successfully',
-                    'token' => $token
-                ]);
-            } else {
-                return response()->json([
-                    'success' => false,
-                    'mes' => 'Error',
-                ]);
+        try {
+                $admin = Admin::where('email',$request->email)->first();
+                if( Hash::check($request->password , $admin->password)) {
+                    $token = $admin->createToken('Admin Token')->plainTextToken;
+                    return response()->json([
+                            'success' => true,
+                            'mes' => 'Login Successfully',
+                            'token' => $token
+                        ]);
+                    } else {
+                        return response()->json([
+                            'success' => false,
+                            'mes' => 'Error',
+                        ]);
+                    }
+                } catch(Exception $e) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => $e->getMessage(),
+                    ]);
             }
-        } catch(Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ]);
-        }
-
-
     }
+
 }

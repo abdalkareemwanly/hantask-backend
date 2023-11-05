@@ -15,18 +15,21 @@ class BrandController extends Controller
     use imageTrait;
     public function index()
     {
+        $data = [];
         foreach(Brand::all() as $brand) {
-            return response()->json([
-                'success' => true,
-                'mes' => 'All Brands',
-                'data' => [
-                    'id' => $brand->id,
-                    'title' => $brand->title,
-                    'url' => $brand->url,
-                    'image' => $brand->image,
-                ],
-            ]);
+            $data[] = [
+                'id' => $brand->id,
+                'title' => $brand->title,
+                'url' => $brand->url,
+                'image' => $brand->image,
+            ];
+
         }
+        return response()->json([
+            'success' => true,
+            'mes' => 'All Brands',
+            'data' => $data
+        ]);
     }
     public function store(StoreRequest $request)
     {
