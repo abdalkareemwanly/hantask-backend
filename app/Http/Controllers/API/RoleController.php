@@ -15,11 +15,18 @@ class RoleController extends Controller
 {
     public function index()
     {
-        $roles = Role::all();
+        $data = [];
+        foreach(Role::all() as $role) {
+            $data[] = [
+                'id' => $role->id,
+                'name' => $role->name,
+                'guard_name' => $role->guard_name,
+            ];
+        }
         return response()->json([
             'success' => true,
             'mes' => 'All Roles',
-            'roles' => $roles
+            'data' => $data
         ]);
     }
     public function store(RoleRequest $request)
