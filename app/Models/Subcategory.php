@@ -18,4 +18,8 @@ class Subcategory extends Model
     {
         return $this->hasMany(ChildCategory::class,'sub_category_id');
     }
+    public function services()
+    {
+        return $this->hasMany(Service::class,'subcategory_id');
+    }
 }

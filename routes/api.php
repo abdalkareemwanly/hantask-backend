@@ -10,6 +10,8 @@ use App\Http\Controllers\API\CountryController;
 use App\Http\Controllers\API\LanguageController;
 use App\Http\Controllers\API\ProfileController;
 use App\Http\Controllers\API\RoleController;
+use App\Http\Controllers\API\SellerController;
+use App\Http\Controllers\API\ServiceController;
 use App\Http\Controllers\API\SubCategoryController;
 use App\Http\Controllers\API\TaxeController;
 use App\Http\Controllers\API\UserController;
@@ -35,6 +37,7 @@ Route::group(['namespace' => 'API' , 'prefix' => 'admin'],function(){
 });
 
 // Start Profile Controller
+
 Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth:sanctum'],function(){
     Route::get('/profile',[ProfileController::class,'index'])->name('admin.profile.index');
     Route::post('/profile/update',[ProfileController::class,'update'])->name('admin.profile.update');
@@ -45,6 +48,7 @@ Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth
 // End Profile Controller
 
 // Start Role Controller
+
 Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth:sanctum'],function(){
     Route::get('/roles',[RoleController::class,'index'])->name('admin.role.index');
     Route::post('/role/store',[RoleController::class,'store'])->name('admin.role.store');
@@ -52,6 +56,7 @@ Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth
     Route::post('/role/update/{id}',[RoleController::class,'update'])->name('admin.role.update');
     Route::get('/role/delete/{id}',[RoleController::class,'delete'])->name('admin.role.delete');
 });
+
 // End Role Controller
 
 // Start User Controller
@@ -182,3 +187,28 @@ Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth
 });
 
 // Start Taxe Controller
+
+// Start Seller Controller
+
+Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth:sanctum'],function(){
+    Route::get('/sellers',[SellerController::class,'index'])->name('admin.seller.index');
+    Route::post('/seller/store',[SellerController::class,'store'])->name('admin.seller.store');
+    Route::post('/seller/update/{id}',[SellerController::class,'update'])->name('admin.seller.update');
+    Route::get('/seller/status/{id}',[SellerController::class,'status'])->name('admin.seller.status');
+    Route::get('/seller/delete/{id}',[SellerController::class,'delete'])->name('admin.seller.delete');
+
+});
+
+// End Seller Controller
+
+// Start Service Controller
+
+Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth:sanctum'],function(){
+    Route::get('/services',[ServiceController::class,'index'])->name('admin.service.index');
+    Route::post('/service/store',[ServiceController::class,'store'])->name('admin.service.store');
+    Route::post('/service/update/{id}',[ServiceController::class,'update'])->name('admin.service.update');
+    Route::get('/service/status/{id}',[ServiceController::class,'status'])->name('admin.service.status');
+    Route::get('/service/delete/{id}',[ServiceController::class,'delete'])->name('admin.service.delete');
+});
+
+// End Service Controller

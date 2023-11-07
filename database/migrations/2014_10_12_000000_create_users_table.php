@@ -36,7 +36,7 @@ return new class extends Migration
             $table->text('google_id')->nullable();
             $table->string('country_code')->nullable();
             $table->bigInteger('otp_code')->default(0);
-            $table->bigInteger('otp_verified');
+            $table->bigInteger('otp_verified')->nullable();
 
             $columns = [
                 'fb_url',

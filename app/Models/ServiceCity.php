@@ -18,5 +18,9 @@ class ServiceCity extends Model
     {
         return $this->hasMany(ServiceArea::class,'service_city_id');
     }
+    public function services()
+    {
+        return $this->hasMany(Service::class,'service_city_id');
+    }
 
 }

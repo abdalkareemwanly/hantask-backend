@@ -12,5 +12,8 @@ class User extends Authenticatable
     use HasFactory,HasApiTokens,HasRoles;
     protected $table = 'users';
     protected $guarded = [];
-
+    public function services()
+    {
+        return $this->hasMany(Service::class,'seller_id');
+    }
 }

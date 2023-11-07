@@ -18,4 +18,8 @@ class Category extends Model
     {
         return $this->hasMany(ChildCategory::class,'category_id');
     }
+    public function services()
+    {
+        return $this->hasMany(Service::class,'category_id');
+    }
 }
