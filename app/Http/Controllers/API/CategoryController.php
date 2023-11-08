@@ -7,6 +7,7 @@ use App\Http\Requests\Category\StoreRequest;
 use App\Http\Requests\Category\updateRequest;
 use App\Http\Traits\imageTrait;
 use App\Models\Category;
+use App\Models\Subcategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
@@ -97,11 +98,19 @@ class CategoryController extends Controller
     {
         DB::beginTransaction();
         $record = Category::find($id);
-        $path = 'uploads/images/categories/'.$record->image;
-        if(File::exists($path)) {
-            File::delete('uploads/images/categories/'.$record->image);
+        $sub = Subcategory::where('category_id',$id)->first();
+        if($sub) {
+            return response()->json([
+                'success' => false,
+                'mes' => 'It cannot be deleted',
+            ]);
+        } else {
+            $path = 'uploads/images/categories/'.$record->image;
+            if(File::exists($path)) {
+                File::delete('uploads/images/categories/'.$record->image);
+            }
+            $record->delete();
         }
-        $record->delete();
         DB::commit();
         return response()->json([
             'success' => true,
