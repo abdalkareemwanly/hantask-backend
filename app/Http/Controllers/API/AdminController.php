@@ -13,35 +13,49 @@ use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
 {
+    public function AdminNumber()
+    {
+        return Admin::pluck('id')->count();
+    }
+
     public function login(AdminRequest $request)
     {
 
-    try {
-            $data =[
-                'email'     => $request->enail,
-                'password'  => $request->password,
+        try {
+            $data = [
+                'email' => $request->email,
+                'password' => $request->password,
             ];
-            $admin = Admin::where('email',$request->email)->first();
-            if($this->authorizeResource(Admin::class,$data) ||Hash::check($request->password , $admin->password)) {
-                $token = $admin->createToken('Admin Token')->plainTextToken;
-                return response()->json([
-                    'success' => true,
-                    'mes' => 'Login Successfully',
-                    'token' => $token
-                ]);
-            } else {
+
+            $admin = Admin::where('email', $request->email)->first();
+
+            if (!$admin || !Hash::check($request->password, $admin->password)) {
                 return response()->json([
                     'success' => false,
-                    'mes' => 'Error',
+                    'message' => 'Invalid credentials',
                 ]);
             }
-        } catch(Exception $e) {
+
+            // Fetch additional admin details
+            $adminDetails = [
+                'username' => $admin->username,
+                'email' => $admin->email,
+                'role' => $admin->role,
+            ];
+
+            $token = $admin->createToken('Admin Token')->plainTextToken;
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Login Successfully',
+                'token' => $token,
+                'admin' => $adminDetails, // Include admin details in the response
+            ]);
+        } catch (Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
             ]);
         }
-
-
     }
 }

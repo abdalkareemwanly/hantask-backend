@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Translation;
 
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class LanguageRequest extends FormRequest
+class TranslationStoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,18 +24,16 @@ class LanguageRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'      => 'required',
-            'direction' => 'required',
-            'slug'      => 'required',
-            'status'    => 'required'
+            'slug' => 'required|string',
         ];
     }
+
     public function failedValidation(Validator $validator)
     {
         throw new HttpResponseException(response()->json([
-            'success'   => false,
-            'message'   => 'Validation errors',
-            'data'      => $validator->errors()
-        ]));
+            'success' => false,
+            'message' => 'Validation errors',
+            'data' => $validator->errors(),
+        ], 422));
     }
 }

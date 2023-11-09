@@ -8,6 +8,7 @@ use App\Http\Controllers\API\CountryController;
 use App\Http\Controllers\API\LanguageController;
 use App\Http\Controllers\API\RoleController;
 use App\Http\Controllers\API\SubCategoryController;
+use App\Http\Controllers\API\TranslationsController;
 use App\Http\Controllers\API\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -28,6 +29,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 Route::group(['namespace' => 'API' , 'prefix' => 'admin'],function(){
     Route::post('login',[AdminController::class,'login'])->name('admin.login');
+    Route::get('AdminNumber',[AdminController::class, 'AdminNumber'])->name('admin.AdminNumber');
 });
 // Start Role Controller
 Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth:sanctum'],function(){
@@ -105,8 +107,16 @@ Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth
     Route::get('/languages',[LanguageController::class,'index'])->name('admin.language.index');
     Route::post('/language/store',[LanguageController::class,'store'])->name('admin.language.store');
     Route::post('/language/update/{id}',[LanguageController::class,'update'])->name('admin.language.update');
+    Route::post('/language/show/{id}',[LanguageController::class, 'show'])->name('admin.language.show');
     Route::get('/language/update_default/{id}',[LanguageController::class,'update_default'])->name('admin.language.update_default');
     Route::get('/language/delete/{id}',[LanguageController::class,'delete'])->name('admin.language.delete');
+});
+
+Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth:sanctum'],function(){
+    Route::get('/translation',[TranslationsController::class,'index'])->name('admin.translation.index');
+    Route::post('/translation/show/{slug}',[TranslationsController::class, 'show'])->name('admin.translation.show');
+    Route::post('/translation/update/{slug}',[TranslationsController::class, 'update'])->name('admin.translation.update');
+    Route::post('/translation/store',[TranslationsController::class,'store'])->name('admin.translation.store');
 });
 
 // End Language Controller

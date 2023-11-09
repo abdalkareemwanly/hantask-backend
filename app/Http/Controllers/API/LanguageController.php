@@ -8,27 +8,31 @@ use App\Http\Requests\Language\updateRequest;
 use App\Models\Language;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Ramsey\Uuid\Type\Integer;
 
 class LanguageController extends Controller
 {
     public function index()
     {
-        foreach(Language::all() as  $language) {
-            return response()->json([
-                'success' => true,
-                'mes' => 'All Languages',
-                'data' => [
-                    [
-                        'id'            => $language->id,
-                        'name'          => $language->name,
-                        'slug'          => $language->slug,
-                        'direction'     => $language->direction,
-                        'status'        => $language->status,
-                        'default'       => $language->default,
-                    ]
-                ]
-            ]);
+        $languages = Language::all();
+
+        $data = [];
+        foreach ($languages as $language) {
+            $data[] = [
+                'id'        => $language->id,
+                'name'      => $language->name,
+                'slug'      => $language->slug,
+                'direction' => $language->direction,
+                'status'    => $language->status,
+                'default'   => $language->default,
+            ];
         }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'All Languages',
+            'data'    => $data,
+        ]);
     }
     public function store(storeRequest $request)
     {
@@ -41,7 +45,7 @@ class LanguageController extends Controller
             'mes' => 'Store Language Successfully'
         ]);
     }
-    public function update(updateRequest $request , $id)
+    public function update(updateRequest $request, $id)
     {
         DB::beginTransaction();
         $record = Language::find($id);
@@ -59,26 +63,48 @@ class LanguageController extends Controller
         ]);
         DB::rollBack();
     }
+    PUBLIC function show($request){
+        $language = Language::find($request);
+        if (!$language) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Language not found',
+            ], 404);
+        }
+
+        // Return the selected language as JSON
+        return response()->json([
+            'success' => true,
+            'message' => 'Selected Language',
+            'data' => [
+                'id'        => $language->id,
+                'name'      => $language->name,
+                'slug'      => $language->slug,
+                'direction' => $language->direction,
+                'status'    => $language->status,
+                'default'   => $language->default,
+            ],
+        ]);
+    }
     public function update_default($id)
     {
-        $record = Language::find($id);
-        if($record->default == 1) {
-            $update = Language::where('id',$id)->update([
-                'default' => 0
-            ]);
+        $language = Language::find($id);
+
+        if (!$language) {
             return response()->json([
-                'success' => true,
-                'mes' => 'The Default Mode Has Been Deactivated Successfully',
-            ]);
-        } elseif($record->default == 0) {
-            $update = Language::where('id',$id)->update([
-                'default' => 1
-            ]);
-            return response()->json([
-                'success' => true,
-                'mes' => 'The Default Mode Has Been Activated  Successfully',
+                'success' => false,
+                'mes' => 'Language not found',
             ]);
         }
+
+        Language::where('default', 1)->update(['default' => 0]);
+
+        $language->update(['default' => 1]);
+
+        return response()->json([
+            'success' => true,
+            'mes' => 'The Default Language Has Been Updated Successfully',
+        ]);
     }
     public function delete($id)
     {
