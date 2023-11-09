@@ -13,11 +13,8 @@ use App\Http\Controllers\API\RoleController;
 use App\Http\Controllers\API\SellerController;
 use App\Http\Controllers\API\ServiceController;
 use App\Http\Controllers\API\SubCategoryController;
-<<<<<<< HEAD
 use App\Http\Controllers\API\TranslationsController;
-=======
 use App\Http\Controllers\API\TaxeController;
->>>>>>> mohammed
 use App\Http\Controllers\API\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
