@@ -7,30 +7,30 @@ use App\Http\Requests\Country\ExcelRequest;
 use App\Http\Requests\Country\storeRequest;
 use App\Http\Requests\Country\updateRequest;
 use App\Models\Country;
-use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx as ReaderXlsx;
 
 class CountryController extends Controller
 {
     public function index()
     {
+        $data = [];
         foreach(Country::all() as $country) {
-            return response()->json([
-                'success' => true,
-                'mes' => 'All Languages',
-                'data' => [
-                    [
-                        'id'                => $country->id,
-                        'country'           => $country->country,
-                        'country_code'      => $country->country_code,
-                        'zone_status'       => $country->zone_status,
-                        'latitude'          => $country->latitude,
-                        'longitude'         => $country->longitude,
-                        'created_at'        => $country->created_at,
-                    ]
-                ]
-            ]);
+            $data[] = [
+                'id'                => $country->id,
+                'country'           => $country->country,
+                'country_code'      => $country->country_code,
+                'zone_status'       => $country->zone_status,
+                'latitude'          => $country->latitude,
+                'longitude'         => $country->longitude,
+                'created_at'        => $country->created_at,
+            ];
+
         }
+        return response()->json([
+            'success' => true,
+            'mes' => 'All Languages',
+            'data' => $data
+        ]);
     }
     public function store(storeRequest $request)
     {
@@ -64,7 +64,7 @@ class CountryController extends Controller
     }
     public function excel()
     {
-        $file = '/uploads/Countrys.xlsx';
+        $file = '/uploads/excel/Countrys.xlsx';
         return response()->json([
             'url' => $file
         ]);
@@ -74,7 +74,7 @@ class CountryController extends Controller
         $file = $request->file('file');
         $reader = new ReaderXlsx();
         $spreadsheet = $reader->load($file);
-        $sheet = $spreadsheet->setActiveSheetIndexByName('Countrys');
+        $sheet = $spreadsheet->getActiveSheet();
         $highestRow = $spreadsheet->getActiveSheet()->getHighestRow('A');
         for($i = 2 ; $i <= $highestRow ; $i++) {
             $country        = $sheet->getCell("A{$i}")->getValue();

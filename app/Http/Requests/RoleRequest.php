@@ -24,7 +24,7 @@ class RoleRequest extends FormRequest
     {
         return [
             'name' => 'required|unique:roles,name',
-            'permission' => 'required|array',
+            'permission' => 'required',
         ];
     }
     public function failedValidation(Validator $validator)

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('username')->unique();
             $table->string('email');
             $table->integer('email_verified',false,true)->default(0);
-            $table->string('role')->default('editor');
+            $table->string('role');
             $table->string('image')->nullable();
             $table->string('password');
             $table->string('status');

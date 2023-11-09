@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\subCategory\StoreRequest;
 use App\Http\Requests\subCategory\updateRequest;
 use App\Http\Traits\imageTrait;
+use App\Models\ChildCategory;
 use App\Models\Subcategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -16,21 +17,23 @@ class SubCategoryController extends Controller
     use imageTrait;
     public function index()
     {
+        $data = [];
         foreach(Subcategory::whereHas('category')->get() as $subCategory) {
-            return response()->json([
-                'success' => true,
-                'mes' => 'All SubCategories',
-                'data' => [
-                    'id' => $subCategory->id,
-                    'categoryName' => $subCategory->category->name,
-                    'name' => $subCategory->name,
-                    'description' => $subCategory->description,
-                    'slug' => $subCategory->slug,
-                    'image' => $subCategory->image,
-                ],
-            ]);
-        }
+            $data[] = [
+                'id' => $subCategory->id,
+                'categoryName' => $subCategory->category->name,
+                'name' => $subCategory->name,
+                'description' => $subCategory->description,
+                'slug' => $subCategory->slug,
+                'image' => $subCategory->image,
+            ];
 
+        }
+        return response()->json([
+            'success' => true,
+            'mes' => 'All SubCategories',
+            'data' => $data
+        ]);
     }
     public function store(StoreRequest $request)
     {
@@ -95,16 +98,24 @@ class SubCategoryController extends Controller
     {
         DB::beginTransaction();
         $record = Subcategory::find($id);
+        $child = ChildCategory::where('category_id',$id)->first();
         $path = 'uploads/images/subCategories/'.$record->image;
-        if(File::exists($path)) {
-            File::delete('uploads/images/subCategories/'.$record->image);
+        if($child) {
+            return response()->json([
+                'success' => false,
+                'mes' => 'It cannot be deleted',
+            ]);
+        } else {
+            if(File::exists($path)) {
+                File::delete('uploads/images/subCategories/'.$record->image);
+            }
+            $record->delete();
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'mes' => 'Deleted SubCategory Successfully',
+            ]);
+            DB::rollBack();
         }
-        $record->delete();
-        DB::commit();
-        return response()->json([
-            'success' => true,
-            'mes' => 'Deleted SubCategory Successfully',
-        ]);
-        DB::rollBack();
     }
 }

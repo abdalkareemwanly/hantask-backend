@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('service_area')->nullable();
             $table->integer('user_type')->default(0)->comment('0=seller, 1=buyer');
             $table->integer('user_status')->default(1)->comment('0=inactive, 1=active');
+            $table->integer('account_state')->default(1)->comment('0=archived, 1=unArchived');
             $table->integer('terms_condition')->default(1);
             $table->text('address')->nullable();
             $table->string('state')->nullable();
@@ -36,7 +37,7 @@ return new class extends Migration
             $table->text('google_id')->nullable();
             $table->string('country_code')->nullable();
             $table->bigInteger('otp_code')->default(0);
-            $table->bigInteger('otp_verified');
+            $table->bigInteger('otp_verified')->nullable();
 
             $columns = [
                 'fb_url',

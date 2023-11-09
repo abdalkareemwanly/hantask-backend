@@ -1,14 +1,23 @@
 <?php
 
 use App\Http\Controllers\API\AdminController;
+use App\Http\Controllers\API\AreaController;
 use App\Http\Controllers\API\BrandController;
 use App\Http\Controllers\API\CategoryController;
 use App\Http\Controllers\API\ChildController;
+use App\Http\Controllers\API\CityController;
 use App\Http\Controllers\API\CountryController;
 use App\Http\Controllers\API\LanguageController;
+use App\Http\Controllers\API\ProfileController;
 use App\Http\Controllers\API\RoleController;
+use App\Http\Controllers\API\SellerController;
+use App\Http\Controllers\API\ServiceController;
 use App\Http\Controllers\API\SubCategoryController;
+<<<<<<< HEAD
 use App\Http\Controllers\API\TranslationsController;
+=======
+use App\Http\Controllers\API\TaxeController;
+>>>>>>> mohammed
 use App\Http\Controllers\API\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -31,11 +40,28 @@ Route::group(['namespace' => 'API' , 'prefix' => 'admin'],function(){
     Route::post('login',[AdminController::class,'login'])->name('admin.login');
     Route::get('AdminNumber',[AdminController::class, 'AdminNumber'])->name('admin.AdminNumber');
 });
+
+// Start Profile Controller
+
+Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth:sanctum'],function(){
+    Route::get('/profile',[ProfileController::class,'index'])->name('admin.profile.index');
+    Route::post('/profile/update',[ProfileController::class,'update'])->name('admin.profile.update');
+    Route::post('/profile/password_change',[ProfileController::class,'password_change'])->name('admin.profile.password_change');
+    Route::get('/profile/logout',[ProfileController::class,'logout'])->name('admin.profile.logout');
+});
+
+// End Profile Controller
+
 // Start Role Controller
+
 Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth:sanctum'],function(){
     Route::get('/roles',[RoleController::class,'index'])->name('admin.role.index');
     Route::post('/role/store',[RoleController::class,'store'])->name('admin.role.store');
+    Route::get('/role/show/{id}',[RoleController::class,'show'])->name('admin.role.show');
+    Route::post('/role/update/{id}',[RoleController::class,'update'])->name('admin.role.update');
+    Route::get('/role/delete/{id}',[RoleController::class,'delete'])->name('admin.role.delete');
 });
+
 // End Role Controller
 
 // Start User Controller
@@ -44,9 +70,14 @@ Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth
     Route::get('/users',[UserController::class,'index'])->name('admin.user.index');
     Route::post('/user/store',[UserController::class,'store'])->name('admin.user.store');
     Route::get('/user/show/{id}',[UserController::class,'show'])->name('admin.user.show');
+    Route::get('/user/changeStatusMethod/{id}',[UserController::class,'status'])->name('admin.user.status');
     Route::post('/user/update/{id}',[UserController::class,'update'])->name('admin.user.update');
-    Route::get('/user/delete/{id}',[UserController::class,'delete'])->name('admin.user.delete');
-    Route::get('/user/FinalDeletion/{id}',[UserController::class,'FinalDeletion'])->name('admin.user.FinalDeletion');
+    Route::get('/user/archiveMethod/{id}',[UserController::class,'archived'])->name('admin.user.archived');
+    Route::get('/user/viewArchived/',[UserController::class,'user_archived'])->name('admin.user.user_archived');
+    Route::get('/user/unarchiveMethod/{id}',[UserController::class,'unArchived'])->name('admin.user.unArchived');
+    Route::get('/user/deleteMethod/{id}',[UserController::class,'delete'])->name('admin.user.delete');
+
+
 });
 
 // End User Controller
@@ -57,8 +88,8 @@ Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth
     Route::get('/categories',[CategoryController::class,'index'])->name('admin.category.index');
     Route::post('/category/store',[CategoryController::class,'store'])->name('admin.category.store');
     Route::post('/category/update/{id}',[CategoryController::class,'update'])->name('admin.category.update');
-    Route::get('/category/status/{id}',[CategoryController::class,'status'])->name('admin.category.status');
-    Route::get('/category/delete/{id}',[CategoryController::class,'delete'])->name('admin.category.delete');
+    Route::get('/category/changeStatusMethod/{id}',[CategoryController::class,'status'])->name('admin.category.status');
+    Route::get('/category/deleteMethod/{id}',[CategoryController::class,'delete'])->name('admin.category.delete');
 });
 
 // End Category Controller
@@ -69,8 +100,8 @@ Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth
     Route::get('/subCategories',[SubCategoryController::class,'index'])->name('admin.subCategory.index');
     Route::post('/subCategory/store',[SubCategoryController::class,'store'])->name('admin.subCategory.store');
     Route::post('/subCategory/update/{id}',[SubCategoryController::class,'update'])->name('admin.subCategory.update');
-    Route::get('/subCategory/status/{id}',[SubCategoryController::class,'status'])->name('admin.subCategory.status');
-    Route::get('/subCategory/delete/{id}',[SubCategoryController::class,'delete'])->name('admin.subCategory.delete');
+    Route::get('/subCategory/changeStatusMethod/{id}',[SubCategoryController::class,'status'])->name('admin.subCategory.status');
+    Route::get('/subCategory/deleteMethod/{id}',[SubCategoryController::class,'delete'])->name('admin.subCategory.delete');
 
 
 });
@@ -83,8 +114,8 @@ Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth
     Route::get('/childs',[ChildController::class,'index'])->name('admin.child.index');
     Route::post('/child/store',[ChildController::class,'store'])->name('admin.child.store');
     Route::post('/child/update/{id}',[ChildController::class,'update'])->name('admin.child.update');
-    Route::get('/child/status/{id}',[ChildController::class,'status'])->name('admin.child.status');
-    Route::get('/child/delete/{id}',[ChildController::class,'delete'])->name('admin.child.delete');
+    Route::get('/child/changeStatusMethod/{id}',[ChildController::class,'status'])->name('admin.child.status');
+    Route::get('/child/deleteMethod/{id}',[ChildController::class,'delete'])->name('admin.child.delete');
 });
 
 // End child Controller
@@ -130,7 +161,72 @@ Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth
     Route::get('/country/delete/{id}',[CountryController::class,'delete'])->name('admin.country.delete');
     Route::get('/country/excel',[CountryController::class,'excel'])->name('admin.country.excel');
     Route::post('/country/import',[CountryController::class,'import'])->name('admin.country.import');
-
 });
 
 // End Country Controller
+
+// Start City Controller
+
+Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth:sanctum'],function(){
+    Route::get('/citys',[CityController::class,'index'])->name('admin.city.index');
+    Route::post('/city/store',[CityController::class,'store'])->name('admin.city.store');
+    Route::post('/city/update/{id}',[CityController::class,'update'])->name('admin.city.update');
+    Route::get('/city/delete/{id}',[CityController::class,'delete'])->name('admin.city.delete');
+    Route::get('/city/excel',[CityController::class,'excel'])->name('admin.city.excel');
+    Route::post('/city/import',[CityController::class,'import'])->name('admin.city.import');
+});
+
+// End City Controller
+
+// Start Area Controller
+
+Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth:sanctum'],function(){
+    Route::get('/areas',[AreaController::class,'index'])->name('admin.area.index');
+    Route::post('/area/store',[AreaController::class,'store'])->name('admin.area.store');
+    Route::post('/area/update/{id}',[AreaController::class,'update'])->name('admin.area.update');
+    Route::get('/area/delete/{id}',[AreaController::class,'delete'])->name('admin.area.delete');
+    Route::get('/area/excel',[AreaController::class,'excel'])->name('admin.area.excel');
+    Route::post('/area/import',[AreaController::class,'import'])->name('admin.area.import');
+});
+
+// Start Area Controller
+
+
+
+// Start Taxe Controller
+
+Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth:sanctum'],function(){
+    Route::get('/taxes',[TaxeController::class,'index'])->name('admin.taxe.index');
+    Route::post('/taxe/store',[TaxeController::class,'store'])->name('admin.taxe.store');
+    Route::post('/taxe/update/{id}',[TaxeController::class,'update'])->name('admin.taxe.update');
+    Route::get('/taxe/delete/{id}',[TaxeController::class,'delete'])->name('admin.taxe.delete');
+    Route::get('/taxe/excel',[TaxeController::class,'excel'])->name('admin.taxe.excel');
+    Route::post('/taxe/import',[TaxeController::class,'import'])->name('admin.taxe.import');
+});
+
+// Start Taxe Controller
+
+// Start Seller Controller
+
+Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth:sanctum'],function(){
+    Route::get('/sellers',[SellerController::class,'index'])->name('admin.seller.index');
+    Route::post('/seller/store',[SellerController::class,'store'])->name('admin.seller.store');
+    Route::post('/seller/update/{id}',[SellerController::class,'update'])->name('admin.seller.update');
+    Route::get('/seller/changeStatusMethod/{id}',[SellerController::class,'status'])->name('admin.seller.status');
+    Route::get('/seller/deleteMethod/{id}',[SellerController::class,'delete'])->name('admin.seller.delete');
+
+});
+
+// End Seller Controller
+
+// Start Service Controller
+
+Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth:sanctum'],function(){
+    Route::get('/services',[ServiceController::class,'index'])->name('admin.service.index');
+    Route::post('/service/store',[ServiceController::class,'store'])->name('admin.service.store');
+    Route::post('/service/update/{id}',[ServiceController::class,'update'])->name('admin.service.update');
+    Route::get('/service/changeStatusMethod/{id}',[ServiceController::class,'status'])->name('admin.service.status');
+    Route::get('/service/deleteMethod/{id}',[ServiceController::class,'delete'])->name('admin.service.delete');
+});
+
+// End Service Controller

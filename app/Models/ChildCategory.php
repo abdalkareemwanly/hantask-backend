@@ -18,4 +18,8 @@ class ChildCategory extends Model
     {
         return $this->belongsTo(Subcategory::class,'sub_category_id');
     }
+    public function services()
+    {
+        return $this->hasMany(Service::class,'child_category_id');
+    }
 }

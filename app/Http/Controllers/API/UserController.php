@@ -18,11 +18,21 @@ class UserController extends Controller
     use imageTrait;
     public function index()
     {
-        $users = User::select('id','name','email','username')->get();
+        $data = [];
+        foreach(User::where('account_state' , 1)->get() as $user) {
+            $data[] = [
+                'id'            => $user->id,
+                'name'          => $user->name,
+                'email'         => $user->email,
+                'username'      => $user->username,
+                'phone'         => $user->phone,
+                'image'         => $user->image,
+            ];
+        }
         return response()->json([
             'success' => true,
             'mes' => 'All Users',
-            'users' => $users
+            'data' => $data
         ]);
     }
     public function store(StoreRequest $request)
@@ -57,6 +67,27 @@ class UserController extends Controller
         }
 
     }
+    public function status($id)
+    {
+        $record = User::find($id);
+        if($record->user_status == 1) {
+            $update = User::where('id',$id)->update([
+                'user_status' => 0
+            ]);
+            return response()->json([
+                'success' => true,
+                'mes' => 'Deactivation Completed Successfully',
+            ]);
+        } elseif($record->user_status == 0) {
+            $update = User::where('id',$id)->update([
+                'user_status' => 1
+            ]);
+            return response()->json([
+                'success' => true,
+                'mes' => 'Activation Completed Successfully',
+            ]);
+        }
+    }
     public function update(UpdateRequest $request , $id)
     {
         DB::beginTransaction();
@@ -82,44 +113,63 @@ class UserController extends Controller
         ]);
         DB::rollBack();
     }
-    public function delete($id)
+    public function archived($id)
     {
-        DB::beginTransaction();
-        $user = User::find($id);
-        $path = 'uploads/images/users/'.$user->image;
-        $soft = UserDeleted::create([
-            'name'      => $user->name,
-            'email'     => $user->email,
-            'username'  => $user->username,
-            'password'  => $user->password,
-            'phone'     => $user->phone,
-            'image'     => $user->image,
-        ]);
-        if($soft) {
-            if(File::exists($path)) {
-                File::move('uploads/images/users/'.$user->image , 'uploads/images/userDeleted/'.$user->image);
-            }
-            $user->delete();
+        $record = User::find($id);
+        if($record->account_state == 1) {
+            $update = User::where('id',$id)->update([
+                'account_state' => 0
+            ]);
         }
-        DB::commit();
         return response()->json([
             'success' => true,
-            'mes' => 'Deleted User Successfully',
+            'mes' => 'Archived User Successfully',
         ]);
-        DB::rollBack();
     }
-    public function FinalDeletion($id)
+    public function user_archived()
     {
-        $user = UserDeleted::find($id);
-        $path = 'uploads/images/userDeleted/'.$user->image;
+        $data = [];
+        foreach(User::where('account_state' , 0)->get() as $user) {
+            $data[] = [
+                'id'            => $user->id,
+                'name'          => $user->name,
+                'email'         => $user->email,
+                'username'      => $user->username,
+                'phone'         => $user->phone,
+                'image'         => $user->image,
+            ];
+        }
+        return response()->json([
+            'success' => true,
+            'mes' => 'All Users Archived',
+            'data' => $data
+        ]);
+    }
+    public function unArchived($id)
+    {
+        $record = User::find($id);
+        if($record->account_state == 0) {
+            $update = User::where('id',$id)->update([
+                'account_state' => 1
+            ]);
+        }
+        return response()->json([
+            'success' => true,
+            'mes' => 'unArchived User Successfully',
+        ]);
+    }
+    public function delete($id)
+    {
+        $user = User::find($id);
+        $path = 'uploads/images/users/'.$user->image;
         if(File::exists($path)) {
-            File::delete('uploads/images/userDeleted/'.$user->image);
+            File::delete('uploads/images/users/'.$user->image);
         }
         $user->delete();
         DB::commit();
         return response()->json([
             'success' => true,
-            'mes' => 'The User Has Been Successfully Deleted Permanently',
+            'mes' => 'Delete User Permanently',
         ]);
         DB::rollBack();
     }
