@@ -31,8 +31,8 @@ class RoleController extends Controller
     }
     public function store(RoleRequest $request)
     {
-        $role = Role::create(['name' => $request->name]);
-        $role->syncPermissions([$request->permission],Auth::guard('sanctum'));
+        $role = Role::create(['name' => $request->name , 'guard_name' => 'sanctum']);
+        $role->syncPermissions([$request->permission , 'guard_name' => 'sanctum']);
         return response()->json([
             'success' => true,
             'mes' => 'Store Role Successfully',
