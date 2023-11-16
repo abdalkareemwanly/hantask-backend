@@ -2,22 +2,22 @@
 
 namespace Database\Seeders;
 
-use App\Models\Permission;
+use App\Models\Role;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class PermissionTableSeeder extends Seeder
+class RoleSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        $permissions = [
-            'dashboard','testing','orders'
+        $rules = [
+            'SuperAdmin'
         ];
-        foreach ($permissions as $permission) {
-            Permission::create(['name' => $permission]);
+        foreach ($rules as $role) {
+            Role::create(['name' => $role]);
         }
     }
 }

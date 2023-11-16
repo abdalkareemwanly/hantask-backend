@@ -55,7 +55,7 @@ Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth
     Route::get('/roles',[RoleController::class,'index'])->name('admin.role.index');
     Route::post('/role/store',[RoleController::class,'store'])->name('admin.role.store');
     Route::get('/role/show/{id}',[RoleController::class,'show'])->name('admin.role.show');
-    Route::post('/role/update/{id}',[RoleController::class,'update'])->name('admin.role.update');
+    Route::post('/role/permission/{id}',[RoleController::class,'permission'])->name('admin.role.permission');
     Route::get('/role/delete/{id}',[RoleController::class,'delete'])->name('admin.role.delete');
 });
 

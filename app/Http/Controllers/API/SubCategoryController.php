@@ -19,13 +19,14 @@ class SubCategoryController extends Controller
     {
         $data = [];
         foreach(Subcategory::whereHas('category')->get() as $subCategory) {
+            $imagePath = '/uploads/images/subCategories';
             $data[] = [
                 'id' => $subCategory->id,
                 'categoryName' => $subCategory->category->name,
                 'name' => $subCategory->name,
                 'description' => $subCategory->description,
                 'slug' => $subCategory->slug,
-                'image' => $subCategory->image,
+                'image' => $imagePath.'/'.$subCategory->image,
             ];
 
         }
@@ -37,20 +38,16 @@ class SubCategoryController extends Controller
     }
     public function store(StoreRequest $request)
     {
-        DB::beginTransaction();
         $data = $request->all();
         $data['image'] = $this->saveImage($request->image,'uploads/images/subCategories');
         Subcategory::create($data);
-        DB::commit();
         return response()->json([
             'success' => true,
             'mes' => 'Store SubCategory Successfully',
         ]);
-        DB::rollBack();
     }
     public function update(updateRequest $request, $id)
     {
-        DB::beginTransaction();
         $record = Subcategory::find($id);
         $data = $request->user();
         if(request()->hasFile('image')) {
@@ -66,12 +63,10 @@ class SubCategoryController extends Controller
             'slug'                 => $request->slug ?? $record->slug,
             'image'                => $data['image'] ?? $record->image,
         ]);
-        DB::commit();
         return response()->json([
             'success' => true,
             'mes' => 'Update SubCategory Successfully',
         ]);
-        DB::rollBack();
     }
     public function status($id)
     {
@@ -96,7 +91,6 @@ class SubCategoryController extends Controller
     }
     public function delete($id)
     {
-        DB::beginTransaction();
         $record = Subcategory::find($id);
         $child = ChildCategory::where('category_id',$id)->first();
         $path = 'uploads/images/subCategories/'.$record->image;
@@ -110,12 +104,10 @@ class SubCategoryController extends Controller
                 File::delete('uploads/images/subCategories/'.$record->image);
             }
             $record->delete();
-            DB::commit();
             return response()->json([
                 'success' => true,
                 'mes' => 'Deleted SubCategory Successfully',
             ]);
-            DB::rollBack();
         }
     }
 }

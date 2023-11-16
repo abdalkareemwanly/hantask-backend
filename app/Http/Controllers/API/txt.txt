@@ -1,0 +1,25 @@
+public function permission(PermissionRequest $request , $id)
+    {
+        $rolePermissions = Role_Permission::where('role_id', $id)->get();
+        $existingPermissionIDs = [];
+        foreach ($rolePermissions as $rolePermission) {
+            $existingPermissionIDs[] = $rolePermission->permission_id;
+        }
+        $permissionsToActivate = [];
+        foreach ($request->permission as $permissionID) {
+            if (!in_array($permissionID, $existingPermissionIDs)) {
+                $permissionsToActivate[] = $permissionID;
+            }
+        }
+        Role_Permission::where('role_id', $id)
+            ->whereIn('permission_id', $permissionsToActivate)
+            ->update(['status' => 1]);
+        $permissionsToDeactivate = array_diff($existingPermissionIDs,$request->permission);
+        Role_Permission::where('role_id', $id)
+            ->where('permission_id', $permissionsToDeactivate)
+            ->update(['status' => 0]);
+        return response()->json([
+            'success' => true,
+            'mes' => 'Saving Changes Successfully',
+        ]);
+    }

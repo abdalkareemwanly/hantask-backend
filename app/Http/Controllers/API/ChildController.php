@@ -18,12 +18,13 @@ class ChildController extends Controller
     {
         $data = [];
         foreach(ChildCategory::whereHas('child_categories')->whereHas('child_subcategories')->get() as $child) {
+            $imagePath = '/uploads/images/childs';
             $data[] = [
                 'id' => $child->id,
                 'name' => $child->name,
                 'description' => $child->description,
                 'slug' => $child->slug,
-                'image' => $child->image,
+                'image' => $imagePath.'/'.$child->image,
                 'categoryName' => $child->child_categories->name,
                 'subcategoryName' => $child->child_subcategories->name,
             ];
@@ -46,7 +47,6 @@ class ChildController extends Controller
     }
     public function update(UpdateRequest $request , $id)
     {
-        DB::beginTransaction();
         $record = ChildCategory::find($id);
         $data = $request->user();
         if(request()->hasFile('image')) {
@@ -63,12 +63,10 @@ class ChildController extends Controller
             'slug'                 => $request->slug ?? $record->slug,
             'image'                => $data['image'] ?? $record->image,
         ]);
-        DB::commit();
         return response()->json([
             'success' => true,
             'mes' => 'Update Child Successfully',
         ]);
-        DB::rollBack();
     }
     public function status($id)
     {

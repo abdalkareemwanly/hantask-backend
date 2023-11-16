@@ -19,6 +19,7 @@ class ServiceController extends Controller
     {
         $data = [];
         foreach(Service::whereHas('category')->whereHas('child_category')->whereHas('seller')->whereHas('subcategory')->whereHas('service_city')->whereRelation('seller','user_type',0)->get() as $service) {
+            $imagePath = '/uploads/images/services';
             $data[] = [
                 'id'                        => $service->id,
                 'category name'             => $service->category->name,
@@ -29,7 +30,7 @@ class ServiceController extends Controller
                 'title'                     => $service->title,
                 'slug'                      => $service->slug,
                 'description'               => $service->description,
-                'image'                     => $service->image,
+                'image'                     => $imagePath .'/'.$service->image,
             ];
         }
         return response()->json([

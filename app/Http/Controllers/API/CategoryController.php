@@ -19,12 +19,13 @@ class CategoryController extends Controller
     {
         $data = [];
         foreach(Category::all() as $category) {
+            $imagePath = '/uploads/images/categories';
             $data[] = [
                 'id'            => $category->id,
                 'name'          => $category->name,
                 'description'   => $category->description,
                 'slug'          => $category->slug,
-                'image'         => $category->image,
+                'image'         => $imagePath.'/'.$category->image,
                 'status'        => $category->status,
             ];
         }
@@ -73,7 +74,6 @@ class CategoryController extends Controller
     }
     public function status($id)
     {
-        DB::beginTransaction();
         $record = Category::find($id);
         if($record->status == 1) {
             $update = Category::where('id',$id)->update([
@@ -92,7 +92,6 @@ class CategoryController extends Controller
                 'mes' => 'Activation Completed Successfully',
             ]);
         }
-        DB::rollBack();
     }
     public function delete($id)
     {

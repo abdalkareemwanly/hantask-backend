@@ -18,10 +18,12 @@ class SellerController extends Controller
     {
         $data = [];
         foreach(User::where('user_type',0)->where('user_status',1)->get() as $seller) {
+            $imagePath = '/uploads/images/sellers';
             $data[] = [
                 'name'      => $seller->name,
                 'email'     => $seller->email,
                 'username'  => $seller->username,
+                'image'     => $imagePath . '/'.$seller->image,
             ];
         }
         return response()->json([

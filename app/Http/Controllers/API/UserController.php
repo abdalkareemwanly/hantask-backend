@@ -20,7 +20,7 @@ class UserController extends Controller
     {
         $data = [];
         foreach(User::where('account_state' , 1)->get() as $user) {
-            $imagePath = public_path('uploads/images/users');
+            $imagePath = '/uploads/images/users';
             $data[] = [
                 'id'            => $user->id,
                 'name'          => $user->name,
@@ -28,6 +28,7 @@ class UserController extends Controller
                 'username'      => $user->username,
                 'phone'         => $user->phone,
                 'image'         => $imagePath . '/'.$user->image,
+                'user_status'   => $user->user_status,
             ];
         }
         return response()->json([

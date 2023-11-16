@@ -3,11 +3,13 @@
 namespace Database\Seeders;
 
 use App\Models\Admin;
+use App\Models\Permission;
+use App\Models\Role;
+use App\Models\Role_Permission;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
+
 class AdminSeeder extends Seeder
 {
     /**
@@ -15,7 +17,6 @@ class AdminSeeder extends Seeder
      */
     public function run(): void
     {
-
         $admin = Admin::create([
             'name' => 'mohamad',
             'username' => 'mohamad',
@@ -24,9 +25,13 @@ class AdminSeeder extends Seeder
             'status' => 1,
             'role' => 'SuperAdmin'
         ]);
-        $role = Role::create(['name' => 'SuperAdmin','guard_name' => 'sanctum']);
-        $permissions = Permission::pluck('id', 'id')->all();
-        $role->syncPermissions($permissions);
-        $admin->assignRole([$role->id]);
+        $role = Role::where('name','SuperAdmin')->first();
+        $Permissions = Permission::all();
+        foreach($Permissions as $Permission) {
+            Role_Permission::create([
+                'role_id' => $role->id,
+                'permission_id' => $Permission->id
+            ]);
+        }
     }
 }

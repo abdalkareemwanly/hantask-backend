@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AdminRequest;
 use App\Models\Admin;
+use App\Models\Role_Permission;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
@@ -36,12 +37,19 @@ class AdminController extends Controller
                     'message' => 'Invalid credentials',
                 ]);
             }
-
+            $permission = [];
+            foreach(Role_Permission::whereHas('role')->whereHas('permisision')->get() as $rolePermission) {
+                $permission[] = [
+                    'id' => $rolePermission->id,
+                    'permisisionName' => $rolePermission->permisision->name,
+                ];
+            }
             // Fetch additional admin details
             $adminDetails = [
                 'username' => $admin->username,
                 'email' => $admin->email,
                 'role' => $admin->role,
+                'permission' => $permission
             ];
 
             $token = $admin->createToken('Admin Token')->plainTextToken;
@@ -50,7 +58,7 @@ class AdminController extends Controller
                 'success' => true,
                 'message' => 'Login Successfully',
                 'token' => $token,
-                'admin' => $adminDetails, // Include admin details in the response
+                'admin' => $adminDetails,
             ]);
         } catch (Exception $e) {
             return response()->json([

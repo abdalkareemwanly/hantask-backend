@@ -17,11 +17,12 @@ class BrandController extends Controller
     {
         $data = [];
         foreach(Brand::all() as $brand) {
+            $imagePath = '/uploads/images/brands';
             $data[] = [
                 'id' => $brand->id,
                 'title' => $brand->title,
                 'url' => $brand->url,
-                'image' => $brand->image,
+                'image' => $imagePath.'/'.$brand->image,
             ];
 
         }
