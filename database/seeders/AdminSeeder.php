@@ -30,7 +30,8 @@ class AdminSeeder extends Seeder
         foreach($Permissions as $Permission) {
             Role_Permission::create([
                 'role_id' => $role->id,
-                'permission_id' => $Permission->id
+                'permission_id' => $Permission->id,
+                'status' => 1
             ]);
         }
     }

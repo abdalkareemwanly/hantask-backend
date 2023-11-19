@@ -84,9 +84,17 @@ class CountryController extends Controller
                 'country_code'      => $country_code,
             ]);
         }
-        return response()->json([
-            'success' => true,
-            'mes' => 'Import Excel File Successfully',
-        ]);
+        if($store) {
+            return response()->json([
+                'success' => true,
+                'mes' => 'Import Excel File Successfully',
+            ]);
+        } else {
+            return response()->json([
+                'success' => true,
+                'mes' => 'Error Import Excel File Successfully',
+            ]);
+        }
+
     }
 }

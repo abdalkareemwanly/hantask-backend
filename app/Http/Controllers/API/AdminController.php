@@ -4,6 +4,8 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AdminRequest;
+use App\Http\Requests\storeRequest;
+use App\Http\Traits\imageTrait;
 use App\Models\Admin;
 use App\Models\Role_Permission;
 use App\Models\User;
@@ -15,6 +17,7 @@ use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
 {
+    use imageTrait;
     public function AdminNumber()
     {
         return Admin::pluck('id')->count();
@@ -25,7 +28,7 @@ class AdminController extends Controller
 
         try {
             $data = [
-                'email' => $request->email,
+                '	username' => $request->email,
                 'password' => $request->password,
             ];
 
@@ -66,5 +69,36 @@ class AdminController extends Controller
                 'message' => $e->getMessage(),
             ]);
         }
+    }
+    public function all()
+    {
+        $data = [];
+        foreach(Admin::all() as $admin) {
+            $imagePath = '/uploads/images/admins';
+            $data[] = [
+                'id' => $admin->id,
+                'name' => $admin->name,
+                'username' => $admin->username,
+                'email' => $admin->email,
+                'role' => $admin->role,
+                'image' => $imagePath.'/'.$admin->image,
+            ];
+        }
+        return response()->json([
+            'success' => true,
+            'message' => 'All Admin',
+            'data' => $data
+        ]);
+    }
+    public function store(storeRequest $request)
+    {
+        $data = $request->validated();
+        $data['password'] = Hash::make($request->password);
+        $data['image'] = $this->saveImage($request->image,'uploads/images/admins');
+        Admin::create($data);
+        return response()->json([
+            'success' => true,
+            'message' => 'Store Admin Successfully',
+        ]);
     }
 }

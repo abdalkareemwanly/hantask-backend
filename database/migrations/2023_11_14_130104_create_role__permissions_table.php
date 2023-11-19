@@ -15,7 +15,7 @@ return new class extends Migration
             $table->bigInteger('id')->autoIncrement();
             $table->bigInteger('role_id');
             $table->bigInteger('permission_id');
-            $table->bigInteger('status')->default('1')->comment('0=off, 1=on');
+            $table->bigInteger('status')->default('0')->comment('0=off, 1=on');
             $table->foreign('role_id')->references('id')->on('roles')->onUpdate('CASCADE')->onDelete('CASCADE');
             $table->foreign('permission_id')->references('id')->on('permissions')->onUpdate('CASCADE')->onDelete('CASCADE');
             $table->timestamps();

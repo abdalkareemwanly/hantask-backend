@@ -38,6 +38,11 @@ Route::group(['namespace' => 'API' , 'prefix' => 'admin'],function(){
     Route::get('AdminNumber',[AdminController::class, 'AdminNumber'])->name('admin.AdminNumber');
 });
 
+Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth:sanctum'],function(){
+    Route::get('/all',[AdminController::class,'all'])->name('admin.all');
+    Route::post('/store',[AdminController::class,'store'])->name('admin.store');
+});
+
 // Start Profile Controller
 
 Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth:sanctum'],function(){
@@ -56,6 +61,7 @@ Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth
     Route::post('/role/store',[RoleController::class,'store'])->name('admin.role.store');
     Route::get('/role/show/{id}',[RoleController::class,'show'])->name('admin.role.show');
     Route::post('/role/permission/{id}',[RoleController::class,'permission'])->name('admin.role.permission');
+    Route::post('/role/update/{id}',[RoleController::class,'update'])->name('admin.role.update');
     Route::get('/role/delete/{id}',[RoleController::class,'delete'])->name('admin.role.delete');
 });
 
