@@ -35,18 +35,8 @@ class RoleController extends Controller
     {
         try
         {
-            $data = $request->all();
+            $data = $request->validated();
             $store = Role::create($data);
-            if($store) {
-                $role = Role::where('name',$store->name)->first();
-                $Permissions = Permission::all();
-                foreach($Permissions as $Permission) {
-                    Role_Permission::create([
-                        'role_id' => $role->id,
-                        'permission_id' => $Permission->id
-                    ]);
-                }
-            }
             return response()->json([
                 'success' => true,
                 'mes' => 'Store Role Successfully',
@@ -67,23 +57,24 @@ class RoleController extends Controller
                 'id' => $record->id,
                 'roleName' => $record->role->name,
                 'permissionName' => $record->permission->name,
+                'value' => $record->status,
             ];
         }
         return response()->json([
             'success' => true,
-            'mes' => "Role {$record->role->name} Permission",
+            'mes' => "Role Permission",
             'data' => $data
         ]);
     }
     public function permission(PermissionRequest $request , $id)
     {
         $data = [];
-        if (!empty($request->permission)) {
-            foreach ($request->permission as $permissionID) {
-                $data[] = $permissionID;
+        if (!empty($request->id)) {
+            foreach ($request->id as $ID) {
+                $data[] = $ID;
             }
-            $json_decode = json_decode($permissionID);
-            $records = Role_Permission::where('role_id', $id)->whereIn('permission_id', $json_decode)->get();
+            $json_decode = json_decode($ID);
+            $records = Role_Permission::where('role_id', $id)->whereIn('id', $json_decode)->get();
             foreach ($records as $record) {
                 $status = $record->status === 1 ? 0 : 1;
                 $record->update(['status' => $status]);

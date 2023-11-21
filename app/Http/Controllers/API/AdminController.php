@@ -28,7 +28,7 @@ class AdminController extends Controller
 
         try {
             $data = [
-                '	username' => $request->email,
+                'username' => $request->email,
                 'password' => $request->password,
             ];
 
@@ -41,10 +41,10 @@ class AdminController extends Controller
                 ]);
             }
             $permission = [];
-            foreach(Role_Permission::whereHas('role')->whereHas('permisision')->get() as $rolePermission) {
+            foreach(Role_Permission::whereHas('role')->whereHas('permission')->whereRelation('permission','status',1)->get() as $rolePermission) {
                 $permission[] = [
                     'id' => $rolePermission->id,
-                    'permisisionName' => $rolePermission->permisision->name,
+                    'permissionName' => $rolePermission->permission->name,
                 ];
             }
             // Fetch additional admin details
