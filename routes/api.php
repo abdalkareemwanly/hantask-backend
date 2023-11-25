@@ -13,6 +13,7 @@ use App\Http\Controllers\API\RoleController;
 use App\Http\Controllers\API\SellerController;
 use App\Http\Controllers\API\ServiceController;
 use App\Http\Controllers\API\SubCategoryController;
+use App\Http\Controllers\API\SubscriptionController;
 use App\Http\Controllers\API\TranslationsController;
 use App\Http\Controllers\API\TaxeController;
 use App\Http\Controllers\API\UserController;
@@ -233,3 +234,16 @@ Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth
 });
 
 // End Service Controller
+
+// Start Subscription Controller
+
+Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth:sanctum'],function(){
+    Route::get('/subscriptions',[SubscriptionController::class,'index'])->name('admin.subscription.index');
+    Route::post('/subscription/store',[SubscriptionController::class,'store'])->name('admin.subscription.store');
+    Route::post('/subscription/update/{id}',[SubscriptionController::class,'update'])->name('admin.subscription.update');
+    Route::get('/subscription/changeStatusMethod/{id}',[SubscriptionController::class,'status'])->name('admin.subscription.status');
+    Route::get('/subscription/deleteMethod/{id}',[SubscriptionController::class,'delete'])->name('admin.subscription.delete');
+});
+
+// End Subscription Controller
+

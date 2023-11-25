@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Subscription;
 
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class PermissionRequest extends FormRequest
+class storeRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,7 +24,11 @@ class PermissionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'permission' => 'required|array',
+            'title'     => 'required',
+            'type'      => 'required',
+            'price'     => 'required',
+            'connect'   => 'required',
+            'image'     => 'required|mimes:png,jpg',
         ];
     }
     public function failedValidation(Validator $validator)

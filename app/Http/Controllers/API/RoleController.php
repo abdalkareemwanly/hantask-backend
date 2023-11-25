@@ -37,6 +37,16 @@ class RoleController extends Controller
         {
             $data = $request->validated();
             $store = Role::create($data);
+            if($store) {
+                $role = Role::where('name',$store->name)->first();
+                $Permissions = Permission::all();
+                foreach($Permissions as $Permission) {
+                    Role_Permission::create([
+                        'role_id' => $role->id,
+                        'permission_id' => $Permission->id
+                    ]);
+                }
+            }
             return response()->json([
                 'success' => true,
                 'mes' => 'Store Role Successfully',
@@ -69,21 +79,42 @@ class RoleController extends Controller
     public function permission(PermissionRequest $request , $id)
     {
         $data = [];
-        if (!empty($request->id)) {
-            foreach ($request->id as $ID) {
-                $data[] = $ID;
+        if (!empty($request->permission)) {
+            $json_decode = json_decode($request->permission[0]);
+
+            foreach ($json_decode as $element) {
+                $data[] = [
+                    'id' => $element->id,
+                    'value' => $element->value
+                ];
             }
-            $json_decode = json_decode($ID);
-            $records = Role_Permission::where('role_id', $id)->whereIn('id', $json_decode)->get();
-            foreach ($records as $record) {
-                $status = $record->status === 1 ? 0 : 1;
-                $record->update(['status' => $status]);
+            foreach($data as $row) {
+                $records = Role_Permission::where('role_id', $id)->where('id',$row['id'])->get();
+                foreach ($records as $record) {
+                    if($row['value'] == true) {
+                        $update = Role_Permission::where('id',$row['id'])->update([
+                            'status' => 1
+                        ]);
+                    } elseif($row['value'] == false) {
+                        $update = Role_Permission::where('id',$row['id'])->update([
+                            'status' => 0
+                        ]);
+                    }
+                }
             }
         }
-        return response()->json([
-            'success' => true,
-            'mes' => 'Saving Changes Successfully',
-        ]);
+        if($update) {
+            return response()->json([
+                'success' => true,
+                'mes' => 'Saving Changes Successfully',
+            ]);
+        } else {
+            return response()->json([
+                'success' => true,
+                'mes' => 'Error',
+            ]);
+        }
+
     }
     public function update(UpdateRoleRequest $request , $id)
     {

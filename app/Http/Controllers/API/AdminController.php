@@ -27,11 +27,6 @@ class AdminController extends Controller
     {
 
         try {
-            $data = [
-                'username' => $request->email,
-                'password' => $request->password,
-            ];
-
             $admin = Admin::where('email', $request->email)->first();
 
             if (!$admin || !Hash::check($request->password, $admin->password)) {
@@ -41,10 +36,11 @@ class AdminController extends Controller
                 ]);
             }
             $permission = [];
-            foreach(Role_Permission::whereHas('role')->whereHas('permission')->whereRelation('permission','status',1)->get() as $rolePermission) {
+            foreach(Role_Permission::whereHas('role')->whereHas('permission')->whereRelation('role','name',$admin->role)->where('status',1)->get() as $rolePermission) {
                 $permission[] = [
                     'id' => $rolePermission->id,
                     'permissionName' => $rolePermission->permission->name,
+                    'permissionStatus' => $rolePermission->status
                 ];
             }
             // Fetch additional admin details
