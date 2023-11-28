@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\PaginatRequest;
 use App\Http\Requests\Tax\storeRequest;
 use App\Http\Requests\Tax\updateRequest;
 use App\Models\Tax;
@@ -10,21 +11,40 @@ use Illuminate\Http\Request;
 
 class TaxeController extends Controller
 {
-    public function index()
+    public function index(PaginatRequest $request)
     {
         $data = [];
-        foreach(Tax::whereHas('country')->get() as $tax) {
-            $data[] = [
-                'id'            => $tax->id,
-                'tax'           => $tax->tax,
-                'country'       => $tax->country->country,
-            ];
+        $paginate = $request->validated();
+        if(!$paginate) {
+            $taxs = Tax::whereHas('country')->paginate(10);
+            foreach($taxs as $tax) {
+                $data[] = [
+                    'id'            => $tax->id,
+                    'tax'           => $tax->tax,
+                    'country'       => $tax->country->country,
+                ];
+            }
+            return response()->json([
+                'success' => true,
+                'mes' => 'All Tax',
+                'data' => $data
+            ]);
+        } else {
+            $taxs = Tax::whereHas('country')->paginate($paginate);
+            foreach($taxs as $tax) {
+                $data[] = [
+                    'id'            => $tax->id,
+                    'tax'           => $tax->tax,
+                    'country'       => $tax->country->country,
+                ];
+            }
+            return response()->json([
+                'success' => true,
+                'mes' => 'All Tax',
+                'data' => $data
+            ]);
         }
-        return response()->json([
-            'success' => true,
-            'mes' => 'All Tax',
-            'data' => $data
-        ]);
+
     }
     public function store(storeRequest $request)
     {

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\PaginatRequest;
 use App\Http\Requests\User\StoreRequest;
 use App\Http\Requests\User\UpdateRequest;
 use App\Http\Requests\UserRequest;
@@ -16,26 +17,50 @@ use Illuminate\Support\Facades\Hash;
 class UserController extends Controller
 {
     use imageTrait;
-    public function index()
+    public function index(PaginatRequest $request)
     {
         $data = [];
-        foreach(User::where('account_state' , 1)->get() as $user) {
-            $imagePath = '/uploads/images/users';
-            $data[] = [
-                'id'            => $user->id,
-                'name'          => $user->name,
-                'email'         => $user->email,
-                'username'      => $user->username,
-                'phone'         => $user->phone,
-                'image'         => $imagePath . '/'.$user->image,
-                'user_status'   => $user->user_status,
-            ];
+        $paginate = $request->validated();
+        if(!$paginate) {
+            $uses = User::where('account_state' , 1)->paginate(10);
+            foreach($uses as $user) {
+                $imagePath = '/uploads/images/users';
+                $data[] = [
+                    'id'            => $user->id,
+                    'name'          => $user->name,
+                    'email'         => $user->email,
+                    'username'      => $user->username,
+                    'phone'         => $user->phone,
+                    'image'         => $imagePath . '/'.$user->image,
+                    'user_status'   => $user->user_status,
+                ];
+            }
+            return response()->json([
+                'success' => true,
+                'mes' => 'All Users',
+                'data' => $data
+            ]);
+        } else {
+            $uses = User::where('account_state' , 1)->paginate($paginate);
+            foreach($uses as $user) {
+                $imagePath = '/uploads/images/users';
+                $data[] = [
+                    'id'            => $user->id,
+                    'name'          => $user->name,
+                    'email'         => $user->email,
+                    'username'      => $user->username,
+                    'phone'         => $user->phone,
+                    'image'         => $imagePath . '/'.$user->image,
+                    'user_status'   => $user->user_status,
+                ];
+            }
+            return response()->json([
+                'success' => true,
+                'mes' => 'All Users',
+                'data' => $data
+            ]);
         }
-        return response()->json([
-            'success' => true,
-            'mes' => 'All Users',
-            'data' => $data
-        ]);
+
     }
     public function store(StoreRequest $request)
     {

@@ -10,4 +10,9 @@ class Customer extends Model
     use HasFactory;
     protected $table = 'customers';
     protected $guarded = [];
+
+    public function posts()
+    {
+        return $this->hasMany(Post::class,'customer_id');
+    }
 }

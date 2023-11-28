@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AdminRequest;
+use App\Http\Requests\PaginatRequest;
 use App\Http\Requests\storeRequest;
 use App\Http\Traits\imageTrait;
 use App\Models\Admin;
@@ -66,25 +67,49 @@ class AdminController extends Controller
             ]);
         }
     }
-    public function all()
+    public function all(PaginatRequest $request)
     {
         $data = [];
-        foreach(Admin::all() as $admin) {
-            $imagePath = '/uploads/images/admins';
-            $data[] = [
-                'id' => $admin->id,
-                'name' => $admin->name,
-                'username' => $admin->username,
-                'email' => $admin->email,
-                'role' => $admin->role,
-                'image' => $imagePath.'/'.$admin->image,
-            ];
+        $paginate = $request->validated();
+        if(!$paginate) {
+            $admins = Admin::paginate(10);
+            foreach($admins as $admin) {
+                $imagePath = '/uploads/images/admins';
+                $data[] = [
+                    'id' => $admin->id,
+                    'name' => $admin->name,
+                    'username' => $admin->username,
+                    'email' => $admin->email,
+                    'role' => $admin->role,
+                    'image' => $imagePath.'/'.$admin->image,
+                ];
+            }
+            return response()->json([
+                'success' => true,
+                'message' => 'All Admin',
+                'data' => $data
+            ]);
+        } else {
+            $admins = Admin::paginate($paginate);
+            foreach($admins as $admin) {
+                $imagePath = '/uploads/images/admins';
+                $data[] = [
+                    'id' => $admin->id,
+                    'name' => $admin->name,
+                    'username' => $admin->username,
+                    'email' => $admin->email,
+                    'role' => $admin->role,
+                    'image' => $imagePath.'/'.$admin->image,
+                ];
+            }
+            return response()->json([
+                'success' => true,
+                'message' => 'All Admin',
+                'data' => $data
+            ]);
         }
-        return response()->json([
-            'success' => true,
-            'message' => 'All Admin',
-            'data' => $data
-        ]);
+
+
     }
     public function store(storeRequest $request)
     {

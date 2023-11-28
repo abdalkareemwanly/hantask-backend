@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Language\storeRequest;
 use App\Http\Requests\Language\updateRequest;
+use App\Http\Requests\PaginatRequest;
 use App\Models\Language;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -12,25 +13,48 @@ use Ramsey\Uuid\Type\Integer;
 
 class LanguageController extends Controller
 {
-    public function index()
+    public function index(PaginatRequest $request)
     {
         $data = [];
-        foreach(Language::all() as  $language) {
-            $data[] = [
-                'id'            => $language->id,
-                'name'          => $language->name,
-                'slug'          => $language->slug,
-                'direction'     => $language->direction,
-                'status'        => $language->status,
-                'default'       => $language->default,
-            ];
+        $paginate = $request->validated();
+        if(!$paginate) {
+            $Languages = Language::paginate(10);
+            foreach($Languages as  $language) {
+                $data[] = [
+                    'id'            => $language->id,
+                    'name'          => $language->name,
+                    'slug'          => $language->slug,
+                    'direction'     => $language->direction,
+                    'status'        => $language->status,
+                    'default'       => $language->default,
+                ];
 
+            }
+            return response()->json([
+                'success' => true,
+                'mes' => 'All Languages',
+                'data' => $data
+            ]);
+        } else {
+            $Languages = Language::paginate($paginate);
+            foreach($Languages as  $language) {
+                $data[] = [
+                    'id'            => $language->id,
+                    'name'          => $language->name,
+                    'slug'          => $language->slug,
+                    'direction'     => $language->direction,
+                    'status'        => $language->status,
+                    'default'       => $language->default,
+                ];
+
+            }
+            return response()->json([
+                'success' => true,
+                'mes' => 'All Languages',
+                'data' => $data
+            ]);
         }
-        return response()->json([
-            'success' => true,
-            'mes' => 'All Languages',
-            'data' => $data
-        ]);
+
     }
     public function store(storeRequest $request)
     {

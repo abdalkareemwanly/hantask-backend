@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Area\ExcelRequest;
 use App\Http\Requests\Area\storeRequest;
 use App\Http\Requests\Area\updateRequest;
+use App\Http\Requests\PaginatRequest;
 use App\Models\Country;
 use App\Models\ServiceArea;
 use App\Models\ServiceCity;
@@ -14,24 +15,46 @@ use PhpOffice\PhpSpreadsheet\Reader\Xlsx as ReaderXlsx;
 
 class AreaController extends Controller
 {
-    public function index()
+    public function index(PaginatRequest $request)
     {
         $data = [];
-        foreach(ServiceArea::whereHas('country')->whereHas('serviceareas')->get() as $area) {
-            $data[] = [
-                'id'                => $area->id,
-                'service_area'      => $area->service_area,
-                'country'           => $area->country->country,
-                'city'              => $area->serviceareas->service_city,
-                'status'            => $area->status,
-                'created_at'        => $area->created_at,
-            ];
+        $paginate = $request->validated();
+        if(!$paginate) {
+            $areas = ServiceArea::whereHas('country')->whereHas('serviceareas')->paginate(10);
+            foreach($areas as $area) {
+                $data[] = [
+                    'id'                => $area->id,
+                    'service_area'      => $area->service_area,
+                    'country'           => $area->country->country,
+                    'city'              => $area->serviceareas->service_city,
+                    'status'            => $area->status,
+                    'created_at'        => $area->created_at,
+                ];
+            }
+            return response()->json([
+                'success' => true,
+                'mes' => 'All ServiceArea',
+                'data' => $data
+            ]);
+        } else {
+            $areas = ServiceArea::whereHas('country')->whereHas('serviceareas')->paginate($paginate);
+            foreach($areas as $area) {
+                $data[] = [
+                    'id'                => $area->id,
+                    'service_area'      => $area->service_area,
+                    'country'           => $area->country->country,
+                    'city'              => $area->serviceareas->service_city,
+                    'status'            => $area->status,
+                    'created_at'        => $area->created_at,
+                ];
+            }
+            return response()->json([
+                'success' => true,
+                'mes' => 'All ServiceArea',
+                'data' => $data
+            ]);
         }
-        return response()->json([
-            'success' => true,
-            'mes' => 'All ServiceArea',
-            'data' => $data
-        ]);
+
     }
     public function store(storeRequest $request)
     {

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\City\ExcelRequest;
 use App\Http\Requests\City\storeRequest;
 use App\Http\Requests\City\updateRequest;
+use App\Http\Requests\PaginatRequest;
 use App\Models\Country;
 use App\Models\ServiceCity;
 use Illuminate\Http\Request;
@@ -14,22 +15,41 @@ use PhpOffice\PhpSpreadsheet\Reader\Xlsx as ReaderXlsx;
 
 class CityController extends Controller
 {
-    public function index()
+    public function index(PaginatRequest $request)
     {
         $data = [];
-        foreach(ServiceCity::whereHas('country')->get() as $city) {
-            $data[] = [
-                'id'                => $city->id,
-                'service_city'      => $city->service_city,
-                'country'           => $city->country->country,
-                'status'            => $city->status,
-            ];
+        $paginate = $request->validated();
+        if(!$paginate) {
+            $ServiceCity = ServiceCity::whereHas('country')->paginate(10);
+            foreach($ServiceCity as $city) {
+                $data[] = [
+                    'id'                => $city->id,
+                    'service_city'      => $city->service_city,
+                    'country'           => $city->country->country,
+                    'status'            => $city->status,
+                ];
+            }
+            return response()->json([
+                'success' => true,
+                'mes' => 'All ServiceCity',
+                'data' => $data
+            ]);
+        } else {
+            $ServiceCity = ServiceCity::whereHas('country')->paginate(10);
+            foreach($ServiceCity as $city) {
+                $data[] = [
+                    'id'                => $city->id,
+                    'service_city'      => $city->service_city,
+                    'country'           => $city->country->country,
+                    'status'            => $city->status,
+                ];
+            }
+            return response()->json([
+                'success' => true,
+                'mes' => 'All ServiceCity',
+                'data' => $data
+            ]);
         }
-        return response()->json([
-            'success' => true,
-            'mes' => 'All ServiceCity',
-            'data' => $data
-        ]);
     }
     public function store(storeRequest $request)
     {

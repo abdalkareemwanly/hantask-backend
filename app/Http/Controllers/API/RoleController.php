@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\PaginatRequest;
 use App\Http\Requests\PermissionRequest;
 use App\Http\Requests\RoleRequest;
 use App\Http\Requests\UpdateRoleRequest;
@@ -14,21 +15,40 @@ use GuzzleHttp\Psr7\Request;
 
 class RoleController extends Controller
 {
-    public function index()
+    public function index(PaginatRequest $request)
     {
         $data = [];
-        foreach(Role::all() as $role)
-        {
-            $data[] = [
-                'id'    => $role->id,
-                'name'  => $role->name,
-            ];
+        $paginate = $request->validated();
+        if(!$paginate) {
+            $roles = Role::paginate(10);
+            foreach($roles as $role)
+            {
+                $data[] = [
+                    'id'    => $role->id,
+                    'name'  => $role->name,
+                ];
+            }
+            return response()->json([
+                'success' => true,
+                'mes' => 'All Roles',
+                'data' => $data
+            ]);
+        } else {
+            $roles = Role::paginate($paginate);
+            foreach($roles as $role)
+            {
+                $data[] = [
+                    'id'    => $role->id,
+                    'name'  => $role->name,
+                ];
+            }
+            return response()->json([
+                'success' => true,
+                'mes' => 'All Roles',
+                'data' => $data
+            ]);
         }
-        return response()->json([
-            'success' => true,
-            'mes' => 'All Roles',
-            'data' => $data
-        ]);
+
     }
 
     public function store(RoleRequest $request)

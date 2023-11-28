@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Child\StoreRequest;
 use App\Http\Requests\Child\UpdateRequest;
+use App\Http\Requests\PaginatRequest;
 use App\Http\Traits\imageTrait;
 use App\Models\ChildCategory;
 use Illuminate\Http\Request;
@@ -14,26 +15,51 @@ use Illuminate\Support\Facades\File;
 class ChildController extends Controller
 {
     use imageTrait;
-    public function index()
+    public function index(PaginatRequest $request)
     {
         $data = [];
-        foreach(ChildCategory::whereHas('child_categories')->whereHas('child_subcategories')->get() as $child) {
-            $imagePath = '/uploads/images/childs';
-            $data[] = [
-                'id' => $child->id,
-                'name' => $child->name,
-                'description' => $child->description,
-                'slug' => $child->slug,
-                'image' => $imagePath.'/'.$child->image,
-                'categoryName' => $child->child_categories->name,
-                'subcategoryName' => $child->child_subcategories->name,
-            ];
+        $paginate = $request->validated();
+        if(!$paginate) {
+            $ChildCategory = ChildCategory::whereHas('child_categories')->whereHas('child_subcategories')->paginate(10);
+            foreach($ChildCategory as $child) {
+                $imagePath = '/uploads/images/childs';
+                $data[] = [
+                    'id' => $child->id,
+                    'name' => $child->name,
+                    'description' => $child->description,
+                    'slug' => $child->slug,
+                    'image' => $imagePath.'/'.$child->image,
+                    'categoryName' => $child->child_categories->name,
+                    'subcategoryName' => $child->child_subcategories->name,
+                ];
+            }
+            return response()->json([
+                'success' => true,
+                'mes' => 'All Childs',
+                'data' => $data
+            ]);
+        } else {
+            $ChildCategory = ChildCategory::whereHas('child_categories')->whereHas('child_subcategories')->paginate($paginate);
+            foreach($ChildCategory as $child) {
+                $imagePath = '/uploads/images/childs';
+                $data[] = [
+                    'id' => $child->id,
+                    'name' => $child->name,
+                    'description' => $child->description,
+                    'slug' => $child->slug,
+                    'image' => $imagePath.'/'.$child->image,
+                    'categoryName' => $child->child_categories->name,
+                    'subcategoryName' => $child->child_subcategories->name,
+                ];
+            }
+            return response()->json([
+                'success' => true,
+                'mes' => 'All Childs',
+                'data' => $data
+            ]);
         }
-        return response()->json([
-            'success' => true,
-            'mes' => 'All Childs',
-            'data' => $data
-        ]);
+
+
     }
     public function store(StoreRequest $request)
     {

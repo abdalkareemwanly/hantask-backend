@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\PaginatRequest;
 use App\Http\Requests\Service\storeRequest;
 use App\Http\Requests\Service\updateRequest;
 use App\Http\Traits\imageTrait;
@@ -15,29 +16,56 @@ use Nette\Schema\Expect;
 class ServiceController extends Controller
 {
     use imageTrait;
-    public function index()
+    public function index(PaginatRequest $request)
     {
         $data = [];
-        foreach(Service::whereHas('category')->whereHas('child_category')->whereHas('seller')->whereHas('subcategory')->whereHas('service_city')->whereRelation('seller','user_type',0)->get() as $service) {
-            $imagePath = '/uploads/images/services';
-            $data[] = [
-                'id'                        => $service->id,
-                'category name'             => $service->category->name,
-                'subcategory name'          => $service->subcategory->name,
-                'child category name'       => $service->child_category->name,
-                'service city name'         => $service->service_city->service_city,
-                'seller name'               => $service->seller->name,
-                'title'                     => $service->title,
-                'slug'                      => $service->slug,
-                'description'               => $service->description,
-                'image'                     => $imagePath .'/'.$service->image,
-            ];
+        $paginate = $request->validated();
+        if(!$paginate) {
+            $Services = Service::whereHas('category')->whereHas('child_category')->whereHas('seller')->whereHas('subcategory')->whereHas('service_city')->whereRelation('seller','user_type',0)->paginate(10);
+            foreach($Services as $service) {
+                $imagePath = '/uploads/images/services';
+                $data[] = [
+                    'id'                        => $service->id,
+                    'category name'             => $service->category->name,
+                    'subcategory name'          => $service->subcategory->name,
+                    'child category name'       => $service->child_category->name,
+                    'service city name'         => $service->service_city->service_city,
+                    'seller name'               => $service->seller->name,
+                    'title'                     => $service->title,
+                    'slug'                      => $service->slug,
+                    'description'               => $service->description,
+                    'image'                     => $imagePath .'/'.$service->image,
+                ];
+            }
+            return response()->json([
+                'success' => true,
+                'mes' => 'All Services',
+                'data' => $data
+            ]);
+        } else {
+            $Services = Service::whereHas('category')->whereHas('child_category')->whereHas('seller')->whereHas('subcategory')->whereHas('service_city')->whereRelation('seller','user_type',0)->paginate($paginate);
+            foreach($Services as $service) {
+                $imagePath = '/uploads/images/services';
+                $data[] = [
+                    'id'                        => $service->id,
+                    'category name'             => $service->category->name,
+                    'subcategory name'          => $service->subcategory->name,
+                    'child category name'       => $service->child_category->name,
+                    'service city name'         => $service->service_city->service_city,
+                    'seller name'               => $service->seller->name,
+                    'title'                     => $service->title,
+                    'slug'                      => $service->slug,
+                    'description'               => $service->description,
+                    'image'                     => $imagePath .'/'.$service->image,
+                ];
+            }
+            return response()->json([
+                'success' => true,
+                'mes' => 'All Services',
+                'data' => $data
+            ]);
         }
-        return response()->json([
-            'success' => true,
-            'mes' => 'All Services',
-            'data' => $data
-        ]);
+
     }
     public function store(storeRequest $request)
     {

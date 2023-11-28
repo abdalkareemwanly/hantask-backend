@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\PaginatRequest;
 use App\Http\Requests\subCategory\StoreRequest;
 use App\Http\Requests\subCategory\updateRequest;
 use App\Http\Traits\imageTrait;
@@ -15,26 +16,50 @@ use Illuminate\Support\Facades\File;
 class SubCategoryController extends Controller
 {
     use imageTrait;
-    public function index()
+    public function index(PaginatRequest $request)
     {
         $data = [];
-        foreach(Subcategory::whereHas('category')->get() as $subCategory) {
-            $imagePath = '/uploads/images/subCategories';
-            $data[] = [
-                'id' => $subCategory->id,
-                'categoryName' => $subCategory->category->name,
-                'name' => $subCategory->name,
-                'description' => $subCategory->description,
-                'slug' => $subCategory->slug,
-                'image' => $imagePath.'/'.$subCategory->image,
-            ];
+        $paginate = $request->validated();
+        if(!$paginate) {
+            $Subcategorys = Subcategory::whereHas('category')->paginate(10);
+            foreach($Subcategorys as $subCategory) {
+                $imagePath = '/uploads/images/subCategories';
+                $data[] = [
+                    'id' => $subCategory->id,
+                    'categoryName' => $subCategory->category->name,
+                    'name' => $subCategory->name,
+                    'description' => $subCategory->description,
+                    'slug' => $subCategory->slug,
+                    'image' => $imagePath.'/'.$subCategory->image,
+                ];
 
+            }
+            return response()->json([
+                'success' => true,
+                'mes' => 'All SubCategories',
+                'data' => $data
+            ]);
+        } else {
+            $Subcategorys = Subcategory::whereHas('category')->paginate($paginate);
+            foreach($Subcategorys as $subCategory) {
+                $imagePath = '/uploads/images/subCategories';
+                $data[] = [
+                    'id' => $subCategory->id,
+                    'categoryName' => $subCategory->category->name,
+                    'name' => $subCategory->name,
+                    'description' => $subCategory->description,
+                    'slug' => $subCategory->slug,
+                    'image' => $imagePath.'/'.$subCategory->image,
+                ];
+
+            }
+            return response()->json([
+                'success' => true,
+                'mes' => 'All SubCategories',
+                'data' => $data
+            ]);
         }
-        return response()->json([
-            'success' => true,
-            'mes' => 'All SubCategories',
-            'data' => $data
-        ]);
+
     }
     public function store(StoreRequest $request)
     {

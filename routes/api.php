@@ -8,12 +8,15 @@ use App\Http\Controllers\API\ChildController;
 use App\Http\Controllers\API\CityController;
 use App\Http\Controllers\API\CountryController;
 use App\Http\Controllers\API\LanguageController;
+use App\Http\Controllers\API\PostController;
 use App\Http\Controllers\API\ProfileController;
 use App\Http\Controllers\API\RoleController;
 use App\Http\Controllers\API\SellerController;
+use App\Http\Controllers\API\SellerSubscriptionController;
 use App\Http\Controllers\API\ServiceController;
 use App\Http\Controllers\API\SubCategoryController;
 use App\Http\Controllers\API\SubscriptionController;
+use App\Http\Controllers\API\SubscriptionCouponController;
 use App\Http\Controllers\API\TranslationsController;
 use App\Http\Controllers\API\TaxeController;
 use App\Http\Controllers\API\UserController;
@@ -215,7 +218,11 @@ Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth
 Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth:sanctum'],function(){
     Route::get('/sellers',[SellerController::class,'index'])->name('admin.seller.index');
     Route::post('/seller/store',[SellerController::class,'store'])->name('admin.seller.store');
+    Route::get('/seller/show/{id}',[SellerController::class,'show'])->name('admin.seller.show');
     Route::post('/seller/update/{id}',[SellerController::class,'update'])->name('admin.seller.update');
+    Route::get('/seller/archiveMethod/{id}',[SellerController::class,'archived'])->name('admin.seller.archived');
+    Route::get('/seller/viewArchived/',[SellerController::class,'seller_archived'])->name('admin.seller.seller_archived');
+    Route::get('/seller/unarchiveMethod/{id}',[SellerController::class,'unArchived'])->name('admin.user.unArchived');
     Route::get('/seller/changeStatusMethod/{id}',[SellerController::class,'status'])->name('admin.seller.status');
     Route::get('/seller/deleteMethod/{id}',[SellerController::class,'delete'])->name('admin.seller.delete');
 
@@ -247,3 +254,36 @@ Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth
 
 // End Subscription Controller
 
+// // Start SellerSubscription Controller
+
+// Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth:sanctum'],function(){
+//     Route::get('/sellerSubscriptions',[SellerSubscriptionController::class,'index'])->name('admin.subscription.index');
+//     Route::post('/sellerSubscription/store',[SellerSubscriptionController::class,'store'])->name('admin.sellerSubscription.store');
+//     Route::post('/sellerSubscription/update/{id}',[SellerSubscriptionController::class,'update'])->name('admin.sellerSubscription.update');
+//     Route::get('/sellerSubscription/changeStatusMethod/{id}',[SellerSubscriptionController::class,'status'])->name('admin.sellerSubscription.status');
+//     Route::get('/sellerSubscription/deleteMethod/{id}',[SellerSubscriptionController::class,'delete'])->name('admin.sellerSubscription.delete');
+// });
+
+// // End Subscription Controller
+
+// Start SellerSubscription Controller
+
+Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth:sanctum'],function(){
+    Route::get('/subscription/coupons',[SubscriptionCouponController::class,'index'])->name('admin.subscription.coupon.index');
+    Route::post('/subscription/coupon/store',[SubscriptionCouponController::class,'store'])->name('admin.subscription.coupon.store');
+    Route::get('/subscription/coupon/changeStatusMethod/{id}',[SubscriptionCouponController::class,'status'])->name('admin.subscription.coupon.status');
+    Route::post('/subscription/coupon/update/{id}',[SubscriptionCouponController::class,'update'])->name('admin.subscription.coupon.update');
+    Route::get('/subscription/coupon/deleteMethod/{id}',[SubscriptionCouponController::class,'delete'])->name('admin.subscription.coupon.delete');
+});
+
+// End SellerSubscription Controller
+
+// Start PostController Controller
+
+Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth:sanctum'],function(){
+    Route::get('/posts',[PostController::class,'index'])->name('admin.post.index');
+    Route::get('/post/changeStatusMethod/{id}',[PostController::class,'status'])->name('admin.post.status');
+    Route::get('/post/deleteMethod/{id}',[PostController::class,'delete'])->name('admin.post.delete');
+});
+
+// End PostController Controller

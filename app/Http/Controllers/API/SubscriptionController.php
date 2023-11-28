@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\PaginatRequest;
 use App\Http\Requests\Subscription\storeRequest;
 use App\Http\Requests\Subscription\updateRequest;
 use App\Http\Traits\imageTrait;
@@ -13,28 +14,54 @@ use Illuminate\Support\Facades\File;
 class SubscriptionController extends Controller
 {
     use imageTrait;
-    public function index()
+    public function index(PaginatRequest $request)
     {
         $data = [];
-        foreach(Subscription::all() as $Subscription) {
-            $imagePath = '/uploads/images/subscriptions';
-            $data[] = [
-                'id' => $Subscription->id,
-                'image' => $imagePath . '/'.$Subscription->image,
-                'title' => $Subscription->title,
-                'type' => $Subscription->type,
-                'price' => '$'.$Subscription->price,
-                'connect' => $Subscription->connect,
-                'service' => $Subscription->service,
-                'job' => $Subscription->job,
-                'status' => $Subscription->status,
-            ];
+        $paginate = $request->validated();
+        if(!$paginate) {
+            $Subscriptions = Subscription::paginate(10);
+            foreach($Subscriptions as $Subscription) {
+                $imagePath = '/uploads/images/subscriptions';
+                $data[] = [
+                    'id' => $Subscription->id,
+                    'image' => $imagePath . '/'.$Subscription->image,
+                    'title' => $Subscription->title,
+                    'type' => $Subscription->type,
+                    'price' => '$'.$Subscription->price,
+                    'connect' => $Subscription->connect,
+                    'service' => $Subscription->service,
+                    'job' => $Subscription->job,
+                    'status' => $Subscription->status,
+                ];
+            }
+            return response()->json([
+                'success' => true,
+                'mes' => 'All Subscriptions',
+                'data' => $data
+            ]);
+        } else {
+            $Subscriptions = Subscription::paginate($paginate);
+            foreach($Subscriptions as $Subscription) {
+                $imagePath = '/uploads/images/subscriptions';
+                $data[] = [
+                    'id' => $Subscription->id,
+                    'image' => $imagePath . '/'.$Subscription->image,
+                    'title' => $Subscription->title,
+                    'type' => $Subscription->type,
+                    'price' => '$'.$Subscription->price,
+                    'connect' => $Subscription->connect,
+                    'service' => $Subscription->service,
+                    'job' => $Subscription->job,
+                    'status' => $Subscription->status,
+                ];
+            }
+            return response()->json([
+                'success' => true,
+                'mes' => 'All Subscriptions',
+                'data' => $data
+            ]);
         }
-        return response()->json([
-            'success' => true,
-            'mes' => 'All Subscriptions',
-            'data' => $data
-        ]);
+
     }
     public function store(storeRequest $request)
     {

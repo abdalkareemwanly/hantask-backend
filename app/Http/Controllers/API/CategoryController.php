@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Category\StoreRequest;
 use App\Http\Requests\Category\updateRequest;
+use App\Http\Requests\PaginatRequest;
 use App\Http\Traits\imageTrait;
 use App\Models\Category;
 use App\Models\Subcategory;
@@ -15,25 +16,47 @@ use Illuminate\Support\Str;
 class CategoryController extends Controller
 {
     use imageTrait;
-    public function index()
+    public function index(PaginatRequest $request)
     {
+        $paginate = $request->validated();
         $data = [];
-        foreach(Category::all() as $category) {
-            $imagePath = '/uploads/images/categories';
-            $data[] = [
-                'id'            => $category->id,
-                'name'          => $category->name,
-                'description'   => $category->description,
-                'slug'          => $category->slug,
-                'image'         => $imagePath.'/'.$category->image,
-                'status'        => $category->status,
-            ];
+        if(!$paginate) {
+            $Categorys = Category::paginate(10);
+            foreach($Categorys as $category) {
+                $imagePath = '/uploads/images/categories';
+                $data[] = [
+                    'id'            => $category->id,
+                    'name'          => $category->name,
+                    'description'   => $category->description,
+                    'slug'          => $category->slug,
+                    'image'         => $imagePath.'/'.$category->image,
+                    'status'        => $category->status,
+                ];
+            }
+            return response()->json([
+                'success' => true,
+                'mes' => 'All categories',
+                'data' => $data
+            ]);
+        } else {
+            $Categorys = Category::paginate($paginate);
+            foreach($Categorys as $category) {
+                $imagePath = '/uploads/images/categories';
+                $data[] = [
+                    'id'            => $category->id,
+                    'name'          => $category->name,
+                    'description'   => $category->description,
+                    'slug'          => $category->slug,
+                    'image'         => $imagePath.'/'.$category->image,
+                    'status'        => $category->status,
+                ];
+            }
+            return response()->json([
+                'success' => true,
+                'mes' => 'All categories',
+                'data' => $data
+            ]);
         }
-        return response()->json([
-            'success' => true,
-            'mes' => 'All categories',
-            'data' => $data
-        ]);
     }
     public function store(StoreRequest $request)
     {

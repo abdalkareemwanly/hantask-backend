@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('description');
             $table->string('short_description');
             $table->string('image');
+            $table->integer('status')->default(1)->comment('0=inactive, 1=active');
             $table->bigInteger('customer_id');
             $table->timestamps();
         });

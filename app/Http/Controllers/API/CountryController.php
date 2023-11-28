@@ -6,31 +6,55 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Country\ExcelRequest;
 use App\Http\Requests\Country\storeRequest;
 use App\Http\Requests\Country\updateRequest;
+use App\Http\Requests\PaginatRequest;
 use App\Models\Country;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx as ReaderXlsx;
 
 class CountryController extends Controller
 {
-    public function index()
+    public function index(PaginatRequest $request)
     {
         $data = [];
-        foreach(Country::all() as $country) {
-            $data[] = [
-                'id'                => $country->id,
-                'country'           => $country->country,
-                'country_code'      => $country->country_code,
-                'zone_status'       => $country->zone_status,
-                'latitude'          => $country->latitude,
-                'longitude'         => $country->longitude,
-                'created_at'        => $country->created_at,
-            ];
+        $paginate = $request->validated();
+        if(!$paginate) {
+            $Countrys = Country::paginate(10);
+            foreach($Countrys as $country) {
+                $data[] = [
+                    'id'                => $country->id,
+                    'country'           => $country->country,
+                    'country_code'      => $country->country_code,
+                    'zone_status'       => $country->zone_status,
+                    'latitude'          => $country->latitude,
+                    'longitude'         => $country->longitude,
+                    'created_at'        => $country->created_at,
+                ];
 
+            }
+            return response()->json([
+                'success' => true,
+                'mes' => 'All Languages',
+                'data' => $data
+            ]);
+        } else {
+            $Countrys = Country::paginate($paginate);
+            foreach($Countrys as $country) {
+                $data[] = [
+                    'id'                => $country->id,
+                    'country'           => $country->country,
+                    'country_code'      => $country->country_code,
+                    'zone_status'       => $country->zone_status,
+                    'latitude'          => $country->latitude,
+                    'longitude'         => $country->longitude,
+                    'created_at'        => $country->created_at,
+                ];
+            }
+            return response()->json([
+                'success' => true,
+                'mes' => 'All Languages',
+                'data' => $data
+            ]);
         }
-        return response()->json([
-            'success' => true,
-            'mes' => 'All Languages',
-            'data' => $data
-        ]);
+
     }
     public function store(storeRequest $request)
     {
