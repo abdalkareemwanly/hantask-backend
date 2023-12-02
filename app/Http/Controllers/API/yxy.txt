@@ -1,0 +1,5 @@
+  public function permission(PermissionRequest $request , $id)
+    {
+        $record = Role_Permission::where('role_id',$id)->where('permission_id',$request->permission)->first();
+        dd($record);
+    }
