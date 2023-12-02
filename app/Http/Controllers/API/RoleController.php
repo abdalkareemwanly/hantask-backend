@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\PaginatRequest;
 use App\Http\Requests\PermissionRequest;
 use App\Http\Requests\RoleRequest;
+use App\Http\Requests\SearchRequest;
 use App\Http\Requests\UpdateRoleRequest;
 use App\Models\Permission;
 use App\Models\Role;
@@ -75,6 +76,30 @@ class RoleController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
+            ]);
+        }
+    }
+    public function search(SearchRequest $request)
+    {
+        $data = $request->validated();
+        $info = [];
+        $search = Role::where('name',$data['search'])->get();
+        foreach($search as $row) {
+                $info[] = [
+                    'id'    => $row->id,
+                    'name'  => $row->name,
+                ];
+        }
+        if($search) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Search Post Successfully',
+                'searchResult' => $info,
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Search Post Error',
             ]);
         }
     }

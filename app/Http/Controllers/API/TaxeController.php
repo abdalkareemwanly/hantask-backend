@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PaginatRequest;
+use App\Http\Requests\Tax\SearchRequest;
 use App\Http\Requests\Tax\storeRequest;
 use App\Http\Requests\Tax\updateRequest;
 use App\Models\Tax;
@@ -54,6 +55,31 @@ class TaxeController extends Controller
             'success' => true,
             'mes' => 'Store Tax Successfully'
         ]);
+    }
+    public function search(SearchRequest $request)
+    {
+        $data = $request->validated();
+        $info = [];
+        $search = Tax::whereHas('country')->where('tax',$data['search'])->get();
+        foreach($search as $row) {
+            $info[] = [
+                'id'            => $row->id,
+                'tax'           => $row->tax,
+                'country'       => $row->country->country,
+            ];
+        }
+        if($search) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Search Tax Successfully',
+                'searchResult' => $info,
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Search Tax Error',
+            ]);
+        }
     }
     public function update(updateRequest $request , $id)
     {

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PaginatRequest;
+use App\Http\Requests\Service\SearchRequest;
 use App\Http\Requests\Service\storeRequest;
 use App\Http\Requests\Service\updateRequest;
 use App\Http\Traits\imageTrait;
@@ -83,6 +84,40 @@ class ServiceController extends Controller
                     'message' => $e->getMessage(),
                 ]);
             }
+    }
+    public function search(SearchRequest $request)
+    {
+        $data = $request->validated();
+        $info = [];
+        $search = Service::whereHas('category')->whereHas('child_category')->whereHas('seller')->whereHas('subcategory')->whereHas('service_city')->whereRelation('seller','user_type',0)
+                ->where('title',$data['search'])->orWhere('description',$data['search'])->get();
+        foreach($search as $row) {
+            $imagePath = '/uploads/images/services';
+            $info[] = [
+                'id'                        => $row->id,
+                'category name'             => $row->category->name,
+                'subcategory name'          => $row->subcategory->name,
+                'child category name'       => $row->child_category->name,
+                'service city name'         => $row->service_city->service_city,
+                'seller name'               => $row->seller->name,
+                'title'                     => $row->title,
+                'slug'                      => $row->slug,
+                'description'               => $row->description,
+                'image'                     => $imagePath .'/'.$row->image,
+            ];
+        }
+        if($search) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Search Service Successfully',
+                'searchResult' => $info,
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Search Service Error',
+            ]);
+        }
     }
     public function update(updateRequest $request , $id)
     {

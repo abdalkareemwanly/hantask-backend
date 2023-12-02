@@ -11,6 +11,5 @@ class Admin extends Model
     use HasFactory,HasApiTokens;
     protected $table = 'admins';
     protected $guarded = [];
-    protected $guard_name = 'sanctum';
 
 }

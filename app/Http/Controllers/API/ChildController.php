@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Child\SearchRequest;
 use App\Http\Requests\Child\StoreRequest;
 use App\Http\Requests\Child\UpdateRequest;
 use App\Http\Requests\PaginatRequest;
@@ -70,6 +71,36 @@ class ChildController extends Controller
             'success' => true,
             'mes' => 'Store Child Successfully',
         ]);
+    }
+    public function search(SearchRequest $request)
+    {
+        $data = $request->validated();
+        $info = [];
+        $search = ChildCategory::whereHas('child_categories')->whereHas('child_subcategories')->where('name',$data['search'])->orWhere('description',$data['search'])->get();
+        foreach($search as $row) {
+            $imagePath = '/uploads/images/childs';
+                $info[] = [
+                    'id' => $row->id,
+                    'name' => $row->name,
+                    'description' => $row->description,
+                    'slug' => $row->slug,
+                    'image' => $imagePath.'/'.$row->image,
+                    'categoryName' => $row->child_categories->name,
+                    'subcategoryName' => $row->child_subcategories->name,
+                ];
+        }
+        if($search) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Search Category Successfully',
+                'searchResult' => $info,
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Search Category Error',
+            ]);
+        }
     }
     public function update(UpdateRequest $request , $id)
     {

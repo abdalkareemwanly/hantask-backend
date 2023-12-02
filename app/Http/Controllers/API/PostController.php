@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PaginatRequest;
+use App\Http\Requests\SearchRequest;
 use App\Models\Post;
 use Illuminate\Http\Request;
 
@@ -53,6 +54,36 @@ class PostController extends Controller
             ]);
         }
 
+    }
+    public function search(SearchRequest $request)
+    {
+        $data = $request->validated();
+        $info = [];
+        $search = Post::whereHas('customer')->where('title',$data['search'])->get();
+        foreach($search as $row) {
+            $imagePath = '/uploads/images/posts';
+                $info[] = [
+                    'id' => $row->id,
+                    'customerName' => $row->customer->name,
+                    'title' => $row->title,
+                    'description' => $row->description,
+                    'short description' => $row->short_description,
+                    'image' => $imagePath .'/',$row->image,
+                    'status' => $row->status,
+                ];
+        }
+        if($search) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Search Post Successfully',
+                'searchResult' => $info,
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Search Post Error',
+            ]);
+        }
     }
     public function status($id)
     {

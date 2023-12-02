@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PaginatRequest;
+use App\Http\Requests\Seller\SearchRequest;
 use App\Http\Requests\Seller\storeRequest;
 use App\Http\Requests\Seller\updateRequest;
 use App\Http\Traits\imageTrait;
@@ -58,6 +59,33 @@ class SellerController extends Controller
             'success' => true,
             'mes' => 'Store Seller Successfully',
         ]);
+    }
+    public function search(SearchRequest $request)
+    {
+        $data = $request->validated();
+        $info = [];
+        $search = User::where('name',$data['search'])->orWhere('username',$data['search'])->get();
+        foreach($search as $row) {
+            $imagePath = '/uploads/images/sellers';
+            $info[] = [
+                'name'      => $row->name,
+                'email'     => $row->email,
+                'username'  => $row->username,
+                'image'     => $imagePath . '/'.$row->image,
+            ];
+        }
+        if($search) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Search Seller Successfully',
+                'searchResult' => $info,
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Search Seller Error',
+            ]);
+        }
     }
     public function update(updateRequest $request , $id)
     {

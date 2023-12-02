@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PaginatRequest;
+use App\Http\Requests\Subscription\Coupon\SearchRequest;
 use App\Http\Requests\Subscription\Coupon\storeRequest;
 use App\Http\Requests\Subscription\Coupon\updateRequest;
 use App\Models\subscription_coupon;
@@ -60,6 +61,34 @@ class SubscriptionCouponController extends Controller
             'success' => true,
             'mes' => 'Store subscriptionCoupon Successfully',
         ]);
+    }
+    public function search(SearchRequest $request)
+    {
+        $data = $request->validated();
+        $info = [];
+        $search = subscription_coupon::where('code',$data['search'])->get();
+        foreach($search as $row) {
+                $info[] = [
+                    'id' => $row->id,
+                    'code' => $row->code,
+                    'discount' => $row->discount,
+                    'discount_type' => $row->discount_type,
+                    'expire_date' => $row->expire_date,
+                    'status' => $row->status,
+                ];
+        }
+        if($search) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Search subscriptionCoupon Successfully',
+                'searchResult' => $info,
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Search subscriptionCoupon Error',
+            ]);
+        }
     }
     public function status($id)
     {

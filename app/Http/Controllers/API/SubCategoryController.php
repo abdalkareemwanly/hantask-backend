@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PaginatRequest;
+use App\Http\Requests\subCategory\SearchRequest;
 use App\Http\Requests\subCategory\StoreRequest;
 use App\Http\Requests\subCategory\updateRequest;
 use App\Http\Traits\imageTrait;
@@ -70,6 +71,35 @@ class SubCategoryController extends Controller
             'success' => true,
             'mes' => 'Store SubCategory Successfully',
         ]);
+    }
+    public function search(SearchRequest $request)
+    {
+        $data = $request->validated();
+        $info = [];
+        $search = Subcategory::where('name',$data['search'])->orWhere('description',$data['search'])->get();
+        foreach($search as $row) {
+            $imagePath = '/uploads/images/subCategories';
+                $info[] = [
+                    'id' => $row->id,
+                    'categoryName' => $row->category->name,
+                    'name' => $row->name,
+                    'description' => $row->description,
+                    'slug' => $row->slug,
+                    'image' => $imagePath.'/'.$row->image,
+                ];
+        }
+        if($search) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Search SubCategory Successfully',
+                'searchResult' => $info,
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Search SubCategory Error',
+            ]);
+        }
     }
     public function update(updateRequest $request, $id)
     {

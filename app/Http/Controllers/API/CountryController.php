@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Country\ExcelRequest;
+use App\Http\Requests\Country\SearchRequest;
 use App\Http\Requests\Country\storeRequest;
 use App\Http\Requests\Country\updateRequest;
 use App\Http\Requests\PaginatRequest;
@@ -65,6 +66,34 @@ class CountryController extends Controller
             'mes' => 'Store Country Successfully'
         ]);
     }
+    public function search(SearchRequest $request)
+    {
+        $data = $request->validated();
+        $info = [];
+        $search = Country::where('country',$data['search'])->get();
+        foreach($search as $row) {
+                $info[] = [
+                    'id'            => $row->id,
+                    'name'          => $row->name,
+                    'slug'          => $row->slug,
+                    'direction'     => $row->direction,
+                    'status'        => $row->status,
+                    'default'       => $row->default,
+                ];
+        }
+        if($search) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Search Language Successfully',
+                'searchResult' => $info,
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Search Language Error',
+            ]);
+        }
+    }
     public function update(updateRequest $request , $id)
     {
         $record = Country::find($id);
@@ -108,17 +137,9 @@ class CountryController extends Controller
                 'country_code'      => $country_code,
             ]);
         }
-        if($store) {
-            return response()->json([
-                'success' => true,
-                'mes' => 'Import Excel File Successfully',
-            ]);
-        } else {
-            return response()->json([
-                'success' => true,
-                'mes' => 'Error Import Excel File Successfully',
-            ]);
-        }
-
+        return response()->json([
+            'success' => true,
+            'mes' => 'Import Excel File Successfully',
+        ]);
     }
 }

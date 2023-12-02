@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Language\SearchRequest;
 use App\Http\Requests\Language\storeRequest;
 use App\Http\Requests\Language\updateRequest;
 use App\Http\Requests\PaginatRequest;
@@ -66,6 +67,34 @@ class LanguageController extends Controller
             'success' => true,
             'mes' => 'Store Language Successfully'
         ]);
+    }
+    public function search(SearchRequest $request)
+    {
+        $data = $request->validated();
+        $info = [];
+        $search = Language::where('name',$data['search'])->get();
+        foreach($search as $row) {
+                $info[] = [
+                    'id'            => $row->id,
+                    'name'          => $row->name,
+                    'slug'          => $row->slug,
+                    'direction'     => $row->direction,
+                    'status'        => $row->status,
+                    'default'       => $row->default,
+                ];
+        }
+        if($search) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Search Language Successfully',
+                'searchResult' => $info,
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Search Language Error',
+            ]);
+        }
     }
     public function update(updateRequest $request, $id)
     {

@@ -1,0 +1,13 @@
+$search = Admin::query()
+            ->when(!empty($data['name']), function ($query) use ($data) {
+                return $query->where('name', 'like', '%' . $data['name'] . '%');
+            })
+            ->when(!empty($data['username']), function ($query) use ($data) {
+                return $query->orWhere('username', 'like', '%' . $data['username'] . '%');
+            })
+            ->when(!empty($data['email']), function ($query) use ($data) {
+                return $query->orWhere('email', 'like', '%' . $data['email'] . '%');
+            })
+            ->when(!empty($data['role']), function ($query) use ($data) {
+                return $query->orWhere('role', 'like', '%' . $data['role'] . '%');
+            })->get();

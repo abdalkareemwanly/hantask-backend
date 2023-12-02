@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AdminRequest;
 use App\Http\Requests\PaginatRequest;
+use App\Http\Requests\SearchRequest;
 use App\Http\Requests\storeRequest;
 use App\Http\Traits\imageTrait;
 use App\Models\Admin;
@@ -108,8 +109,6 @@ class AdminController extends Controller
                 'data' => $data
             ]);
         }
-
-
     }
     public function store(storeRequest $request)
     {
@@ -121,5 +120,35 @@ class AdminController extends Controller
             'success' => true,
             'message' => 'Store Admin Successfully',
         ]);
+    }
+    public function search(SearchRequest $request)
+    {
+        $data = $request->validated();
+        $info = [];
+        $search = Admin::where('name',$data['search'])->orWhere('username',$data['search'])->get();
+        foreach($search as $row) {
+            $imagePath = '/uploads/images/admins';
+            $info[] = [
+                'id' => $row->id,
+                'name' => $row->name,
+                'username' => $row->username,
+                'email' => $row->email,
+                'role' => $row->role,
+                'image' => $imagePath.'/'.$row->image,
+            ];
+        }
+        if($search) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Search Admin Successfully',
+                'searchResult' => $info,
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Search Admin Error',
+            ]);
+        }
+
     }
 }

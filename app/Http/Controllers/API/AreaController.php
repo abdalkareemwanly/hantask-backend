@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Area\ExcelRequest;
+use App\Http\Requests\Area\SearchRequest;
 use App\Http\Requests\Area\storeRequest;
 use App\Http\Requests\Area\updateRequest;
 use App\Http\Requests\PaginatRequest;
@@ -64,6 +65,34 @@ class AreaController extends Controller
             'success' => true,
             'mes' => 'Store ServiceArea Successfully'
         ]);
+    }
+    public function search(SearchRequest $request)
+    {
+        $data = $request->validated();
+        $info = [];
+        $search = ServiceArea::where('service_area',$data['search'])->get();
+        foreach($search as $row) {
+            $info[] = [
+                'id'                => $row->id,
+                'service_area'      => $row->service_area,
+                'country'           => $row->country->country,
+                'city'              => $row->serviceareas->service_city,
+                'status'            => $row->status,
+                'created_at'        => $row->created_at,
+            ];
+        }
+        if($search) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Search ServiceArea Successfully',
+                'searchResult' => $info,
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Search ServiceArea Error',
+            ]);
+        }
     }
     public function update(updateRequest $request , $id)
     {

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PaginatRequest;
+use App\Http\Requests\User\SearchRequest;
 use App\Http\Requests\User\StoreRequest;
 use App\Http\Requests\User\UpdateRequest;
 use App\Http\Requests\UserRequest;
@@ -75,6 +76,36 @@ class UserController extends Controller
             'mes' => 'Store User Successfully',
         ]);
         DB::rollBack();
+    }
+    public function search(SearchRequest $request)
+    {
+        $data = $request->validated();
+        $info = [];
+        $search = User::where('name',$data['search'])->orWhere('username',$data['search'])->get();
+        foreach($search as $row) {
+            $imagePath = '/uploads/images/users';
+            $info[] = [
+                'id'            => $row->id,
+                'name'          => $row->name,
+                'email'         => $row->email,
+                'username'      => $row->username,
+                'phone'         => $row->phone,
+                'image'         => $imagePath . '/'.$row->image,
+                'user_status'   => $row->user_status,
+            ];
+        }
+        if($search) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Search Seller Successfully',
+                'searchResult' => $info,
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Search Seller Error',
+            ]);
+        }
     }
     public function show($id)
     {

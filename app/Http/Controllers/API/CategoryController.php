@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Category\SearchRequest;
 use App\Http\Requests\Category\StoreRequest;
 use App\Http\Requests\Category\updateRequest;
 use App\Http\Requests\PaginatRequest;
@@ -70,6 +71,35 @@ class CategoryController extends Controller
             'mes' => 'Store Category Successfully',
         ]);
         DB::rollBack();
+    }
+    public function search(SearchRequest $request)
+    {
+        $data = $request->validated();
+        $info = [];
+        $search = Category::where('name',$data['search'])->orWhere('description',$data['search'])->get();
+        foreach($search as $row) {
+            $imagePath = '/uploads/images/categories';
+            $info[] = [
+                'id'            => $row->id,
+                'name'          => $row->name,
+                'description'   => $row->description,
+                'slug'          => $row->slug,
+                'image'         => $imagePath.'/'.$row->image,
+                'status'        => $row->status,
+            ];
+        }
+        if($search) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Search Category Successfully',
+                'searchResult' => $info,
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Search Category Error',
+            ]);
+        }
     }
     public function update(updateRequest $request , $id)
     {
