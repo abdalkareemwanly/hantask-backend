@@ -18,41 +18,77 @@ class AreaController extends Controller
 {
     public function index(PaginatRequest $request)
     {
-        $data = [];
-        $paginate = $request->validated();
-        if(!$paginate) {
-            $areas = ServiceArea::whereHas('country')->whereHas('serviceareas')->paginate(10);
-            foreach($areas as $area) {
-                $data[] = [
-                    'id'                => $area->id,
-                    'service_area'      => $area->service_area,
-                    'country'           => $area->country->country,
-                    'city'              => $area->serviceareas->service_city,
-                    'status'            => $area->status,
-                    'created_at'        => $area->created_at,
+        if(isset($request->search)) {
+            $info = [];
+            $search = ServiceArea::where('service_area',$request->search)->get();
+            foreach($search as $row) {
+                $info[] = [
+                    'id'                => $row->id,
+                    'service_area'      => $row->service_area,
+                    'country'           => $row->country->country,
+                    'city'              => $row->serviceareas->service_city,
+                    'status'            => $row->status,
+                    'created_at'        => $row->created_at,
                 ];
             }
+            if($search) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Search ServiceArea Successfully',
+                    'searchResult' => $info,
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Search ServiceArea Error',
+                ]);
+            }
+        }
+        if($request->paginate) {
+            $paginate = ServiceArea::whereHas('country')->whereHas('serviceareas')->paginate($request->paginate);
+            $nextPageUrl = $paginate->nextPageUrl();
+            $data = $paginate->map(function ($row) {
+                return [
+                    'id'                => $row->id,
+                    'service_area'      => $row->service_area,
+                    'country'           => $row->country->country,
+                    'city'              => $row->serviceareas->service_city,
+                    'status'            => $row->status,
+                    'created_at'        => $row->created_at,
+                ];
+            });
             return response()->json([
-                'success' => true,
-                'mes' => 'All ServiceArea',
-                'data' => $data
+                'status' => true,
+                'message' => 'success',
+                'data' => $data,
+                'next_page_url' => $nextPageUrl,
+                'total' => $paginate->count(),
+                'currentPage' => $paginate->currentPage(),
+                'lastPage' => $paginate->lastPage(),
+                'perPage' => $paginate->perPage(),
             ]);
         } else {
-            $areas = ServiceArea::whereHas('country')->whereHas('serviceareas')->paginate($paginate);
-            foreach($areas as $area) {
-                $data[] = [
-                    'id'                => $area->id,
-                    'service_area'      => $area->service_area,
-                    'country'           => $area->country->country,
-                    'city'              => $area->serviceareas->service_city,
-                    'status'            => $area->status,
-                    'created_at'        => $area->created_at,
+            $paginate = ServiceArea::whereHas('country')->whereHas('serviceareas')->paginate(10);
+            $nextPageUrl = $paginate->nextPageUrl();
+            $data = $paginate->map(function ($row) {
+                return [
+                    'id'                => $row->id,
+                    'service_area'      => $row->service_area,
+                    'country'           => $row->country->country,
+                    'city'              => $row->serviceareas->service_city,
+                    'status'            => $row->status,
+                    'created_at'        => $row->created_at,
                 ];
-            }
+            });
             return response()->json([
-                'success' => true,
-                'mes' => 'All ServiceArea',
-                'data' => $data
+                'status' => true,
+                'message' => 'success',
+                'data' => $data,
+                'next_page_url' => $nextPageUrl,
+                'total' => $paginate->count(),
+                'currentPage' => $paginate->currentPage(),
+                'lastPage' => $paginate->lastPage(),
+                'perPage' => $paginate->perPage(),
             ]);
         }
 
@@ -66,34 +102,7 @@ class AreaController extends Controller
             'mes' => 'Store ServiceArea Successfully'
         ]);
     }
-    public function search(SearchRequest $request)
-    {
-        $data = $request->validated();
-        $info = [];
-        $search = ServiceArea::where('service_area',$data['search'])->get();
-        foreach($search as $row) {
-            $info[] = [
-                'id'                => $row->id,
-                'service_area'      => $row->service_area,
-                'country'           => $row->country->country,
-                'city'              => $row->serviceareas->service_city,
-                'status'            => $row->status,
-                'created_at'        => $row->created_at,
-            ];
-        }
-        if($search) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Search ServiceArea Successfully',
-                'searchResult' => $info,
-            ]);
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Search ServiceArea Error',
-            ]);
-        }
-    }
+
     public function update(updateRequest $request , $id)
     {
         $record = ServiceArea::find($id);

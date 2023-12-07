@@ -16,46 +16,79 @@ class LanguageController extends Controller
 {
     public function index(PaginatRequest $request)
     {
-        $data = [];
-        $paginate = $request->validated();
-        if(!$paginate) {
-            $Languages = Language::paginate(10);
-            foreach($Languages as  $language) {
-                $data[] = [
-                    'id'            => $language->id,
-                    'name'          => $language->name,
-                    'slug'          => $language->slug,
-                    'direction'     => $language->direction,
-                    'status'        => $language->status,
-                    'default'       => $language->default,
+        if(isset($request->search)) {
+            $info = [];
+            $search = Language::where('name',$request->search)->get();
+            foreach($search as $row) {
+                $info[] = [
+                    'id'            => $row->id,
+                    'name'          => $row->name,
+                    'slug'          => $row->slug,
+                    'direction'     => $row->direction,
+                    'status'        => $row->status,
+                    'default'       => $row->default,
                 ];
-
             }
+            if($search) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Search Country Successfully',
+                    'searchResult' => $info,
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Search Country Error',
+                ]);
+            }
+        }
+        if($request->paginate) {
+            $paginate = Language::paginate($request->paginate);
+            $nextPageUrl = $paginate->nextPageUrl();
+            $data = $paginate->map(function ($row) {
+                return [
+                    'id'            => $row->id,
+                    'name'          => $row->name,
+                    'slug'          => $row->slug,
+                    'direction'     => $row->direction,
+                    'status'        => $row->status,
+                    'default'       => $row->default,
+                ];
+            });
             return response()->json([
-                'success' => true,
-                'mes' => 'All Languages',
-                'data' => $data
+                'status' => true,
+                'message' => 'success',
+                'data' => $data,
+                'next_page_url' => $nextPageUrl,
+                'total' => $paginate->count(),
+                'currentPage' => $paginate->currentPage(),
+                'lastPage' => $paginate->lastPage(),
+                'perPage' => $paginate->perPage(),
             ]);
         } else {
-            $Languages = Language::paginate($paginate);
-            foreach($Languages as  $language) {
-                $data[] = [
-                    'id'            => $language->id,
-                    'name'          => $language->name,
-                    'slug'          => $language->slug,
-                    'direction'     => $language->direction,
-                    'status'        => $language->status,
-                    'default'       => $language->default,
+            $paginate = Language::paginate(10);
+            $nextPageUrl = $paginate->nextPageUrl();
+            $data = $paginate->map(function ($row) {
+                return [
+                    'id'            => $row->id,
+                    'name'          => $row->name,
+                    'slug'          => $row->slug,
+                    'direction'     => $row->direction,
+                    'status'        => $row->status,
+                    'default'       => $row->default,
                 ];
-
-            }
+            });
             return response()->json([
-                'success' => true,
-                'mes' => 'All Languages',
-                'data' => $data
+                'status' => true,
+                'message' => 'success',
+                'data' => $data,
+                'next_page_url' => $nextPageUrl,
+                'total' => $paginate->count(),
+                'currentPage' => $paginate->currentPage(),
+                'lastPage' => $paginate->lastPage(),
+                'perPage' => $paginate->perPage(),
             ]);
         }
-
     }
     public function store(storeRequest $request)
     {
@@ -67,34 +100,6 @@ class LanguageController extends Controller
             'success' => true,
             'mes' => 'Store Language Successfully'
         ]);
-    }
-    public function search(SearchRequest $request)
-    {
-        $data = $request->validated();
-        $info = [];
-        $search = Language::where('name',$data['search'])->get();
-        foreach($search as $row) {
-                $info[] = [
-                    'id'            => $row->id,
-                    'name'          => $row->name,
-                    'slug'          => $row->slug,
-                    'direction'     => $row->direction,
-                    'status'        => $row->status,
-                    'default'       => $row->default,
-                ];
-        }
-        if($search) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Search Language Successfully',
-                'searchResult' => $info,
-            ]);
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Search Language Error',
-            ]);
-        }
     }
     public function update(updateRequest $request, $id)
     {

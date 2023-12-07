@@ -19,48 +19,80 @@ class SubCategoryController extends Controller
     use imageTrait;
     public function index(PaginatRequest $request)
     {
-        $data = [];
-        $paginate = $request->validated();
-        if(!$paginate) {
-            $Subcategorys = Subcategory::whereHas('category')->paginate(10);
-            foreach($Subcategorys as $subCategory) {
+        if(isset($request->search)) {
+            $info = [];
+            $search = Subcategory::where('name',$request->search)->orWhere('description',$request->search)->get();
+            foreach($search as $row) {
                 $imagePath = '/uploads/images/subCategories';
-                $data[] = [
+                    $info[] = [
+                        'id' => $row->id,
+                        'categoryName' => $row->category->name,
+                        'name' => $row->name,
+                        'description' => $row->description,
+                        'slug' => $row->slug,
+                        'image' => $imagePath.'/'.$row->image,
+                    ];
+            }
+            if($search) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Search SubCategory Successfully',
+                    'searchResult' => $info,
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Search SubCategory Error',
+                ]);
+            }
+        }
+        if($request->paginate) {
+            $paginate = Subcategory::whereHas('category')->paginate($request->paginate);
+            $nextPageUrl = $paginate->nextPageUrl();
+            $data = $paginate->map(function ($subCategory) {
+                return [
                     'id' => $subCategory->id,
                     'categoryName' => $subCategory->category->name,
                     'name' => $subCategory->name,
                     'description' => $subCategory->description,
                     'slug' => $subCategory->slug,
-                    'image' => $imagePath.'/'.$subCategory->image,
+                    'image' => '/uploads/images/subCategories'.$subCategory->image,
                 ];
-
-            }
+            });
             return response()->json([
-                'success' => true,
-                'mes' => 'All SubCategories',
-                'data' => $data
+                'status' => true,
+                'message' => 'success',
+                'data' => $data,
+                'next_page_url' => $nextPageUrl,
+                'total' => $paginate->count(),
+                'currentPage' => $paginate->currentPage(),
+                'lastPage' => $paginate->lastPage(),
+                'perPage' => $paginate->perPage(),
             ]);
         } else {
-            $Subcategorys = Subcategory::whereHas('category')->paginate($paginate);
-            foreach($Subcategorys as $subCategory) {
-                $imagePath = '/uploads/images/subCategories';
-                $data[] = [
+            $paginate = Subcategory::whereHas('category')->paginate(10);
+            $nextPageUrl = $paginate->nextPageUrl();
+            $data = $paginate->map(function ($subCategory) {
+                return [
                     'id' => $subCategory->id,
                     'categoryName' => $subCategory->category->name,
                     'name' => $subCategory->name,
                     'description' => $subCategory->description,
                     'slug' => $subCategory->slug,
-                    'image' => $imagePath.'/'.$subCategory->image,
+                    'image' => '/uploads/images/subCategories'.$subCategory->image,
                 ];
-
-            }
+            });
             return response()->json([
-                'success' => true,
-                'mes' => 'All SubCategories',
-                'data' => $data
+                'status' => true,
+                'message' => 'success',
+                'data' => $data,
+                'next_page_url' => $nextPageUrl,
+                'total' => $paginate->count(),
+                'currentPage' => $paginate->currentPage(),
+                'lastPage' => $paginate->lastPage(),
+                'perPage' => $paginate->perPage(),
             ]);
         }
-
     }
     public function store(StoreRequest $request)
     {
@@ -71,35 +103,6 @@ class SubCategoryController extends Controller
             'success' => true,
             'mes' => 'Store SubCategory Successfully',
         ]);
-    }
-    public function search(SearchRequest $request)
-    {
-        $data = $request->validated();
-        $info = [];
-        $search = Subcategory::where('name',$data['search'])->orWhere('description',$data['search'])->get();
-        foreach($search as $row) {
-            $imagePath = '/uploads/images/subCategories';
-                $info[] = [
-                    'id' => $row->id,
-                    'categoryName' => $row->category->name,
-                    'name' => $row->name,
-                    'description' => $row->description,
-                    'slug' => $row->slug,
-                    'image' => $imagePath.'/'.$row->image,
-                ];
-        }
-        if($search) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Search SubCategory Successfully',
-                'searchResult' => $info,
-            ]);
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Search SubCategory Error',
-            ]);
-        }
     }
     public function update(updateRequest $request, $id)
     {

@@ -24,7 +24,8 @@ class PaginatRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'paginate' => 'nullable|numeric'
+            'paginate' => 'nullable',
+            'search'   => 'nullable',
         ];
     }
     public function failedValidation(Validator $validator)

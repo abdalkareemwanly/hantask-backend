@@ -18,48 +18,82 @@ class ChildController extends Controller
     use imageTrait;
     public function index(PaginatRequest $request)
     {
-        $data = [];
-        $paginate = $request->validated();
-        if(!$paginate) {
-            $ChildCategory = ChildCategory::whereHas('child_categories')->whereHas('child_subcategories')->paginate(10);
-            foreach($ChildCategory as $child) {
-                $imagePath = '/uploads/images/childs';
-                $data[] = [
+        if(isset($request->search)) {
+            $info = [];
+            $search = ChildCategory::whereHas('child_categories')->whereHas('child_subcategories')->where('name',$request->search)->orWhere('description',$request->search)->get();
+            foreach($search as $row) {
+                $info[] = [
+                    'id' => $row->id,
+                    'name' => $row->name,
+                    'description' => $row->description,
+                    'slug' => $row->slug,
+                    'image'         => '/uploads/images/childs/'.$row->image,
+                    'categoryName' => $row->child_categories->name,
+                    'subcategoryName' => $row->child_subcategories->name,
+                ];
+            }
+            if($search) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Search Child Successfully',
+                    'searchResult' => $info,
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Search Child Error',
+                ]);
+            }
+        }
+        if($request->paginate) {
+            $paginate = ChildCategory::whereHas('child_categories')->whereHas('child_subcategories')->paginate($request->paginate);
+            $nextPageUrl = $paginate->nextPageUrl();
+            $data = $paginate->map(function ($child) {
+                return [
                     'id' => $child->id,
                     'name' => $child->name,
                     'description' => $child->description,
                     'slug' => $child->slug,
-                    'image' => $imagePath.'/'.$child->image,
+                    'image' =>'/uploads/images/childs/'.$child->image,
                     'categoryName' => $child->child_categories->name,
                     'subcategoryName' => $child->child_subcategories->name,
                 ];
-            }
+            });
             return response()->json([
-                'success' => true,
-                'mes' => 'All Childs',
-                'data' => $data
+                'status' => true,
+                'message' => 'success',
+                'data' => $data,
+                'next_page_url' => $nextPageUrl,
+                'total' => $paginate->count(),
+                'currentPage' => $paginate->currentPage(),
+                'lastPage' => $paginate->lastPage(),
+                'perPage' => $paginate->perPage(),
             ]);
         } else {
-            $ChildCategory = ChildCategory::whereHas('child_categories')->whereHas('child_subcategories')->paginate($paginate);
-            foreach($ChildCategory as $child) {
-                $imagePath = '/uploads/images/childs';
-                $data[] = [
+            $paginate = ChildCategory::whereHas('child_categories')->whereHas('child_subcategories')->paginate(10);
+            $nextPageUrl = $paginate->nextPageUrl();
+            $data = $paginate->map(function ($child) {
+                return [
                     'id' => $child->id,
                     'name' => $child->name,
                     'description' => $child->description,
                     'slug' => $child->slug,
-                    'image' => $imagePath.'/'.$child->image,
+                    'image' =>'/uploads/images/childs/'.$child->image,
                     'categoryName' => $child->child_categories->name,
                     'subcategoryName' => $child->child_subcategories->name,
                 ];
-            }
+            });
             return response()->json([
-                'success' => true,
-                'mes' => 'All Childs',
-                'data' => $data
+                'status' => true,
+                'message' => 'success',
+                'data' => $data,
+                'next_page_url' => $nextPageUrl,
+                'total' => $paginate->count(),
+                'currentPage' => $paginate->currentPage(),
+                'lastPage' => $paginate->lastPage(),
+                'perPage' => $paginate->perPage(),
             ]);
         }
-
 
     }
     public function store(StoreRequest $request)
@@ -72,36 +106,7 @@ class ChildController extends Controller
             'mes' => 'Store Child Successfully',
         ]);
     }
-    public function search(SearchRequest $request)
-    {
-        $data = $request->validated();
-        $info = [];
-        $search = ChildCategory::whereHas('child_categories')->whereHas('child_subcategories')->where('name',$data['search'])->orWhere('description',$data['search'])->get();
-        foreach($search as $row) {
-            $imagePath = '/uploads/images/childs';
-                $info[] = [
-                    'id' => $row->id,
-                    'name' => $row->name,
-                    'description' => $row->description,
-                    'slug' => $row->slug,
-                    'image' => $imagePath.'/'.$row->image,
-                    'categoryName' => $row->child_categories->name,
-                    'subcategoryName' => $row->child_subcategories->name,
-                ];
-        }
-        if($search) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Search Category Successfully',
-                'searchResult' => $info,
-            ]);
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Search Category Error',
-            ]);
-        }
-    }
+
     public function update(UpdateRequest $request , $id)
     {
         $record = ChildCategory::find($id);

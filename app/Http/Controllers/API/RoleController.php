@@ -18,38 +18,67 @@ class RoleController extends Controller
 {
     public function index(PaginatRequest $request)
     {
-        $data = [];
-        $paginate = $request->validated();
-        if(!$paginate) {
-            $roles = Role::paginate(10);
-            foreach($roles as $role)
-            {
-                $data[] = [
-                    'id'    => $role->id,
-                    'name'  => $role->name,
+        if(isset($request->search)) {
+            $info = [];
+            $search = Role::where('name',$request->search)->get();
+            foreach($search as $row) {
+                $info[] = [
+                    'id'    => $row->id,
+                    'name'  => $row->name,
                 ];
             }
+            if($search) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Search Role Successfully',
+                    'searchResult' => $info,
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Search Role Error',
+                ]);
+            }
+        }
+        if($request->paginate) {
+            $paginate =  Role::paginate($request->paginate);
+            $nextPageUrl = $paginate->nextPageUrl();
+            $data = $paginate->map(function ($row) {
+                return [
+                    'id'    => $row->id,
+                    'name'  => $row->name,
+                ];
+            });
             return response()->json([
-                'success' => true,
-                'mes' => 'All Roles',
-                'data' => $data
+                'status' => true,
+                'message' => 'success',
+                'data' => $data,
+                'next_page_url' => $nextPageUrl,
+                'total' => $paginate->count(),
+                'currentPage' => $paginate->currentPage(),
+                'lastPage' => $paginate->lastPage(),
+                'perPage' => $paginate->perPage(),
             ]);
         } else {
-            $roles = Role::paginate($paginate);
-            foreach($roles as $role)
-            {
-                $data[] = [
-                    'id'    => $role->id,
-                    'name'  => $role->name,
+            $paginate = Role::paginate(10);
+            $nextPageUrl = $paginate->nextPageUrl();
+            $data = $paginate->map(function ($row) {
+                return [
+                    'id'    => $row->id,
+                    'name'  => $row->name,
                 ];
-            }
+            });
             return response()->json([
-                'success' => true,
-                'mes' => 'All Roles',
-                'data' => $data
+                'status' => true,
+                'message' => 'success',
+                'data' => $data,
+                'next_page_url' => $nextPageUrl,
+                'total' => $paginate->count(),
+                'currentPage' => $paginate->currentPage(),
+                'lastPage' => $paginate->lastPage(),
+                'perPage' => $paginate->perPage(),
             ]);
         }
-
     }
 
     public function store(RoleRequest $request)
@@ -79,30 +108,7 @@ class RoleController extends Controller
             ]);
         }
     }
-    public function search(SearchRequest $request)
-    {
-        $data = $request->validated();
-        $info = [];
-        $search = Role::where('name',$data['search'])->get();
-        foreach($search as $row) {
-                $info[] = [
-                    'id'    => $row->id,
-                    'name'  => $row->name,
-                ];
-        }
-        if($search) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Search Post Successfully',
-                'searchResult' => $info,
-            ]);
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Search Post Error',
-            ]);
-        }
-    }
+
     public function show($id)
     {
         $data = [];

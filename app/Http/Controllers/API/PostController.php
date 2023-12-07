@@ -12,56 +12,11 @@ class PostController extends Controller
 {
     public function index(PaginatRequest $request)
     {
-        $data = [];
-        $paginate = $request->validated();
-        if(!$paginate) {
-            $posts = Post::whereHas('customer')->paginate(10);
-            foreach($posts as $post) {
+        if(isset($request->search)) {
+            $info = [];
+            $search = Post::whereHas('customer')->where('title',$request->search)->orWhere('description',$request->search)->get();
+            foreach($search as $row) {
                 $imagePath = '/uploads/images/posts';
-                $data[] = [
-                    'id' => $post->id,
-                    'customerName' => $post->customer->name,
-                    'title' => $post->title,
-                    'description' => $post->description,
-                    'short description' => $post->short_description,
-                    'image' => $imagePath .'/',$post->image,
-                    'status' => $post->status,
-                ];
-            }
-            return response()->json([
-                'success' => true,
-                'mes' => 'All Posts',
-                'data' => $data
-            ]);
-        } else {
-            $posts = Post::whereHas('customer')->paginate($paginate);
-            foreach($posts as $post) {
-                $imagePath = '/uploads/images/posts';
-                $data[] = [
-                    'id' => $post->id,
-                    'customerName' => $post->customer->name,
-                    'title' => $post->title,
-                    'description' => $post->description,
-                    'short description' => $post->short_description,
-                    'image' => $imagePath .'/',$post->image,
-                    'status' => $post->status,
-                ];
-            }
-            return response()->json([
-                'success' => true,
-                'mes' => 'All Posts',
-                'data' => $data
-            ]);
-        }
-
-    }
-    public function search(SearchRequest $request)
-    {
-        $data = $request->validated();
-        $info = [];
-        $search = Post::whereHas('customer')->where('title',$data['search'])->get();
-        foreach($search as $row) {
-            $imagePath = '/uploads/images/posts';
                 $info[] = [
                     'id' => $row->id,
                     'customerName' => $row->customer->name,
@@ -71,17 +26,67 @@ class PostController extends Controller
                     'image' => $imagePath .'/',$row->image,
                     'status' => $row->status,
                 ];
+            }
+            if($search) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Search Country Successfully',
+                    'searchResult' => $info,
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Search Country Error',
+                ]);
+            }
         }
-        if($search) {
+        if($request->paginate) {
+            $paginate =  Post::whereHas('customer')->paginate($request->paginate);
+            $nextPageUrl = $paginate->nextPageUrl();
+            $data = $paginate->map(function ($row) {
+                return [
+                    'id' => $row->id,
+                    'customerName' => $row->customer->name,
+                    'title' => $row->title,
+                    'description' => $row->description,
+                    'short description' => $row->short_description,
+                    'image' => '/uploads/images/posts/',$row->image,
+                    'status' => $row->status,
+                ];
+            });
             return response()->json([
-                'success' => true,
-                'message' => 'Search Post Successfully',
-                'searchResult' => $info,
+                'status' => true,
+                'message' => 'success',
+                'data' => $data,
+                'next_page_url' => $nextPageUrl,
+                'total' => $paginate->count(),
+                'currentPage' => $paginate->currentPage(),
+                'lastPage' => $paginate->lastPage(),
+                'perPage' => $paginate->perPage(),
             ]);
         } else {
+            $paginate = Post::whereHas('customer')->paginate(10);
+            $nextPageUrl = $paginate->nextPageUrl();
+            $data = $paginate->map(function ($row) {
+                return [
+                    'id' => $row->id,
+                    'customerName' => $row->customer->name,
+                    'title' => $row->title,
+                    'description' => $row->description,
+                    'short description' => $row->short_description,
+                    'image' => '/uploads/images/posts/',$row->image,
+                    'status' => $row->status,
+                ];
+            });
             return response()->json([
-                'success' => false,
-                'message' => 'Search Post Error',
+                'status' => true,
+                'message' => 'success',
+                'data' => $data,
+                'next_page_url' => $nextPageUrl,
+                'total' => $paginate->count(),
+                'currentPage' => $paginate->currentPage(),
+                'lastPage' => $paginate->lastPage(),
+                'perPage' => $paginate->perPage(),
             ]);
         }
     }

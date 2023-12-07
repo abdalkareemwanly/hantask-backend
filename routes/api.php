@@ -45,7 +45,6 @@ Route::group(['namespace' => 'API' , 'prefix' => 'admin'],function(){
 Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth:sanctum'],function(){
     Route::get('/all',[AdminController::class,'all'])->name('admin.all');
     Route::post('/store',[AdminController::class,'store'])->name('admin.store');
-    Route::post('/search',[AdminController::class,'search'])->name('admin.search');
 });
 
 // Start Profile Controller
@@ -64,7 +63,6 @@ Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth
 Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth:sanctum'],function(){
     Route::get('/roles',[RoleController::class,'index'])->name('admin.role.index');
     Route::post('/role/store',[RoleController::class,'store'])->name('admin.role.store');
-    Route::post('/role/search',[RoleController::class,'search'])->name('admin.role.search');
     Route::get('/role/show/{id}',[RoleController::class,'show'])->name('admin.role.show');
     Route::post('/role/permission/{id}',[RoleController::class,'permission'])->name('admin.role.permission');
     Route::post('/role/update/{id}',[RoleController::class,'update'])->name('admin.role.update');
@@ -78,7 +76,6 @@ Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth
 Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth:sanctum'],function(){
     Route::get('/users',[UserController::class,'index'])->name('admin.user.index');
     Route::post('/user/store',[UserController::class,'store'])->name('admin.user.store');
-    Route::post('/user/search',[UserController::class,'search'])->name('admin.user.search');
     Route::get('/user/show/{id}',[UserController::class,'show'])->name('admin.user.show');
     Route::get('/user/changeStatusMethod/{id}',[UserController::class,'status'])->name('admin.user.status');
     Route::post('/user/update/{id}',[UserController::class,'update'])->name('admin.user.update');
@@ -97,7 +94,6 @@ Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth
 Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth:sanctum'],function(){
     Route::get('/categories',[CategoryController::class,'index'])->name('admin.category.index');
     Route::post('/category/store',[CategoryController::class,'store'])->name('admin.category.store');
-    Route::post('/category/search',[CategoryController::class,'search'])->name('admin.category.search');
     Route::post('/category/update/{id}',[CategoryController::class,'update'])->name('admin.category.update');
     Route::get('/category/changeStatusMethod/{id}',[CategoryController::class,'status'])->name('admin.category.status');
     Route::get('/category/deleteMethod/{id}',[CategoryController::class,'delete'])->name('admin.category.delete');
@@ -110,7 +106,6 @@ Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth
 Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth:sanctum'],function(){
     Route::get('/subCategories',[SubCategoryController::class,'index'])->name('admin.subCategory.index');
     Route::post('/subCategory/store',[SubCategoryController::class,'store'])->name('admin.subCategory.store');
-    Route::post('/subCategory/search',[SubCategoryController::class,'search'])->name('admin.subCategory.search');
     Route::post('/subCategory/update/{id}',[SubCategoryController::class,'update'])->name('admin.subCategory.update');
     Route::get('/subCategory/changeStatusMethod/{id}',[SubCategoryController::class,'status'])->name('admin.subCategory.status');
     Route::get('/subCategory/deleteMethod/{id}',[SubCategoryController::class,'delete'])->name('admin.subCategory.delete');
@@ -125,7 +120,6 @@ Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth
 Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth:sanctum'],function(){
     Route::get('/childs',[ChildController::class,'index'])->name('admin.child.index');
     Route::post('/child/store',[ChildController::class,'store'])->name('admin.child.store');
-    Route::post('/child/search',[ChildController::class,'search'])->name('admin.child.search');
     Route::post('/child/update/{id}',[ChildController::class,'update'])->name('admin.child.update');
     Route::get('/child/changeStatusMethod/{id}',[ChildController::class,'status'])->name('admin.child.status');
     Route::get('/child/deleteMethod/{id}',[ChildController::class,'delete'])->name('admin.child.delete');
@@ -150,7 +144,6 @@ Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth
 Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth:sanctum'],function(){
     Route::get('/languages',[LanguageController::class,'index'])->name('admin.language.index');
     Route::post('/language/store',[LanguageController::class,'store'])->name('admin.language.store');
-    Route::post('/language/search',[LanguageController::class,'search'])->name('admin.language.search');
     Route::post('/language/update/{id}',[LanguageController::class,'update'])->name('admin.language.update');
     Route::post('/language/show/{id}',[LanguageController::class, 'show'])->name('admin.language.show');
     Route::get('/language/update_default/{id}',[LanguageController::class,'update_default'])->name('admin.language.update_default');
@@ -171,7 +164,6 @@ Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth
 Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth:sanctum'],function(){
     Route::get('/countries',[CountryController::class,'index'])->name('admin.country.index');
     Route::post('/country/store',[CountryController::class,'store'])->name('admin.country.store');
-    Route::post('/country/search',[CountryController::class,'search'])->name('admin.country.search');
     Route::post('/country/update/{id}',[CountryController::class,'update'])->name('admin.country.update');
     Route::get('/country/delete/{id}',[CountryController::class,'delete'])->name('admin.country.delete');
     Route::get('/country/excel',[CountryController::class,'excel'])->name('admin.country.excel');
@@ -198,7 +190,6 @@ Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth
 Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth:sanctum'],function(){
     Route::get('/areas',[AreaController::class,'index'])->name('admin.area.index');
     Route::post('/area/store',[AreaController::class,'store'])->name('admin.area.store');
-    Route::post('/area/search',[AreaController::class,'search'])->name('admin.area.search');
     Route::post('/area/update/{id}',[AreaController::class,'update'])->name('admin.area.update');
     Route::get('/area/delete/{id}',[AreaController::class,'delete'])->name('admin.area.delete');
     Route::get('/area/excel',[AreaController::class,'excel'])->name('admin.area.excel');
@@ -214,7 +205,6 @@ Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth
 Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth:sanctum'],function(){
     Route::get('/taxes',[TaxeController::class,'index'])->name('admin.taxe.index');
     Route::post('/taxe/store',[TaxeController::class,'store'])->name('admin.taxe.store');
-    Route::post('/taxe/search',[TaxeController::class,'search'])->name('admin.taxe.search');
     Route::post('/taxe/update/{id}',[TaxeController::class,'update'])->name('admin.taxe.update');
     Route::get('/taxe/delete/{id}',[TaxeController::class,'delete'])->name('admin.taxe.delete');
     Route::get('/taxe/excel',[TaxeController::class,'excel'])->name('admin.taxe.excel');
@@ -228,7 +218,6 @@ Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth
 Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth:sanctum'],function(){
     Route::get('/sellers',[SellerController::class,'index'])->name('admin.seller.index');
     Route::post('/seller/store',[SellerController::class,'store'])->name('admin.seller.store');
-    Route::post('/seller/search',[SellerController::class,'search'])->name('admin.seller.search');
     Route::get('/seller/show/{id}',[SellerController::class,'show'])->name('admin.seller.show');
     Route::post('/seller/update/{id}',[SellerController::class,'update'])->name('admin.seller.update');
     Route::get('/seller/archiveMethod/{id}',[SellerController::class,'archived'])->name('admin.seller.archived');
@@ -246,7 +235,6 @@ Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth
 Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth:sanctum'],function(){
     Route::get('/services',[ServiceController::class,'index'])->name('admin.service.index');
     Route::post('/service/store',[ServiceController::class,'store'])->name('admin.service.store');
-    Route::post('/service/search',[ServiceController::class,'search'])->name('admin.service.search');
     Route::post('/service/update/{id}',[ServiceController::class,'update'])->name('admin.service.update');
     Route::get('/service/changeStatusMethod/{id}',[ServiceController::class,'status'])->name('admin.service.status');
     Route::get('/service/deleteMethod/{id}',[ServiceController::class,'delete'])->name('admin.service.delete');
@@ -259,7 +247,6 @@ Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth
 Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth:sanctum'],function(){
     Route::get('/subscriptions',[SubscriptionController::class,'index'])->name('admin.subscription.index');
     Route::post('/subscription/store',[SubscriptionController::class,'store'])->name('admin.subscription.store');
-    Route::post('/subscription/search',[SubscriptionController::class,'search'])->name('admin.subscription.search');
     Route::post('/subscription/update/{id}',[SubscriptionController::class,'update'])->name('admin.subscription.update');
     Route::get('/subscription/changeStatusMethod/{id}',[SubscriptionController::class,'status'])->name('admin.subscription.status');
     Route::get('/subscription/deleteMethod/{id}',[SubscriptionController::class,'delete'])->name('admin.subscription.delete');
@@ -284,7 +271,6 @@ Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth
 Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth:sanctum'],function(){
     Route::get('/subscription/coupons',[SubscriptionCouponController::class,'index'])->name('admin.subscription.coupon.index');
     Route::post('/subscription/coupon/store',[SubscriptionCouponController::class,'store'])->name('admin.subscription.coupon.store');
-    Route::post('/subscription/coupon/search',[SubscriptionCouponController::class,'search'])->name('admin.subscription.coupon.search');
     Route::get('/subscription/coupon/changeStatusMethod/{id}',[SubscriptionCouponController::class,'status'])->name('admin.subscription.coupon.status');
     Route::post('/subscription/coupon/update/{id}',[SubscriptionCouponController::class,'update'])->name('admin.subscription.coupon.update');
     Route::get('/subscription/coupon/deleteMethod/{id}',[SubscriptionCouponController::class,'delete'])->name('admin.subscription.coupon.delete');
@@ -296,7 +282,6 @@ Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth
 
 Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth:sanctum'],function(){
     Route::get('/posts',[PostController::class,'index'])->name('admin.post.index');
-    Route::post('/post/search',[PostController::class,'search'])->name('admin.post.search');
     Route::get('/post/changeStatusMethod/{id}',[PostController::class,'status'])->name('admin.post.status');
     Route::get('/post/deleteMethod/{id}',[PostController::class,'delete'])->name('admin.post.delete');
 });

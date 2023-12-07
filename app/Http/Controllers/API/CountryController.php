@@ -15,12 +15,37 @@ class CountryController extends Controller
 {
     public function index(PaginatRequest $request)
     {
-        $data = [];
-        $paginate = $request->validated();
-        if(!$paginate) {
-            $Countrys = Country::paginate(10);
-            foreach($Countrys as $country) {
-                $data[] = [
+        if(isset($request->search)) {
+            $info = [];
+            $search = Country::where('country',$request->search)->get();
+            foreach($search as $row) {
+                $info[] = [
+                    'id'            => $row->id,
+                    'name'          => $row->name,
+                    'slug'          => $row->slug,
+                    'direction'     => $row->direction,
+                    'status'        => $row->status,
+                    'default'       => $row->default,
+                ];
+            }
+            if($search) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Search Country Successfully',
+                    'searchResult' => $info,
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Search Country Error',
+                ]);
+            }
+        }
+        if($request->paginate) {
+            $paginate = Country::paginate($request->paginate);
+            $nextPageUrl = $paginate->nextPageUrl();
+            $data = $paginate->map(function ($country) {
+                return [
                     'id'                => $country->id,
                     'country'           => $country->country,
                     'country_code'      => $country->country_code,
@@ -29,17 +54,22 @@ class CountryController extends Controller
                     'longitude'         => $country->longitude,
                     'created_at'        => $country->created_at,
                 ];
-
-            }
+            });
             return response()->json([
-                'success' => true,
-                'mes' => 'All Languages',
-                'data' => $data
+                'status' => true,
+                'message' => 'success',
+                'data' => $data,
+                'next_page_url' => $nextPageUrl,
+                'total' => $paginate->count(),
+                'currentPage' => $paginate->currentPage(),
+                'lastPage' => $paginate->lastPage(),
+                'perPage' => $paginate->perPage(),
             ]);
         } else {
-            $Countrys = Country::paginate($paginate);
-            foreach($Countrys as $country) {
-                $data[] = [
+            $paginate = Country::whereHas('child_categories')->whereHas('child_subcategories')->paginate(10);
+            $nextPageUrl = $paginate->nextPageUrl();
+            $data = $paginate->map(function ($country) {
+                return [
                     'id'                => $country->id,
                     'country'           => $country->country,
                     'country_code'      => $country->country_code,
@@ -48,11 +78,16 @@ class CountryController extends Controller
                     'longitude'         => $country->longitude,
                     'created_at'        => $country->created_at,
                 ];
-            }
+            });
             return response()->json([
-                'success' => true,
-                'mes' => 'All Languages',
-                'data' => $data
+                'status' => true,
+                'message' => 'success',
+                'data' => $data,
+                'next_page_url' => $nextPageUrl,
+                'total' => $paginate->count(),
+                'currentPage' => $paginate->currentPage(),
+                'lastPage' => $paginate->lastPage(),
+                'perPage' => $paginate->perPage(),
             ]);
         }
 
@@ -66,34 +101,7 @@ class CountryController extends Controller
             'mes' => 'Store Country Successfully'
         ]);
     }
-    public function search(SearchRequest $request)
-    {
-        $data = $request->validated();
-        $info = [];
-        $search = Country::where('country',$data['search'])->get();
-        foreach($search as $row) {
-                $info[] = [
-                    'id'            => $row->id,
-                    'name'          => $row->name,
-                    'slug'          => $row->slug,
-                    'direction'     => $row->direction,
-                    'status'        => $row->status,
-                    'default'       => $row->default,
-                ];
-        }
-        if($search) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Search Language Successfully',
-                'searchResult' => $info,
-            ]);
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Search Language Error',
-            ]);
-        }
-    }
+
     public function update(updateRequest $request , $id)
     {
         $record = Country::find($id);

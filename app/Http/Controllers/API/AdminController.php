@@ -7,6 +7,7 @@ use App\Http\Requests\AdminRequest;
 use App\Http\Requests\PaginatRequest;
 use App\Http\Requests\SearchRequest;
 use App\Http\Requests\storeRequest;
+use App\Http\Resources\AdminResource;
 use App\Http\Traits\imageTrait;
 use App\Models\Admin;
 use App\Models\Role_Permission;
@@ -70,45 +71,81 @@ class AdminController extends Controller
     }
     public function all(PaginatRequest $request)
     {
-        $data = [];
-        $paginate = $request->validated();
-        if(!$paginate) {
-            $admins = Admin::paginate(10);
-            foreach($admins as $admin) {
+        if(isset($request->search)) {
+            $info = [];
+            $search = Admin::where('name',$request->search)->orWhere('username',$request->search)->get();
+            foreach($search as $row) {
                 $imagePath = '/uploads/images/admins';
-                $data[] = [
+                $info[] = [
+                    'id' => $row->id,
+                    'name' => $row->name,
+                    'username' => $row->username,
+                    'email' => $row->email,
+                    'role' => $row->role,
+                    'image' => $imagePath.'/'.$row->image,
+                ];
+            }
+            if($search) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Search Admin Successfully',
+                    'searchResult' => $info,
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Search Admin Error',
+                ]);
+            }
+        }
+        if($request->paginate) {
+            $paginate = Admin::paginate($request->paginate);
+            $nextPageUrl = $paginate->nextPageUrl();
+            $data = $paginate->map(function ($admin) {
+                return [
                     'id' => $admin->id,
                     'name' => $admin->name,
                     'username' => $admin->username,
                     'email' => $admin->email,
                     'role' => $admin->role,
-                    'image' => $imagePath.'/'.$admin->image,
+                    'image' => '/uploads/images/admins/' . $admin->image,
                 ];
-            }
+            });
             return response()->json([
-                'success' => true,
-                'message' => 'All Admin',
-                'data' => $data
+                'status' => true,
+                'message' => 'success',
+                'data' => $data,
+                'next_page_url' => $nextPageUrl,
+                'total' => $paginate->count(),
+                'currentPage' => $paginate->currentPage(),
+                'lastPage' => $paginate->lastPage(),
+                'perPage' => $paginate->perPage(),
             ]);
         } else {
-            $admins = Admin::paginate($paginate);
-            foreach($admins as $admin) {
-                $imagePath = '/uploads/images/admins';
-                $data[] = [
+            $paginate = Admin::paginate(10);
+            $nextPageUrl = $paginate->nextPageUrl();
+            $data = $paginate->map(function ($admin) {
+                return [
                     'id' => $admin->id,
                     'name' => $admin->name,
                     'username' => $admin->username,
                     'email' => $admin->email,
                     'role' => $admin->role,
-                    'image' => $imagePath.'/'.$admin->image,
+                    'image' => '/uploads/images/admins/' . $admin->image,
                 ];
-            }
+            });
             return response()->json([
-                'success' => true,
-                'message' => 'All Admin',
-                'data' => $data
+                'status' => true,
+                'message' => 'success',
+                'data' => $data,
+                'next_page_url' => $nextPageUrl,
+                'total' => $paginate->count(),
+                'currentPage' => $paginate->currentPage(),
+                'lastPage' => $paginate->lastPage(),
+                'perPage' => $paginate->perPage(),
             ]);
         }
+
     }
     public function store(storeRequest $request)
     {

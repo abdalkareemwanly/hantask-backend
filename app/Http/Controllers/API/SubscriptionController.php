@@ -17,68 +17,9 @@ class SubscriptionController extends Controller
     use imageTrait;
     public function index(PaginatRequest $request)
     {
-        $data = [];
-        $paginate = $request->validated();
-        if(!$paginate) {
-            $Subscriptions = Subscription::paginate(10);
-            foreach($Subscriptions as $Subscription) {
-                $imagePath = '/uploads/images/subscriptions';
-                $data[] = [
-                    'id' => $Subscription->id,
-                    'image' => $imagePath . '/'.$Subscription->image,
-                    'title' => $Subscription->title,
-                    'type' => $Subscription->type,
-                    'price' => '$'.$Subscription->price,
-                    'connect' => $Subscription->connect,
-                    'service' => $Subscription->service,
-                    'job' => $Subscription->job,
-                    'status' => $Subscription->status,
-                ];
-            }
-            return response()->json([
-                'success' => true,
-                'mes' => 'All Subscriptions',
-                'data' => $data
-            ]);
-        } else {
-            $Subscriptions = Subscription::paginate($paginate);
-            foreach($Subscriptions as $Subscription) {
-                $imagePath = '/uploads/images/subscriptions';
-                $data[] = [
-                    'id' => $Subscription->id,
-                    'image' => $imagePath . '/'.$Subscription->image,
-                    'title' => $Subscription->title,
-                    'type' => $Subscription->type,
-                    'price' => '$'.$Subscription->price,
-                    'connect' => $Subscription->connect,
-                    'service' => $Subscription->service,
-                    'job' => $Subscription->job,
-                    'status' => $Subscription->status,
-                ];
-            }
-            return response()->json([
-                'success' => true,
-                'mes' => 'All Subscriptions',
-                'data' => $data
-            ]);
-        }
-
-    }
-    public function store(storeRequest $request)
-    {
-        $data = $request->validated();
-        $data['image'] = $this->saveImage($request->image,'uploads/images/subscriptions');
-        Subscription::create($data);
-        return response()->json([
-            'success' => true,
-            'mes' => 'Store Subscription Successfully',
-        ]);
-    }
-    public function search(SearchRequest $request)
-    {
-        $data = $request->validated();
-        $info = [];
-        $search = Subscription::where('title',$data['search'])->orWhere('type',$data['search'])->get();
+        if(isset($request->search)) {
+            $info = [];
+            $search = Subscription::where('title',$request->search)->orWhere('type',$request->search)->get();
         foreach($search as $row) {
             $imagePath = '/uploads/images/subscriptions';
                 $info[] = [
@@ -100,11 +41,75 @@ class SubscriptionController extends Controller
                 'searchResult' => $info,
             ]);
         } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Search Subscription Error',
+                ]);
+            }
+        }
+        if($request->paginate) {
+            $paginate = Subscription::paginate($request->paginate);
+            $nextPageUrl = $paginate->nextPageUrl();
+            $data = $paginate->map(function ($row) {
+                return [
+                    'id' => $row->id,
+                    'image' => '/uploads/images/subscriptions/'.$row->image,
+                    'title' => $row->title,
+                    'type' => $row->type,
+                    'price' => '$'.$row->price,
+                    'connect' => $row->connect,
+                    'service' => $row->service,
+                    'job' => $row->job,
+                    'status' => $row->status,
+                ];
+            });
             return response()->json([
-                'success' => false,
-                'message' => 'Search Subscription Error',
+                'status' => true,
+                'message' => 'success',
+                'data' => $data,
+                'next_page_url' => $nextPageUrl,
+                'total' => $paginate->count(),
+                'currentPage' => $paginate->currentPage(),
+                'lastPage' => $paginate->lastPage(),
+                'perPage' => $paginate->perPage(),
+            ]);
+        } else {
+            $paginate = Subscription::paginate(10);
+            $nextPageUrl = $paginate->nextPageUrl();
+            $data = $paginate->map(function ($row) {
+                return [
+                    'id' => $row->id,
+                    'image' => '/uploads/images/subscriptions/'.$row->image,
+                    'title' => $row->title,
+                    'type' => $row->type,
+                    'price' => '$'.$row->price,
+                    'connect' => $row->connect,
+                    'service' => $row->service,
+                    'job' => $row->job,
+                    'status' => $row->status,
+                ];
+            });
+            return response()->json([
+                'status' => true,
+                'message' => 'success',
+                'data' => $data,
+                'next_page_url' => $nextPageUrl,
+                'total' => $paginate->count(),
+                'currentPage' => $paginate->currentPage(),
+                'lastPage' => $paginate->lastPage(),
+                'perPage' => $paginate->perPage(),
             ]);
         }
+    }
+    public function store(storeRequest $request)
+    {
+        $data = $request->validated();
+        $data['image'] = $this->saveImage($request->image,'uploads/images/subscriptions');
+        Subscription::create($data);
+        return response()->json([
+            'success' => true,
+            'mes' => 'Store Subscription Successfully',
+        ]);
     }
     public function status($id)
     {

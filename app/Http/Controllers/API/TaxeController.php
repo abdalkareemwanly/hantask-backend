@@ -14,53 +14,9 @@ class TaxeController extends Controller
 {
     public function index(PaginatRequest $request)
     {
-        $data = [];
-        $paginate = $request->validated();
-        if(!$paginate) {
-            $taxs = Tax::whereHas('country')->paginate(10);
-            foreach($taxs as $tax) {
-                $data[] = [
-                    'id'            => $tax->id,
-                    'tax'           => $tax->tax,
-                    'country'       => $tax->country->country,
-                ];
-            }
-            return response()->json([
-                'success' => true,
-                'mes' => 'All Tax',
-                'data' => $data
-            ]);
-        } else {
-            $taxs = Tax::whereHas('country')->paginate($paginate);
-            foreach($taxs as $tax) {
-                $data[] = [
-                    'id'            => $tax->id,
-                    'tax'           => $tax->tax,
-                    'country'       => $tax->country->country,
-                ];
-            }
-            return response()->json([
-                'success' => true,
-                'mes' => 'All Tax',
-                'data' => $data
-            ]);
-        }
-
-    }
-    public function store(storeRequest $request)
-    {
-        $data = $request->all();
-        Tax::create($data);
-        return response()->json([
-            'success' => true,
-            'mes' => 'Store Tax Successfully'
-        ]);
-    }
-    public function search(SearchRequest $request)
-    {
-        $data = $request->validated();
-        $info = [];
-        $search = Tax::whereHas('country')->where('tax',$data['search'])->get();
+        if(isset($request->search)) {
+            $info = [];
+            $search = Tax::whereHas('country')->where('tax',$request->search)->get();
         foreach($search as $row) {
             $info[] = [
                 'id'            => $row->id,
@@ -75,11 +31,62 @@ class TaxeController extends Controller
                 'searchResult' => $info,
             ]);
         } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Search Tax Error',
+                ]);
+            }
+        }
+        if($request->paginate) {
+            $paginate = Tax::whereHas('country')->paginate($request->paginate);
+            $nextPageUrl = $paginate->nextPageUrl();
+            $data = $paginate->map(function ($row) {
+                return [
+                    'id'            => $row->id,
+                    'tax'           => $row->tax,
+                    'country'       => $row->country->country,
+                ];
+            });
             return response()->json([
-                'success' => false,
-                'message' => 'Search Tax Error',
+                'status' => true,
+                'message' => 'success',
+                'data' => $data,
+                'next_page_url' => $nextPageUrl,
+                'total' => $paginate->count(),
+                'currentPage' => $paginate->currentPage(),
+                'lastPage' => $paginate->lastPage(),
+                'perPage' => $paginate->perPage(),
+            ]);
+        } else {
+            $paginate = Tax::whereHas('country')->paginate(10);
+            $nextPageUrl = $paginate->nextPageUrl();
+            $data = $paginate->map(function ($row) {
+                return [
+                    'id'            => $row->id,
+                    'tax'           => $row->tax,
+                    'country'       => $row->country->country,
+                ];
+            });
+            return response()->json([
+                'status' => true,
+                'message' => 'success',
+                'data' => $data,
+                'next_page_url' => $nextPageUrl,
+                'total' => $paginate->count(),
+                'currentPage' => $paginate->currentPage(),
+                'lastPage' => $paginate->lastPage(),
+                'perPage' => $paginate->perPage(),
             ]);
         }
+    }
+    public function store(storeRequest $request)
+    {
+        $data = $request->all();
+        Tax::create($data);
+        return response()->json([
+            'success' => true,
+            'mes' => 'Store Tax Successfully'
+        ]);
     }
     public function update(updateRequest $request , $id)
     {

@@ -14,12 +14,37 @@ class SubscriptionCouponController extends Controller
 {
     public function index(PaginatRequest $request)
     {
-        $data = [];
-        $paginate = $request->validated();
-        if(!$paginate) {
-            $subscription_coupon = subscription_coupon::paginate(10);
-            foreach($subscription_coupon as $coupon) {
-                $data[] = [
+        if(isset($request->search)) {
+            $info = [];
+            $search = subscription_coupon::where('code',$request->search)->get();
+            foreach($search as $row) {
+                    $info[] = [
+                        'id' => $row->id,
+                        'code' => $row->code,
+                        'discount' => $row->discount,
+                        'discount_type' => $row->discount_type,
+                        'expire_date' => $row->expire_date,
+                        'status' => $row->status,
+                    ];
+            }
+            if($search) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Search subscriptionCoupon Successfully',
+                    'searchResult' => $info,
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Search subscriptionCoupon Error',
+                ]);
+            }
+        }
+        if($request->paginate) {
+            $paginate = subscription_coupon::paginate($request->paginate);
+            $nextPageUrl = $paginate->nextPageUrl();
+            $data = $paginate->map(function ($coupon) {
+                return [
                     'id' => $coupon->id,
                     'code' => $coupon->code,
                     'discount' => $coupon->discount,
@@ -27,16 +52,22 @@ class SubscriptionCouponController extends Controller
                     'expire_date' => $coupon->expire_date,
                     'status' => $coupon->status,
                 ];
-            }
+            });
             return response()->json([
-                'success' => true,
-                'mes' => 'All subscriptionCoupons',
-                'data' => $data
+                'status' => true,
+                'message' => 'success',
+                'data' => $data,
+                'next_page_url' => $nextPageUrl,
+                'total' => $paginate->count(),
+                'currentPage' => $paginate->currentPage(),
+                'lastPage' => $paginate->lastPage(),
+                'perPage' => $paginate->perPage(),
             ]);
         } else {
-            $subscription_coupon = subscription_coupon::paginate($paginate);
-            foreach($subscription_coupon as $coupon) {
-                $data[] = [
+            $paginate = subscription_coupon::paginate(10);
+            $nextPageUrl = $paginate->nextPageUrl();
+            $data = $paginate->map(function ($coupon) {
+                return [
                     'id' => $coupon->id,
                     'code' => $coupon->code,
                     'discount' => $coupon->discount,
@@ -44,14 +75,18 @@ class SubscriptionCouponController extends Controller
                     'expire_date' => $coupon->expire_date,
                     'status' => $coupon->status,
                 ];
-            }
+            });
             return response()->json([
-                'success' => true,
-                'mes' => 'All subscriptionCoupons',
-                'data' => $data
+                'status' => true,
+                'message' => 'success',
+                'data' => $data,
+                'next_page_url' => $nextPageUrl,
+                'total' => $paginate->count(),
+                'currentPage' => $paginate->currentPage(),
+                'lastPage' => $paginate->lastPage(),
+                'perPage' => $paginate->perPage(),
             ]);
         }
-
     }
     public function store(storeRequest $request)
     {
@@ -61,34 +96,6 @@ class SubscriptionCouponController extends Controller
             'success' => true,
             'mes' => 'Store subscriptionCoupon Successfully',
         ]);
-    }
-    public function search(SearchRequest $request)
-    {
-        $data = $request->validated();
-        $info = [];
-        $search = subscription_coupon::where('code',$data['search'])->get();
-        foreach($search as $row) {
-                $info[] = [
-                    'id' => $row->id,
-                    'code' => $row->code,
-                    'discount' => $row->discount,
-                    'discount_type' => $row->discount_type,
-                    'expire_date' => $row->expire_date,
-                    'status' => $row->status,
-                ];
-        }
-        if($search) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Search subscriptionCoupon Successfully',
-                'searchResult' => $info,
-            ]);
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Search subscriptionCoupon Error',
-            ]);
-        }
     }
     public function status($id)
     {

@@ -18,36 +18,74 @@ class SellerController extends Controller
     use imageTrait;
     public function index(PaginatRequest $request)
     {
-        $data = [];
-        $paginate = $request->validated();
-        if(!$paginate) {
-            $sellers = User::where('user_type',0)->where('account_state',1)->paginate(10);
-            foreach($sellers as $seller) {
+        if(isset($request->search)) {
+            $info = [];
+            $search = User::where('name',$request->search)->orWhere('username',$request->search)->get();
+            foreach($search as $row) {
                 $imagePath = '/uploads/images/sellers';
-                $data[] = [
-                    'name'      => $seller->name,
-                    'email'     => $seller->email,
-                    'username'  => $seller->username,
-                    'image'     => $imagePath . '/'.$seller->image,
+                $info[] = [
+                    'name'      => $row->name,
+                    'email'     => $row->email,
+                    'username'  => $row->username,
+                    'image'     => $imagePath . '/'.$row->image,
                 ];
             }
-        } else {
-            $sellers = User::where('user_type',0)->where('account_state',1)->paginate($paginate);
-            foreach($sellers as $seller) {
-                $imagePath = '/uploads/images/sellers';
-                $data[] = [
-                    'name'      => $seller->name,
-                    'email'     => $seller->email,
-                    'username'  => $seller->username,
-                    'image'     => $imagePath . '/'.$seller->image,
-                ];
+            if($search) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Search Role Successfully',
+                    'searchResult' => $info,
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Search Role Error',
+                ]);
             }
         }
-        return response()->json([
-            'success' => true,
-            'mes' => 'All Sellers',
-            'data' => $data
-        ]);
+        if($request->paginate) {
+            $paginate =  User::where('user_type',0)->where('account_state',1)->paginate($request->paginate);
+            $nextPageUrl = $paginate->nextPageUrl();
+            $data = $paginate->map(function ($seller) {
+                return [
+                    'name'      => $seller->name,
+                    'email'     => $seller->email,
+                    'username'  => $seller->username,
+                    'image'     => '/uploads/images/sellers'.$seller->image,
+                ];
+            });
+            return response()->json([
+                'status' => true,
+                'message' => 'success',
+                'data' => $data,
+                'next_page_url' => $nextPageUrl,
+                'total' => $paginate->count(),
+                'currentPage' => $paginate->currentPage(),
+                'lastPage' => $paginate->lastPage(),
+                'perPage' => $paginate->perPage(),
+            ]);
+        } else {
+            $paginate = User::where('user_type',0)->where('account_state',1)->paginate(10);
+            $nextPageUrl = $paginate->nextPageUrl();
+            $data = $paginate->map(function ($seller) {
+                return [
+                    'name'      => $seller->name,
+                    'email'     => $seller->email,
+                    'username'  => $seller->username,
+                    'image'     => '/uploads/images/sellers'.$seller->image,
+                ];
+            });
+            return response()->json([
+                'status' => true,
+                'message' => 'success',
+                'data' => $data,
+                'next_page_url' => $nextPageUrl,
+                'total' => $paginate->count(),
+                'currentPage' => $paginate->currentPage(),
+                'lastPage' => $paginate->lastPage(),
+                'perPage' => $paginate->perPage(),
+            ]);
+        }
     }
     public function store(storeRequest $request)
     {
@@ -59,33 +97,6 @@ class SellerController extends Controller
             'success' => true,
             'mes' => 'Store Seller Successfully',
         ]);
-    }
-    public function search(SearchRequest $request)
-    {
-        $data = $request->validated();
-        $info = [];
-        $search = User::where('name',$data['search'])->orWhere('username',$data['search'])->get();
-        foreach($search as $row) {
-            $imagePath = '/uploads/images/sellers';
-            $info[] = [
-                'name'      => $row->name,
-                'email'     => $row->email,
-                'username'  => $row->username,
-                'image'     => $imagePath . '/'.$row->image,
-            ];
-        }
-        if($search) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Search Seller Successfully',
-                'searchResult' => $info,
-            ]);
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Search Seller Error',
-            ]);
-        }
     }
     public function update(updateRequest $request , $id)
     {

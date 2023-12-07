@@ -19,78 +19,10 @@ class ServiceController extends Controller
     use imageTrait;
     public function index(PaginatRequest $request)
     {
-        $data = [];
-        $paginate = $request->validated();
-        if(!$paginate) {
-            $Services = Service::whereHas('category')->whereHas('child_category')->whereHas('seller')->whereHas('subcategory')->whereHas('service_city')->whereRelation('seller','user_type',0)->paginate(10);
-            foreach($Services as $service) {
-                $imagePath = '/uploads/images/services';
-                $data[] = [
-                    'id'                        => $service->id,
-                    'category name'             => $service->category->name,
-                    'subcategory name'          => $service->subcategory->name,
-                    'child category name'       => $service->child_category->name,
-                    'service city name'         => $service->service_city->service_city,
-                    'seller name'               => $service->seller->name,
-                    'title'                     => $service->title,
-                    'slug'                      => $service->slug,
-                    'description'               => $service->description,
-                    'image'                     => $imagePath .'/'.$service->image,
-                ];
-            }
-            return response()->json([
-                'success' => true,
-                'mes' => 'All Services',
-                'data' => $data
-            ]);
-        } else {
-            $Services = Service::whereHas('category')->whereHas('child_category')->whereHas('seller')->whereHas('subcategory')->whereHas('service_city')->whereRelation('seller','user_type',0)->paginate($paginate);
-            foreach($Services as $service) {
-                $imagePath = '/uploads/images/services';
-                $data[] = [
-                    'id'                        => $service->id,
-                    'category name'             => $service->category->name,
-                    'subcategory name'          => $service->subcategory->name,
-                    'child category name'       => $service->child_category->name,
-                    'service city name'         => $service->service_city->service_city,
-                    'seller name'               => $service->seller->name,
-                    'title'                     => $service->title,
-                    'slug'                      => $service->slug,
-                    'description'               => $service->description,
-                    'image'                     => $imagePath .'/'.$service->image,
-                ];
-            }
-            return response()->json([
-                'success' => true,
-                'mes' => 'All Services',
-                'data' => $data
-            ]);
-        }
-
-    }
-    public function store(storeRequest $request)
-    {
-        try {
-                $data = $request->all();
-                $data['image'] = $this->saveImage($request->image,'uploads/images/services');
-                Service::create($data);
-                return response()->json([
-                    'success' => true,
-                    'mes' => 'Store Service Successfully',
-                ]);
-            } catch(Exception $e) {
-                return response()->json([
-                    'success' => false,
-                    'message' => $e->getMessage(),
-                ]);
-            }
-    }
-    public function search(SearchRequest $request)
-    {
-        $data = $request->validated();
-        $info = [];
-        $search = Service::whereHas('category')->whereHas('child_category')->whereHas('seller')->whereHas('subcategory')->whereHas('service_city')->whereRelation('seller','user_type',0)
-                ->where('title',$data['search'])->orWhere('description',$data['search'])->get();
+        if(isset($request->search)) {
+            $info = [];
+            $search = Service::whereHas('category')->whereHas('child_category')->whereHas('seller')->whereHas('subcategory')->whereHas('service_city')->whereRelation('seller','user_type',0)
+                ->where('title',$request->search)->orWhere('description',$request->search)->get();
         foreach($search as $row) {
             $imagePath = '/uploads/images/services';
             $info[] = [
@@ -117,7 +49,81 @@ class ServiceController extends Controller
                 'success' => false,
                 'message' => 'Search Service Error',
             ]);
+            }
         }
+        if($request->paginate) {
+            $paginate = Service::whereHas('category')->whereHas('child_category')->whereHas('seller')->whereHas('subcategory')->whereHas('service_city')->whereRelation('seller','user_type',0)->paginate($request->paginate);
+            $nextPageUrl = $paginate->nextPageUrl();
+            $data = $paginate->map(function ($row) {
+                return [
+                    'id'                        => $row->id,
+                    'category name'             => $row->category->name,
+                    'subcategory name'          => $row->subcategory->name,
+                    'child category name'       => $row->child_category->name,
+                    'service city name'         => $row->service_city->service_city,
+                    'seller name'               => $row->seller->name,
+                    'title'                     => $row->title,
+                    'slug'                      => $row->slug,
+                    'description'               => $row->description,
+                    'image'                     => '/uploads/images/services/'.$row->image,
+                ];
+            });
+            return response()->json([
+                'status' => true,
+                'message' => 'success',
+                'data' => $data,
+                'next_page_url' => $nextPageUrl,
+                'total' => $paginate->count(),
+                'currentPage' => $paginate->currentPage(),
+                'lastPage' => $paginate->lastPage(),
+                'perPage' => $paginate->perPage(),
+            ]);
+        } else {
+            $paginate = Service::whereHas('category')->whereHas('child_category')->whereHas('seller')->whereHas('subcategory')->whereHas('service_city')->whereRelation('seller','user_type',0)->paginate(10);
+            $nextPageUrl = $paginate->nextPageUrl();
+            $data = $paginate->map(function ($row) {
+                return [
+                    'id'                        => $row->id,
+                    'category name'             => $row->category->name,
+                    'subcategory name'          => $row->subcategory->name,
+                    'child category name'       => $row->child_category->name,
+                    'service city name'         => $row->service_city->service_city,
+                    'seller name'               => $row->seller->name,
+                    'title'                     => $row->title,
+                    'slug'                      => $row->slug,
+                    'description'               => $row->description,
+                    'image'                     => '/uploads/images/services/'.$row->image,
+                ];
+            });
+            return response()->json([
+                'status' => true,
+                'message' => 'success',
+                'data' => $data,
+                'next_page_url' => $nextPageUrl,
+                'total' => $paginate->count(),
+                'currentPage' => $paginate->currentPage(),
+                'lastPage' => $paginate->lastPage(),
+                'perPage' => $paginate->perPage(),
+            ]);
+        }
+
+    }
+    public function store(storeRequest $request)
+    {
+        try {
+                $data = $request->all();
+                $data['image'] = $this->saveImage($request->image,'uploads/images/services');
+                Service::create($data);
+                return response()->json([
+                    'success' => true,
+                    'mes' => 'Store Service Successfully',
+                ]);
+            } catch(Exception $e) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ]);
+            }
     }
     public function update(updateRequest $request , $id)
     {

@@ -19,45 +19,80 @@ class CategoryController extends Controller
     use imageTrait;
     public function index(PaginatRequest $request)
     {
-        $paginate = $request->validated();
-        $data = [];
-        if(!$paginate) {
-            $Categorys = Category::paginate(10);
-            foreach($Categorys as $category) {
-                $imagePath = '/uploads/images/categories';
-                $data[] = [
+        if(isset($request->search)) {
+            $info = [];
+            $search = Category::where('name',$request->search)->orWhere('description',$request->search)->get();
+            foreach($search as $row) {
+                $info[] = [
+                    'id'            => $row->id,
+                    'name'          => $row->name,
+                    'description'   => $row->description,
+                    'slug'          => $row->slug,
+                    'image'         => '/uploads/images/categories/'.$row->image,
+                    'status'        => $row->status,
+                ];
+            }
+            if($search) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Search Category Successfully',
+                    'searchResult' => $info,
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Search Category Error',
+                ]);
+            }
+        }
+        if($request->paginate) {
+            $paginate = Category::paginate($request->paginate);
+            $nextPageUrl = $paginate->nextPageUrl();
+            $data = $paginate->map(function ($category) {
+                return [
                     'id'            => $category->id,
                     'name'          => $category->name,
                     'description'   => $category->description,
                     'slug'          => $category->slug,
-                    'image'         => $imagePath.'/'.$category->image,
+                    'image'         => '/uploads/images/categories/'.$category->image,
                     'status'        => $category->status,
                 ];
-            }
+            });
             return response()->json([
-                'success' => true,
-                'mes' => 'All categories',
-                'data' => $data
+                'status' => true,
+                'message' => 'success',
+                'data' => $data,
+                'next_page_url' => $nextPageUrl,
+                'total' => $paginate->count(),
+                'currentPage' => $paginate->currentPage(),
+                'lastPage' => $paginate->lastPage(),
+                'perPage' => $paginate->perPage(),
             ]);
         } else {
-            $Categorys = Category::paginate($paginate);
-            foreach($Categorys as $category) {
-                $imagePath = '/uploads/images/categories';
-                $data[] = [
+            $paginate = Category::paginate(10);
+            $nextPageUrl = $paginate->nextPageUrl();
+            $data = $paginate->map(function ($category) {
+                return [
                     'id'            => $category->id,
                     'name'          => $category->name,
                     'description'   => $category->description,
                     'slug'          => $category->slug,
-                    'image'         => $imagePath.'/'.$category->image,
+                    'image'         => '/uploads/images/categories/'.$category->image,
                     'status'        => $category->status,
                 ];
-            }
+            });
             return response()->json([
-                'success' => true,
-                'mes' => 'All categories',
-                'data' => $data
+                'status' => true,
+                'message' => 'success',
+                'data' => $data,
+                'next_page_url' => $nextPageUrl,
+                'total' => $paginate->count(),
+                'currentPage' => $paginate->currentPage(),
+                'lastPage' => $paginate->lastPage(),
+                'perPage' => $paginate->perPage(),
             ]);
         }
+
     }
     public function store(StoreRequest $request)
     {
@@ -72,35 +107,7 @@ class CategoryController extends Controller
         ]);
         DB::rollBack();
     }
-    public function search(SearchRequest $request)
-    {
-        $data = $request->validated();
-        $info = [];
-        $search = Category::where('name',$data['search'])->orWhere('description',$data['search'])->get();
-        foreach($search as $row) {
-            $imagePath = '/uploads/images/categories';
-            $info[] = [
-                'id'            => $row->id,
-                'name'          => $row->name,
-                'description'   => $row->description,
-                'slug'          => $row->slug,
-                'image'         => $imagePath.'/'.$row->image,
-                'status'        => $row->status,
-            ];
-        }
-        if($search) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Search Category Successfully',
-                'searchResult' => $info,
-            ]);
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Search Category Error',
-            ]);
-        }
-    }
+
     public function update(updateRequest $request , $id)
     {
         DB::beginTransaction();

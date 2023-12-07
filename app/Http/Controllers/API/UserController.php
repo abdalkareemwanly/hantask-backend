@@ -20,48 +20,83 @@ class UserController extends Controller
     use imageTrait;
     public function index(PaginatRequest $request)
     {
-        $data = [];
-        $paginate = $request->validated();
-        if(!$paginate) {
-            $uses = User::where('account_state' , 1)->paginate(10);
-            foreach($uses as $user) {
+        if(isset($request->search)) {
+            $info = [];
+            $search = User::where('name',$request->search)->orWhere('username',$request->search)->get();
+            foreach($search as $row) {
                 $imagePath = '/uploads/images/users';
-                $data[] = [
-                    'id'            => $user->id,
-                    'name'          => $user->name,
-                    'email'         => $user->email,
-                    'username'      => $user->username,
-                    'phone'         => $user->phone,
-                    'image'         => $imagePath . '/'.$user->image,
-                    'user_status'   => $user->user_status,
+                $info[] = [
+                    'id'            => $row->id,
+                    'name'          => $row->name,
+                    'email'         => $row->email,
+                    'username'      => $row->username,
+                    'phone'         => $row->phone,
+                    'image'         => $imagePath . '/'.$row->image,
+                    'user_status'   => $row->user_status,
                 ];
             }
+            if($search) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Search Seller Successfully',
+                    'searchResult' => $info,
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Search Seller Error',
+                ]);
+            }
+        }
+        if($request->paginate) {
+            $paginate =  User::where('account_state' , 1)->paginate($request->paginate);
+            $nextPageUrl = $paginate->nextPageUrl();
+            $data = $paginate->map(function ($row) {
+                return [
+                    'id'            => $row->id,
+                    'name'          => $row->name,
+                    'email'         => $row->email,
+                    'username'      => $row->username,
+                    'phone'         => $row->phone,
+                    'image'         => '/uploads/images/users/'.$row->image,
+                    'user_status'   => $row->user_status,
+                ];
+            });
             return response()->json([
-                'success' => true,
-                'mes' => 'All Users',
-                'data' => $data
+                'status' => true,
+                'message' => 'success',
+                'data' => $data,
+                'next_page_url' => $nextPageUrl,
+                'total' => $paginate->count(),
+                'currentPage' => $paginate->currentPage(),
+                'lastPage' => $paginate->lastPage(),
+                'perPage' => $paginate->perPage(),
             ]);
         } else {
-            $uses = User::where('account_state' , 1)->paginate($paginate);
-            foreach($uses as $user) {
-                $imagePath = '/uploads/images/users';
-                $data[] = [
-                    'id'            => $user->id,
-                    'name'          => $user->name,
-                    'email'         => $user->email,
-                    'username'      => $user->username,
-                    'phone'         => $user->phone,
-                    'image'         => $imagePath . '/'.$user->image,
-                    'user_status'   => $user->user_status,
+            $paginate = User::where('account_state' , 1)->paginate(10);
+            $nextPageUrl = $paginate->nextPageUrl();
+            $data = $paginate->map(function ($row) {
+                return [
+                    'id'            => $row->id,
+                    'name'          => $row->name,
+                    'email'         => $row->email,
+                    'username'      => $row->username,
+                    'phone'         => $row->phone,
+                    'image'         => '/uploads/images/users/'.$row->image,
+                    'user_status'   => $row->user_status,
                 ];
-            }
+            });
             return response()->json([
-                'success' => true,
-                'mes' => 'All Users',
-                'data' => $data
+                'status' => true,
+                'message' => 'success',
+                'data' => $data,
+                'next_page_url' => $nextPageUrl,
+                'total' => $paginate->count(),
+                'currentPage' => $paginate->currentPage(),
+                'lastPage' => $paginate->lastPage(),
+                'perPage' => $paginate->perPage(),
             ]);
         }
-
     }
     public function store(StoreRequest $request)
     {
@@ -76,36 +111,6 @@ class UserController extends Controller
             'mes' => 'Store User Successfully',
         ]);
         DB::rollBack();
-    }
-    public function search(SearchRequest $request)
-    {
-        $data = $request->validated();
-        $info = [];
-        $search = User::where('name',$data['search'])->orWhere('username',$data['search'])->get();
-        foreach($search as $row) {
-            $imagePath = '/uploads/images/users';
-            $info[] = [
-                'id'            => $row->id,
-                'name'          => $row->name,
-                'email'         => $row->email,
-                'username'      => $row->username,
-                'phone'         => $row->phone,
-                'image'         => $imagePath . '/'.$row->image,
-                'user_status'   => $row->user_status,
-            ];
-        }
-        if($search) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Search Seller Successfully',
-                'searchResult' => $info,
-            ]);
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Search Seller Error',
-            ]);
-        }
     }
     public function show($id)
     {

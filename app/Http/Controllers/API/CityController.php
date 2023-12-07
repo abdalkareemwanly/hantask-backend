@@ -17,37 +17,71 @@ class CityController extends Controller
 {
     public function index(PaginatRequest $request)
     {
-        $data = [];
-        $paginate = $request->validated();
-        if(!$paginate) {
-            $ServiceCity = ServiceCity::whereHas('country')->paginate(10);
-            foreach($ServiceCity as $city) {
-                $data[] = [
+        if(isset($request->search)) {
+            $info = [];
+            $search = ServiceCity::whereHas('country')->where('service_city',$request->search)->get();
+            foreach($search as $city) {
+                $info[] = [
                     'id'                => $city->id,
                     'service_city'      => $city->service_city,
                     'country'           => $city->country->country,
                     'status'            => $city->status,
                 ];
             }
+            if($search) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Search ServiceCity Successfully',
+                    'searchResult' => $info,
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Search ServiceCity Error',
+                ]);
+            }
+        }
+        if($request->paginate) {
+            $paginate = ServiceCity::whereHas('country')->paginate($request->paginate);
+            $nextPageUrl = $paginate->nextPageUrl();
+            $data = $paginate->map(function ($city) {
+                return [
+                    'id'                => $city->id,
+                    'service_city'      => $city->service_city,
+                    'country'           => $city->country->country,
+                    'status'            => $city->status,
+                ];
+            });
             return response()->json([
-                'success' => true,
-                'mes' => 'All ServiceCity',
-                'data' => $data
+                'status' => true,
+                'message' => 'success',
+                'data' => $data,
+                'next_page_url' => $nextPageUrl,
+                'total' => $paginate->count(),
+                'currentPage' => $paginate->currentPage(),
+                'lastPage' => $paginate->lastPage(),
+                'perPage' => $paginate->perPage(),
             ]);
         } else {
-            $ServiceCity = ServiceCity::whereHas('country')->paginate(10);
-            foreach($ServiceCity as $city) {
-                $data[] = [
+            $paginate = ServiceCity::whereHas('child_categories')->whereHas('child_subcategories')->paginate(10);
+            $nextPageUrl = $paginate->nextPageUrl();
+            $data = $paginate->map(function ($city) {
+                return [
                     'id'                => $city->id,
                     'service_city'      => $city->service_city,
                     'country'           => $city->country->country,
                     'status'            => $city->status,
                 ];
-            }
+            });
             return response()->json([
-                'success' => true,
-                'mes' => 'All ServiceCity',
-                'data' => $data
+                'status' => true,
+                'message' => 'success',
+                'data' => $data,
+                'next_page_url' => $nextPageUrl,
+                'total' => $paginate->count(),
+                'currentPage' => $paginate->currentPage(),
+                'lastPage' => $paginate->lastPage(),
+                'perPage' => $paginate->perPage(),
             ]);
         }
     }
