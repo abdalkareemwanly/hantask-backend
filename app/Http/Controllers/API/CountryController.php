@@ -20,12 +20,13 @@ class CountryController extends Controller
             $search = Country::where('country',$request->search)->get();
             foreach($search as $row) {
                 $info[] = [
-                    'id'            => $row->id,
-                    'name'          => $row->name,
-                    'slug'          => $row->slug,
-                    'direction'     => $row->direction,
-                    'status'        => $row->status,
-                    'default'       => $row->default,
+                    'id'                => $row->id,
+                    'country'           => $row->country,
+                    'country_code'      => $row->country_code,
+                    'zone_status'       => $row->zone_status,
+                    'latitude'          => $row->latitude,
+                    'longitude'         => $row->longitude,
+                    'created_at'        => $row->created_at,
                 ];
             }
             if($search) {
@@ -66,7 +67,7 @@ class CountryController extends Controller
                 'perPage' => $paginate->perPage(),
             ]);
         } else {
-            $paginate = Country::whereHas('child_categories')->whereHas('child_subcategories')->paginate(10);
+            $paginate = Country::paginate(10);
             $nextPageUrl = $paginate->nextPageUrl();
             $data = $paginate->map(function ($country) {
                 return [

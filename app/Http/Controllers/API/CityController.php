@@ -63,7 +63,7 @@ class CityController extends Controller
                 'perPage' => $paginate->perPage(),
             ]);
         } else {
-            $paginate = ServiceCity::whereHas('child_categories')->whereHas('child_subcategories')->paginate(10);
+            $paginate = ServiceCity::whereHas('country')->paginate(10);
             $nextPageUrl = $paginate->nextPageUrl();
             $data = $paginate->map(function ($city) {
                 return [
