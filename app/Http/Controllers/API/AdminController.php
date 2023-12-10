@@ -72,31 +72,28 @@ class AdminController extends Controller
     public function all(PaginatRequest $request)
     {
         if(isset($request->search)) {
-            $info = [];
-            $search = Admin::where('name',$request->search)->orWhere('username',$request->search)->get();
-            foreach($search as $row) {
-                $imagePath = '/uploads/images/admins';
-                $info[] = [
-                    'id' => $row->id,
-                    'name' => $row->name,
-                    'username' => $row->username,
-                    'email' => $row->email,
-                    'role' => $row->role,
-                    'image' => $imagePath.'/'.$row->image,
+            $paginate = Admin::where('name' , $request->search)->orWhere('username' , $request->search)->paginate(10);
+            $nextPageUrl = $paginate->nextPageUrl();
+            $data = $paginate->map(function ($admin) {
+                return [
+                    'id' => $admin->id,
+                    'name' => $admin->name,
+                    'username' => $admin->username,
+                    'email' => $admin->email,
+                    'role' => $admin->role,
+                    'image' => '/uploads/images/admins/' . $admin->image,
                 ];
-            }
-            if($search) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Search Admin Successfully',
-                    'searchResult' => $info,
-                ]);
-            } else {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Search Admin Error',
-                ]);
-            }
+            });
+            return response()->json([
+                'status' => true,
+                'message' => 'success',
+                'data' => $data,
+                'next_page_url' => $nextPageUrl,
+                'total' => $paginate->count(),
+                'currentPage' => $paginate->currentPage(),
+                'lastPage' => $paginate->lastPage(),
+                'perPage' => $paginate->perPage(),
+            ]);
         }
         if($request->paginate) {
             $paginate = Admin::paginate($request->paginate);
@@ -158,34 +155,5 @@ class AdminController extends Controller
             'message' => 'Store Admin Successfully',
         ]);
     }
-    public function search(SearchRequest $request)
-    {
-        $data = $request->validated();
-        $info = [];
-        $search = Admin::where('name',$data['search'])->orWhere('username',$data['search'])->get();
-        foreach($search as $row) {
-            $imagePath = '/uploads/images/admins';
-            $info[] = [
-                'id' => $row->id,
-                'name' => $row->name,
-                'username' => $row->username,
-                'email' => $row->email,
-                'role' => $row->role,
-                'image' => $imagePath.'/'.$row->image,
-            ];
-        }
-        if($search) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Search Admin Successfully',
-                'searchResult' => $info,
-            ]);
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Search Admin Error',
-            ]);
-        }
 
-    }
 }

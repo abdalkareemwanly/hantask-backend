@@ -18,28 +18,26 @@ class CityController extends Controller
     public function index(PaginatRequest $request)
     {
         if(isset($request->search)) {
-            $info = [];
-            $search = ServiceCity::whereHas('country')->where('service_city',$request->search)->get();
-            foreach($search as $city) {
-                $info[] = [
+            $paginate = ServiceCity::whereHas('country')->where('service_city',$request->search)->paginate(10);
+            $nextPageUrl = $paginate->nextPageUrl();
+            $data = $paginate->map(function ($city) {
+                return [
                     'id'                => $city->id,
                     'service_city'      => $city->service_city,
                     'country'           => $city->country->country,
                     'status'            => $city->status,
                 ];
-            }
-            if($search) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Search ServiceCity Successfully',
-                    'searchResult' => $info,
-                ]);
-            } else {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Search ServiceCity Error',
-                ]);
-            }
+            });
+            return response()->json([
+                'status' => true,
+                'message' => 'success',
+                'data' => $data,
+                'next_page_url' => $nextPageUrl,
+                'total' => $paginate->count(),
+                'currentPage' => $paginate->currentPage(),
+                'lastPage' => $paginate->lastPage(),
+                'perPage' => $paginate->perPage(),
+            ]);
         }
         if($request->paginate) {
             $paginate = ServiceCity::whereHas('country')->paginate($request->paginate);

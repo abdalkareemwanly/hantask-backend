@@ -19,31 +19,29 @@ class ChildController extends Controller
     public function index(PaginatRequest $request)
     {
         if(isset($request->search)) {
-            $info = [];
-            $search = ChildCategory::whereHas('child_categories')->whereHas('child_subcategories')->where('name',$request->search)->orWhere('description',$request->search)->get();
-            foreach($search as $row) {
-                $info[] = [
-                    'id' => $row->id,
-                    'name' => $row->name,
-                    'description' => $row->description,
-                    'slug' => $row->slug,
-                    'image'         => '/uploads/images/childs/'.$row->image,
-                    'categoryName' => $row->child_categories->name,
-                    'subcategoryName' => $row->child_subcategories->name,
+            $paginate = ChildCategory::whereHas('child_categories')->whereHas('child_subcategories')->where('name',$request->search)->orWhere('description',$request->search)->paginate(10);
+            $nextPageUrl = $paginate->nextPageUrl();
+            $data = $paginate->map(function ($child) {
+                return [
+                    'id' => $child->id,
+                    'name' => $child->name,
+                    'description' => $child->description,
+                    'slug' => $child->slug,
+                    'image' =>'/uploads/images/childs/'.$child->image,
+                    'categoryName' => $child->child_categories->name,
+                    'subcategoryName' => $child->child_subcategories->name,
                 ];
-            }
-            if($search) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Search Child Successfully',
-                    'searchResult' => $info,
-                ]);
-            } else {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Search Child Error',
-                ]);
-            }
+            });
+            return response()->json([
+                'status' => true,
+                'message' => 'success',
+                'data' => $data,
+                'next_page_url' => $nextPageUrl,
+                'total' => $paginate->count(),
+                'currentPage' => $paginate->currentPage(),
+                'lastPage' => $paginate->lastPage(),
+                'perPage' => $paginate->perPage(),
+            ]);
         }
         if($request->paginate) {
             $paginate = ChildCategory::whereHas('child_categories')->whereHas('child_subcategories')->paginate($request->paginate);

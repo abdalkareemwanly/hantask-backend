@@ -20,30 +20,28 @@ class CategoryController extends Controller
     public function index(PaginatRequest $request)
     {
         if(isset($request->search)) {
-            $info = [];
-            $search = Category::where('name',$request->search)->orWhere('description',$request->search)->get();
-            foreach($search as $row) {
-                $info[] = [
-                    'id'            => $row->id,
-                    'name'          => $row->name,
-                    'description'   => $row->description,
-                    'slug'          => $row->slug,
-                    'image'         => '/uploads/images/categories/'.$row->image,
-                    'status'        => $row->status,
+            $paginate = Category::where('name',$request->search)->orWhere('description',$request->search)->paginate(10);
+            $nextPageUrl = $paginate->nextPageUrl();
+            $data = $paginate->map(function ($category) {
+                return [
+                    'id'            => $category->id,
+                    'name'          => $category->name,
+                    'description'   => $category->description,
+                    'slug'          => $category->slug,
+                    'image'         => '/uploads/images/categories/'.$category->image,
+                    'status'        => $category->status,
                 ];
-            }
-            if($search) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Search Category Successfully',
-                    'searchResult' => $info,
-                ]);
-            } else {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Search Category Error',
-                ]);
-            }
+            });
+            return response()->json([
+                'status' => true,
+                'message' => 'success',
+                'data' => $data,
+                'next_page_url' => $nextPageUrl,
+                'total' => $paginate->count(),
+                'currentPage' => $paginate->currentPage(),
+                'lastPage' => $paginate->lastPage(),
+                'perPage' => $paginate->perPage(),
+            ]);
         }
         if($request->paginate) {
             $paginate = Category::paginate($request->paginate);

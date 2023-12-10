@@ -19,32 +19,30 @@ class SubCategoryController extends Controller
     use imageTrait;
     public function index(PaginatRequest $request)
     {
+
         if(isset($request->search)) {
-            $info = [];
-            $search = Subcategory::where('name',$request->search)->orWhere('description',$request->search)->get();
-            foreach($search as $row) {
-                $imagePath = '/uploads/images/subCategories';
-                    $info[] = [
-                        'id' => $row->id,
-                        'categoryName' => $row->category->name,
-                        'name' => $row->name,
-                        'description' => $row->description,
-                        'slug' => $row->slug,
-                        'image' => $imagePath.'/'.$row->image,
-                    ];
-            }
-            if($search) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Search SubCategory Successfully',
-                    'searchResult' => $info,
-                ]);
-            } else {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Search SubCategory Error',
-                ]);
-            }
+            $paginate = Subcategory::whereHas('category')->where('name',$request->search)->orWhere('description',$request->search)->paginate(10);
+            $nextPageUrl = $paginate->nextPageUrl();
+            $data = $paginate->map(function ($subCategory) {
+                return [
+                    'id' => $subCategory->id,
+                    'categoryName' => $subCategory->category->name,
+                    'name' => $subCategory->name,
+                    'description' => $subCategory->description,
+                    'slug' => $subCategory->slug,
+                    'image' => '/uploads/images/subCategories'.$subCategory->image,
+                ];
+            });
+            return response()->json([
+                'status' => true,
+                'message' => 'success',
+                'data' => $data,
+                'next_page_url' => $nextPageUrl,
+                'total' => $paginate->count(),
+                'currentPage' => $paginate->currentPage(),
+                'lastPage' => $paginate->lastPage(),
+                'perPage' => $paginate->perPage(),
+            ]);
         }
         if($request->paginate) {
             $paginate = Subcategory::whereHas('category')->paginate($request->paginate);

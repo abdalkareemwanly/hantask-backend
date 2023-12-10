@@ -17,10 +17,10 @@ class LanguageController extends Controller
     public function index(PaginatRequest $request)
     {
         if(isset($request->search)) {
-            $info = [];
-            $search = Language::where('name',$request->search)->get();
-            foreach($search as $row) {
-                $info[] = [
+            $paginate = Language::where('name',$request->search)->paginate(10);
+            $nextPageUrl = $paginate->nextPageUrl();
+            $data = $paginate->map(function ($row) {
+                return [
                     'id'            => $row->id,
                     'name'          => $row->name,
                     'slug'          => $row->slug,
@@ -28,19 +28,17 @@ class LanguageController extends Controller
                     'status'        => $row->status,
                     'default'       => $row->default,
                 ];
-            }
-            if($search) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Search Country Successfully',
-                    'searchResult' => $info,
-                ]);
-            } else {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Search Country Error',
-                ]);
-            }
+            });
+            return response()->json([
+                'status' => true,
+                'message' => 'success',
+                'data' => $data,
+                'next_page_url' => $nextPageUrl,
+                'total' => $paginate->count(),
+                'currentPage' => $paginate->currentPage(),
+                'lastPage' => $paginate->lastPage(),
+                'perPage' => $paginate->perPage(),
+            ]);
         }
         if($request->paginate) {
             $paginate = Language::paginate($request->paginate);

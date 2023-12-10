@@ -19,10 +19,10 @@ class AreaController extends Controller
     public function index(PaginatRequest $request)
     {
         if(isset($request->search)) {
-            $info = [];
-            $search = ServiceArea::where('service_area',$request->search)->get();
-            foreach($search as $row) {
-                $info[] = [
+            $paginate = ServiceArea::where('service_area',$request->search)->paginate(10);
+            $nextPageUrl = $paginate->nextPageUrl();
+            $data = $paginate->map(function ($row) {
+                return [
                     'id'                => $row->id,
                     'service_area'      => $row->service_area,
                     'country'           => $row->country->country,
@@ -30,19 +30,17 @@ class AreaController extends Controller
                     'status'            => $row->status,
                     'created_at'        => $row->created_at,
                 ];
-            }
-            if($search) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Search ServiceArea Successfully',
-                    'searchResult' => $info,
-                ]);
-            } else {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Search ServiceArea Error',
-                ]);
-            }
+            });
+            return response()->json([
+                'status' => true,
+                'message' => 'success',
+                'data' => $data,
+                'next_page_url' => $nextPageUrl,
+                'total' => $paginate->count(),
+                'currentPage' => $paginate->currentPage(),
+                'lastPage' => $paginate->lastPage(),
+                'perPage' => $paginate->perPage(),
+            ]);
         }
         if($request->paginate) {
             $paginate = ServiceArea::whereHas('country')->whereHas('serviceareas')->paginate($request->paginate);

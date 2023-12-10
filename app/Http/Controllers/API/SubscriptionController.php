@@ -18,13 +18,12 @@ class SubscriptionController extends Controller
     public function index(PaginatRequest $request)
     {
         if(isset($request->search)) {
-            $info = [];
-            $search = Subscription::where('title',$request->search)->orWhere('type',$request->search)->get();
-        foreach($search as $row) {
-            $imagePath = '/uploads/images/subscriptions';
-                $info[] = [
+            $paginate = Subscription::where('title',$request->search)->orWhere('type',$request->search)->paginate(10);
+            $nextPageUrl = $paginate->nextPageUrl();
+            $data = $paginate->map(function ($row) {
+                return [
                     'id' => $row->id,
-                    'image' => $imagePath . '/'.$row->image,
+                    'image' => '/uploads/images/subscriptions/'.$row->image,
                     'title' => $row->title,
                     'type' => $row->type,
                     'price' => '$'.$row->price,
@@ -33,19 +32,17 @@ class SubscriptionController extends Controller
                     'job' => $row->job,
                     'status' => $row->status,
                 ];
-        }
-        if($search) {
+            });
             return response()->json([
-                'success' => true,
-                'message' => 'Search Subscription Successfully',
-                'searchResult' => $info,
+                'status' => true,
+                'message' => 'success',
+                'data' => $data,
+                'next_page_url' => $nextPageUrl,
+                'total' => $paginate->count(),
+                'currentPage' => $paginate->currentPage(),
+                'lastPage' => $paginate->lastPage(),
+                'perPage' => $paginate->perPage(),
             ]);
-        } else {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Search Subscription Error',
-                ]);
-            }
         }
         if($request->paginate) {
             $paginate = Subscription::paginate($request->paginate);

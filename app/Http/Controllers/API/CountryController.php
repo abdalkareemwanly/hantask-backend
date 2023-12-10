@@ -15,32 +15,31 @@ class CountryController extends Controller
 {
     public function index(PaginatRequest $request)
     {
+
         if(isset($request->search)) {
-            $info = [];
-            $search = Country::where('country',$request->search)->get();
-            foreach($search as $row) {
-                $info[] = [
-                    'id'                => $row->id,
-                    'country'           => $row->country,
-                    'country_code'      => $row->country_code,
-                    'zone_status'       => $row->zone_status,
-                    'latitude'          => $row->latitude,
-                    'longitude'         => $row->longitude,
-                    'created_at'        => $row->created_at,
+            $paginate = Country::where('country',$request->search)->paginate(10);
+            $nextPageUrl = $paginate->nextPageUrl();
+            $data = $paginate->map(function ($country) {
+                return [
+                    'id'                => $country->id,
+                    'country'           => $country->country,
+                    'country_code'      => $country->country_code,
+                    'zone_status'       => $country->zone_status,
+                    'latitude'          => $country->latitude,
+                    'longitude'         => $country->longitude,
+                    'created_at'        => $country->created_at,
                 ];
-            }
-            if($search) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Search Country Successfully',
-                    'searchResult' => $info,
-                ]);
-            } else {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Search Country Error',
-                ]);
-            }
+            });
+            return response()->json([
+                'status' => true,
+                'message' => 'success',
+                'data' => $data,
+                'next_page_url' => $nextPageUrl,
+                'total' => $paginate->count(),
+                'currentPage' => $paginate->currentPage(),
+                'lastPage' => $paginate->lastPage(),
+                'perPage' => $paginate->perPage(),
+            ]);
         }
         if($request->paginate) {
             $paginate = Country::paginate($request->paginate);

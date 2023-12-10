@@ -19,37 +19,35 @@ class ServiceController extends Controller
     use imageTrait;
     public function index(PaginatRequest $request)
     {
+
         if(isset($request->search)) {
-            $info = [];
-            $search = Service::whereHas('category')->whereHas('child_category')->whereHas('seller')->whereHas('subcategory')->whereHas('service_city')->whereRelation('seller','user_type',0)
-                ->where('title',$request->search)->orWhere('description',$request->search)->get();
-        foreach($search as $row) {
-            $imagePath = '/uploads/images/services';
-            $info[] = [
-                'id'                        => $row->id,
-                'category name'             => $row->category->name,
-                'subcategory name'          => $row->subcategory->name,
-                'child category name'       => $row->child_category->name,
-                'service city name'         => $row->service_city->service_city,
-                'seller name'               => $row->seller->name,
-                'title'                     => $row->title,
-                'slug'                      => $row->slug,
-                'description'               => $row->description,
-                'image'                     => $imagePath .'/'.$row->image,
-            ];
-        }
-        if($search) {
+            $paginate = Service::whereHas('category')->whereHas('child_category')->whereHas('seller')->whereHas('subcategory')->whereHas('service_city')->whereRelation('seller','user_type',0)
+            ->where('title',$request->search)->orWhere('description',$request->search)->paginate(10);
+            $nextPageUrl = $paginate->nextPageUrl();
+            $data = $paginate->map(function ($row) {
+                return [
+                    'id'                        => $row->id,
+                    'category name'             => $row->category->name,
+                    'subcategory name'          => $row->subcategory->name,
+                    'child category name'       => $row->child_category->name,
+                    'service city name'         => $row->service_city->service_city,
+                    'seller name'               => $row->seller->name,
+                    'title'                     => $row->title,
+                    'slug'                      => $row->slug,
+                    'description'               => $row->description,
+                    'image'                     => '/uploads/images/services/'.$row->image,
+                ];
+            });
             return response()->json([
-                'success' => true,
-                'message' => 'Search Service Successfully',
-                'searchResult' => $info,
+                'status' => true,
+                'message' => 'success',
+                'data' => $data,
+                'next_page_url' => $nextPageUrl,
+                'total' => $paginate->count(),
+                'currentPage' => $paginate->currentPage(),
+                'lastPage' => $paginate->lastPage(),
+                'perPage' => $paginate->perPage(),
             ]);
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Search Service Error',
-            ]);
-            }
         }
         if($request->paginate) {
             $paginate = Service::whereHas('category')->whereHas('child_category')->whereHas('seller')->whereHas('subcategory')->whereHas('service_city')->whereRelation('seller','user_type',0)->paginate($request->paginate);

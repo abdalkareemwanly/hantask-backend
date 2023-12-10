@@ -15,27 +15,25 @@ class TaxeController extends Controller
     public function index(PaginatRequest $request)
     {
         if(isset($request->search)) {
-            $info = [];
-            $search = Tax::whereHas('country')->where('tax',$request->search)->get();
-        foreach($search as $row) {
-            $info[] = [
-                'id'            => $row->id,
-                'tax'           => $row->tax,
-                'country'       => $row->country->country,
-            ];
-        }
-        if($search) {
+            $paginate = Tax::whereHas('country')->where('tax',$request->search)->paginate(10);
+            $nextPageUrl = $paginate->nextPageUrl();
+            $data = $paginate->map(function ($row) {
+                return [
+                    'id'            => $row->id,
+                    'tax'           => $row->tax,
+                    'country'       => $row->country->country,
+                ];
+            });
             return response()->json([
-                'success' => true,
-                'message' => 'Search Tax Successfully',
-                'searchResult' => $info,
+                'status' => true,
+                'message' => 'success',
+                'data' => $data,
+                'next_page_url' => $nextPageUrl,
+                'total' => $paginate->count(),
+                'currentPage' => $paginate->currentPage(),
+                'lastPage' => $paginate->lastPage(),
+                'perPage' => $paginate->perPage(),
             ]);
-        } else {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Search Tax Error',
-                ]);
-            }
         }
         if($request->paginate) {
             $paginate = Tax::whereHas('country')->paginate($request->paginate);

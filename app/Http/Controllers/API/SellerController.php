@@ -18,30 +18,28 @@ class SellerController extends Controller
     use imageTrait;
     public function index(PaginatRequest $request)
     {
+
         if(isset($request->search)) {
-            $info = [];
-            $search = User::where('name',$request->search)->orWhere('username',$request->search)->get();
-            foreach($search as $row) {
-                $imagePath = '/uploads/images/sellers';
-                $info[] = [
-                    'name'      => $row->name,
-                    'email'     => $row->email,
-                    'username'  => $row->username,
-                    'image'     => $imagePath . '/'.$row->image,
+            $paginate = User::where('name',$request->search)->orWhere('username',$request->search)->paginate(10);
+            $nextPageUrl = $paginate->nextPageUrl();
+            $data = $paginate->map(function ($seller) {
+                return [
+                    'name'      => $seller->name,
+                    'email'     => $seller->email,
+                    'username'  => $seller->username,
+                    'image'     => '/uploads/images/sellers'.$seller->image,
                 ];
-            }
-            if($search) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Search Role Successfully',
-                    'searchResult' => $info,
-                ]);
-            } else {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Search Role Error',
-                ]);
-            }
+            });
+            return response()->json([
+                'status' => true,
+                'message' => 'success',
+                'data' => $data,
+                'next_page_url' => $nextPageUrl,
+                'total' => $paginate->count(),
+                'currentPage' => $paginate->currentPage(),
+                'lastPage' => $paginate->lastPage(),
+                'perPage' => $paginate->perPage(),
+            ]);
         }
         if($request->paginate) {
             $paginate =  User::where('user_type',0)->where('account_state',1)->paginate($request->paginate);

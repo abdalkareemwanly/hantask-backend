@@ -15,30 +15,28 @@ class SubscriptionCouponController extends Controller
     public function index(PaginatRequest $request)
     {
         if(isset($request->search)) {
-            $info = [];
-            $search = subscription_coupon::where('code',$request->search)->get();
-            foreach($search as $row) {
-                    $info[] = [
-                        'id' => $row->id,
-                        'code' => $row->code,
-                        'discount' => $row->discount,
-                        'discount_type' => $row->discount_type,
-                        'expire_date' => $row->expire_date,
-                        'status' => $row->status,
-                    ];
-            }
-            if($search) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Search subscriptionCoupon Successfully',
-                    'searchResult' => $info,
-                ]);
-            } else {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Search subscriptionCoupon Error',
-                ]);
-            }
+            $paginate = subscription_coupon::where('code',$request->search)->paginate(10);
+            $nextPageUrl = $paginate->nextPageUrl();
+            $data = $paginate->map(function ($coupon) {
+                return [
+                    'id' => $coupon->id,
+                    'code' => $coupon->code,
+                    'discount' => $coupon->discount,
+                    'discount_type' => $coupon->discount_type,
+                    'expire_date' => $coupon->expire_date,
+                    'status' => $coupon->status,
+                ];
+            });
+            return response()->json([
+                'status' => true,
+                'message' => 'success',
+                'data' => $data,
+                'next_page_url' => $nextPageUrl,
+                'total' => $paginate->count(),
+                'currentPage' => $paginate->currentPage(),
+                'lastPage' => $paginate->lastPage(),
+                'perPage' => $paginate->perPage(),
+            ]);
         }
         if($request->paginate) {
             $paginate = subscription_coupon::paginate($request->paginate);

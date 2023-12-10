@@ -21,32 +21,29 @@ class UserController extends Controller
     public function index(PaginatRequest $request)
     {
         if(isset($request->search)) {
-            $info = [];
-            $search = User::where('name',$request->search)->orWhere('username',$request->search)->get();
-            foreach($search as $row) {
-                $imagePath = '/uploads/images/users';
-                $info[] = [
+            $paginate = User::where('name',$request->search)->orWhere('username',$request->search)->paginate(10);
+            $nextPageUrl = $paginate->nextPageUrl();
+            $data = $paginate->map(function ($row) {
+                return [
                     'id'            => $row->id,
                     'name'          => $row->name,
                     'email'         => $row->email,
                     'username'      => $row->username,
                     'phone'         => $row->phone,
-                    'image'         => $imagePath . '/'.$row->image,
+                    'image'         => '/uploads/images/users/'.$row->image,
                     'user_status'   => $row->user_status,
                 ];
-            }
-            if($search) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Search Seller Successfully',
-                    'searchResult' => $info,
-                ]);
-            } else {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Search Seller Error',
-                ]);
-            }
+            });
+            return response()->json([
+                'status' => true,
+                'message' => 'success',
+                'data' => $data,
+                'next_page_url' => $nextPageUrl,
+                'total' => $paginate->count(),
+                'currentPage' => $paginate->currentPage(),
+                'lastPage' => $paginate->lastPage(),
+                'perPage' => $paginate->perPage(),
+            ]);
         }
         if($request->paginate) {
             $paginate =  User::where('account_state' , 1)->paginate($request->paginate);
