@@ -17,7 +17,7 @@ class CountryController extends Controller
     {
 
         if(isset($request->search)) {
-            $paginate = Country::where('country',$request->search)->paginate(10);
+            $paginate = Country::where('country','like', '%' . $request->search . '%')->paginate(10);
             $nextPageUrl = $paginate->nextPageUrl();
             $data = $paginate->map(function ($country) {
                 return [

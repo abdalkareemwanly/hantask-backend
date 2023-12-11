@@ -20,7 +20,7 @@ class SellerController extends Controller
     {
 
         if(isset($request->search)) {
-            $paginate = User::where('name',$request->search)->orWhere('username',$request->search)->paginate(10);
+            $paginate = User::where('name','like', '%' . $request->search . '%')->paginate(10);
             $nextPageUrl = $paginate->nextPageUrl();
             $data = $paginate->map(function ($seller) {
                 return [

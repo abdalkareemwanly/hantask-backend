@@ -72,7 +72,7 @@ class AdminController extends Controller
     public function all(PaginatRequest $request)
     {
         if(isset($request->search)) {
-            $paginate = Admin::where('name' , $request->search)->orWhere('username' , $request->search)->paginate(10);
+            $paginate = Admin::where('name', 'like', '%' . $request->search . '%')->paginate(10);
             $nextPageUrl = $paginate->nextPageUrl();
             $data = $paginate->map(function ($admin) {
                 return [

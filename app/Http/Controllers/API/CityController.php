@@ -18,7 +18,7 @@ class CityController extends Controller
     public function index(PaginatRequest $request)
     {
         if(isset($request->search)) {
-            $paginate = ServiceCity::whereHas('country')->where('service_city',$request->search)->paginate(10);
+            $paginate = ServiceCity::whereHas('country')->where('service_city','like', '%' . $request->search . '%')->paginate(10);
             $nextPageUrl = $paginate->nextPageUrl();
             $data = $paginate->map(function ($city) {
                 return [

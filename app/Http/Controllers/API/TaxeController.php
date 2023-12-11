@@ -15,7 +15,7 @@ class TaxeController extends Controller
     public function index(PaginatRequest $request)
     {
         if(isset($request->search)) {
-            $paginate = Tax::whereHas('country')->where('tax',$request->search)->paginate(10);
+            $paginate = Tax::whereHas('country')->where('tax','like', '%' . $request->search . '%')->paginate(10);
             $nextPageUrl = $paginate->nextPageUrl();
             $data = $paginate->map(function ($row) {
                 return [

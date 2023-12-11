@@ -22,7 +22,7 @@ class ServiceController extends Controller
 
         if(isset($request->search)) {
             $paginate = Service::whereHas('category')->whereHas('child_category')->whereHas('seller')->whereHas('subcategory')->whereHas('service_city')->whereRelation('seller','user_type',0)
-            ->where('title',$request->search)->orWhere('description',$request->search)->paginate(10);
+            ->where('title','like', '%' . $request->search . '%')->paginate(10);
             $nextPageUrl = $paginate->nextPageUrl();
             $data = $paginate->map(function ($row) {
                 return [

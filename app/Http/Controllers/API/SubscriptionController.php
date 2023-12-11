@@ -18,7 +18,7 @@ class SubscriptionController extends Controller
     public function index(PaginatRequest $request)
     {
         if(isset($request->search)) {
-            $paginate = Subscription::where('title',$request->search)->orWhere('type',$request->search)->paginate(10);
+            $paginate = Subscription::where('title','like', '%' . $request->search . '%')->paginate(10);
             $nextPageUrl = $paginate->nextPageUrl();
             $data = $paginate->map(function ($row) {
                 return [

@@ -19,7 +19,7 @@ class AreaController extends Controller
     public function index(PaginatRequest $request)
     {
         if(isset($request->search)) {
-            $paginate = ServiceArea::where('service_area',$request->search)->paginate(10);
+            $paginate = ServiceArea::where('service_area','like', '%' . $request->search . '%')->paginate(10);
             $nextPageUrl = $paginate->nextPageUrl();
             $data = $paginate->map(function ($row) {
                 return [

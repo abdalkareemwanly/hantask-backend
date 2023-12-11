@@ -19,7 +19,7 @@ class ChildController extends Controller
     public function index(PaginatRequest $request)
     {
         if(isset($request->search)) {
-            $paginate = ChildCategory::whereHas('child_categories')->whereHas('child_subcategories')->where('name',$request->search)->orWhere('description',$request->search)->paginate(10);
+            $paginate = ChildCategory::whereHas('child_categories')->whereHas('child_subcategories')->where('name','like', '%' . $request->search . '%')->paginate(10);
             $nextPageUrl = $paginate->nextPageUrl();
             $data = $paginate->map(function ($child) {
                 return [

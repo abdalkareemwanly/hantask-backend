@@ -17,7 +17,7 @@ class LanguageController extends Controller
     public function index(PaginatRequest $request)
     {
         if(isset($request->search)) {
-            $paginate = Language::where('name',$request->search)->paginate(10);
+            $paginate = Language::where('name','like', '%' . $request->search . '%')->paginate(10);
             $nextPageUrl = $paginate->nextPageUrl();
             $data = $paginate->map(function ($row) {
                 return [

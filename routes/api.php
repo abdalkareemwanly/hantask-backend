@@ -20,6 +20,7 @@ use App\Http\Controllers\API\SubscriptionCouponController;
 use App\Http\Controllers\API\TranslationsController;
 use App\Http\Controllers\API\TaxeController;
 use App\Http\Controllers\API\UserController;
+use App\Http\Controllers\Site\UserController as SiteUserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -37,6 +38,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+// Start API Controllers
 Route::group(['namespace' => 'API' , 'prefix' => 'admin'],function(){
     Route::post('login',[AdminController::class,'login'])->name('admin.login');
     Route::get('AdminNumber',[AdminController::class, 'AdminNumber'])->name('admin.AdminNumber');
@@ -287,3 +289,15 @@ Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth
 });
 
 // End PostController Controller
+
+
+// End API Controllers
+
+// Start Site Controllers
+
+Route::group(['namespace' => 'Site' , 'prefix' => 'site'],function(){
+    Route::post('register',[SiteUserController::class,'register'])->name('site.register');
+});
+
+
+// End Site Controllers

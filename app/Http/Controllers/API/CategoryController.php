@@ -20,7 +20,7 @@ class CategoryController extends Controller
     public function index(PaginatRequest $request)
     {
         if(isset($request->search)) {
-            $paginate = Category::where('name',$request->search)->orWhere('description',$request->search)->paginate(10);
+            $paginate = Category::where('name','like', '%' . $request->search . '%')->paginate(10);
             $nextPageUrl = $paginate->nextPageUrl();
             $data = $paginate->map(function ($category) {
                 return [

@@ -13,7 +13,7 @@ class PostController extends Controller
     public function index(PaginatRequest $request)
     {
         if(isset($request->search)) {
-            $paginate = Post::whereHas('customer')->where('title',$request->search)->orWhere('description',$request->search)->paginate(10);
+            $paginate = Post::whereHas('customer')->where('title','like', '%' . $request->search . '%')->paginate(10);
             $nextPageUrl = $paginate->nextPageUrl();
             $data = $paginate->map(function ($row) {
                 return [

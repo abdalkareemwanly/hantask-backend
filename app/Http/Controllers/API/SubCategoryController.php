@@ -21,7 +21,7 @@ class SubCategoryController extends Controller
     {
 
         if(isset($request->search)) {
-            $paginate = Subcategory::whereHas('category')->where('name',$request->search)->orWhere('description',$request->search)->paginate(10);
+            $paginate = Subcategory::whereHas('category')->where('name','like', '%' . $request->search . '%')->paginate(10);
             $nextPageUrl = $paginate->nextPageUrl();
             $data = $paginate->map(function ($subCategory) {
                 return [
