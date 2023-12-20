@@ -7,9 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
+use Laravel\Cashier\Billable;
 class User extends Authenticatable
 {
-    use HasFactory,HasApiTokens,Notifiable;
+    use HasFactory,HasApiTokens,Notifiable,Billable;
     protected $table = 'users';
     protected $guarded = [];
 
@@ -20,5 +21,9 @@ class User extends Authenticatable
     public function seller_subscriptions()
     {
         return $this->hasMany(sellerSubscription::class,'seller_id');
+    }
+    public function chats()
+    {
+        return $this->hasMany(Chat::class,'recipient_id');
     }
 }

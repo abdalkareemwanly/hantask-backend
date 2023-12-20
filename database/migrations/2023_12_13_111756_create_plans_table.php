@@ -11,15 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('subscriptions', function (Blueprint $table) {
+        Schema::create('plans', function (Blueprint $table) {
             $table->unsignedBigInteger('id')->autoIncrement();
-            $table->string('title');
-            $table->string('type');
+            $table->string('plan_id');
+            $table->string('name');
             $table->string('price');
-            $table->string('connect');
-            $table->string('service')->default(0);
-            $table->string('job')->default(0);
-            $table->string('status')->default(1);
+            $table->string('interval');
+            $table->string('interval_count');
+            $table->string('currency');
             $table->string('image')->nullable();
             $table->timestamps();
         });
@@ -30,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('subscriptions');
+        Schema::dropIfExists('plans');
     }
 };

@@ -8,22 +8,25 @@ use App\Http\Requests\Subscription\SearchRequest;
 use App\Http\Requests\Subscription\storeRequest;
 use App\Http\Requests\Subscription\updateRequest;
 use App\Http\Traits\imageTrait;
+use App\Models\Plan as ModelsPlan;
 use App\Models\Subscription;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Stripe\Plan;
+use Stripe\Stripe;
 
-class SubscriptionController extends Controller
+class PlanController extends Controller
 {
     use imageTrait;
     public function index(PaginatRequest $request)
     {
         if(isset($request->search)) {
-            $paginate = Subscription::where('title','like', '%' . $request->search . '%')->paginate(10);
+            $paginate = ModelsPlan::where('title','like', '%' . $request->search . '%')->paginate(10);
             $nextPageUrl = $paginate->nextPageUrl();
             $data = $paginate->map(function ($row) {
                 return [
                     'id' => $row->id,
-                    'image' => '/uploads/images/subscriptions/'.$row->image,
+                    'image' => '/uploads/images/plans/'.$row->image,
                     'title' => $row->title,
                     'type' => $row->type,
                     'price' => '$'.$row->price,
@@ -45,12 +48,12 @@ class SubscriptionController extends Controller
             ]);
         }
         if($request->paginate) {
-            $paginate = Subscription::paginate($request->paginate);
+            $paginate = ModelsPlan::paginate($request->paginate);
             $nextPageUrl = $paginate->nextPageUrl();
             $data = $paginate->map(function ($row) {
                 return [
                     'id' => $row->id,
-                    'image' => '/uploads/images/subscriptions/'.$row->image,
+                    'image' => '/uploads/images/plans/'.$row->image,
                     'title' => $row->title,
                     'type' => $row->type,
                     'price' => '$'.$row->price,
@@ -71,12 +74,12 @@ class SubscriptionController extends Controller
                 'perPage' => $paginate->perPage(),
             ]);
         } else {
-            $paginate = Subscription::paginate(10);
+            $paginate = ModelsPlan::paginate(10);
             $nextPageUrl = $paginate->nextPageUrl();
             $data = $paginate->map(function ($row) {
                 return [
                     'id' => $row->id,
-                    'image' => '/uploads/images/subscriptions/'.$row->image,
+                    'image' => '/uploads/images/plans/'.$row->image,
                     'title' => $row->title,
                     'type' => $row->type,
                     'price' => '$'.$row->price,
@@ -101,11 +104,30 @@ class SubscriptionController extends Controller
     public function store(storeRequest $request)
     {
         $data = $request->validated();
-        $data['image'] = $this->saveImage($request->image,'uploads/images/subscriptions');
-        Subscription::create($data);
+        Stripe::setApiKey(env('STRIPE_SECRET'));
+        $amount = ($request->amount * 100);
+        $plan = Plan::create([
+            'amount'         => $amount,
+            'currency'       => $request->currency,
+            'interval'       => $request->interval,
+            'interval_count' => $request->interval_count,
+            'product' => [
+                'name' => $request->name
+            ],
+        ]);
+        $image = $this->saveImage($request->image,'uploads/images/plans');
+        ModelsPlan::create([
+            'plan_id'        => $plan->id,
+            'name'           => $request->name,
+            'price'          => $plan->amount,
+            'interval'       => $plan->interval,
+            'interval_count' => $plan->interval_count,
+            'currency'       => $plan->currency,
+            'image'          => $image
+        ]);
         return response()->json([
             'success' => true,
-            'mes' => 'Store Subscription Successfully',
+            'mes' => 'Store Plan Successfully',
         ]);
     }
     public function status($id)

@@ -8,6 +8,7 @@ use App\Http\Controllers\API\ChildController;
 use App\Http\Controllers\API\CityController;
 use App\Http\Controllers\API\CountryController;
 use App\Http\Controllers\API\LanguageController;
+use App\Http\Controllers\API\PlanController;
 use App\Http\Controllers\API\PostController;
 use App\Http\Controllers\API\ProfileController;
 use App\Http\Controllers\API\RoleController;
@@ -20,6 +21,10 @@ use App\Http\Controllers\API\SubscriptionCouponController;
 use App\Http\Controllers\API\TranslationsController;
 use App\Http\Controllers\API\TaxeController;
 use App\Http\Controllers\API\UserController;
+use App\Http\Controllers\Site\CategoriesController;
+use App\Http\Controllers\Site\ChatController;
+use App\Http\Controllers\Site\CheckoutController;
+use App\Http\Controllers\Site\ServiceController as SiteServiceController;
 use App\Http\Controllers\Site\UserController as SiteUserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -244,19 +249,19 @@ Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth
 
 // End Service Controller
 
-// Start Subscription Controller
+// Start Plan Controller
 
 Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth:sanctum'],function(){
-    Route::get('/subscriptions',[SubscriptionController::class,'index'])->name('admin.subscription.index');
-    Route::post('/subscription/store',[SubscriptionController::class,'store'])->name('admin.subscription.store');
-    Route::post('/subscription/update/{id}',[SubscriptionController::class,'update'])->name('admin.subscription.update');
-    Route::get('/subscription/changeStatusMethod/{id}',[SubscriptionController::class,'status'])->name('admin.subscription.status');
-    Route::get('/subscription/deleteMethod/{id}',[SubscriptionController::class,'delete'])->name('admin.subscription.delete');
+    Route::get('/plans',[PlanController::class,'index'])->name('admin.plan.index');
+    Route::post('/plan/store',[planController::class,'store'])->name('admin.plan.store');
+    Route::post('/plan/update/{id}',[planController::class,'update'])->name('admin.plan.update');
+    Route::get('/plan/changeStatusMethod/{id}',[planController::class,'status'])->name('admin.plan.status');
+    Route::get('/plan/deleteMethod/{id}',[planController::class,'delete'])->name('admin.plan.delete');
 });
 
-// End Subscription Controller
+// End Plan Controller
 
-// // Start SellerSubscription Controller
+// Start SellerSubscription Controller
 
 // Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth:sanctum'],function(){
 //     Route::get('/sellerSubscriptions',[SellerSubscriptionController::class,'index'])->name('admin.subscription.index');
@@ -266,7 +271,7 @@ Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth
 //     Route::get('/sellerSubscription/deleteMethod/{id}',[SellerSubscriptionController::class,'delete'])->name('admin.sellerSubscription.delete');
 // });
 
-// // End Subscription Controller
+// End Subscription Controller
 
 // Start SellerSubscription Controller
 
@@ -297,7 +302,32 @@ Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth
 
 Route::group(['namespace' => 'Site' , 'prefix' => 'site'],function(){
     Route::post('register',[SiteUserController::class,'register'])->name('site.register');
+    Route::post('login',[SiteUserController::class,'login'])->name('site.login');
 });
+// Start CheckoutController
+Route::group(['namespace' => 'Site' , 'prefix' => 'site' , 'middleware' => 'auth:sanctum'],function(){
+    Route::post('checkout',[CheckoutController::class, 'checkout'])->name('site.user.checkout');
+});
+// End CheckoutController
 
+// Start ChatController
+Route::group(['namespace' => 'Site' , 'prefix' => 'site' , 'middleware' => 'auth:sanctum'],function(){
+    Route::get('getContact',[ChatController::class,'getContact'])->name('site.chat.getContact');
+    Route::get('getMessage/{id}',[ChatController::class,'getMessage'])->name('site.chat.getMessage');
+    Route::post('storeMessage',[ChatController::class,'storeMessage'])->name('site.chat.storeMessage');
+});
+// End ChatController
+
+// Start CategoriesController
+Route::group(['namespace' => 'Site' , 'prefix' => 'site' , 'middleware' => 'auth:sanctum'],function(){
+    Route::get('categories',[CategoriesController::class,'index'])->name('site.categories');
+});
+// End CategoriesController
+
+// Start ServiceController
+Route::group(['namespace' => 'Site' , 'prefix' => 'site' , 'middleware' => 'auth:sanctum'],function(){
+    Route::get('services',[SiteServiceController::class,'index'])->name('site.services');
+});
+// End ServiceController
 
 // End Site Controllers

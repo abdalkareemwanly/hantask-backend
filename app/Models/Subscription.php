@@ -4,10 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use Laravel\Cashier\Billable;
 class Subscription extends Model
 {
-    use HasFactory;
+    use HasFactory,Billable;
     protected $table = 'subscriptions';
     protected $guarded = [];
 

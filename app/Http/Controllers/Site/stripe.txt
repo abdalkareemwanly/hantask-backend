@@ -1,0 +1,28 @@
+try
+        {
+            Stripe::setApiKey(env('STRIPE_SECRET'));
+            $paymentMethod = PaymentMethod::create([
+                'type' => 'card',
+                'card' => [
+                    'number' => $request->card_number,
+                    'exp_month' => $request->card_exp_month,
+                    'exp_year' => $request->card_exp_year,
+                    'cvc' => $request->card_cvc,
+                ],
+            ]);
+            $paymentMethod = PaymentMethod::retrieve($paymentMethod->id);
+            $paymentMethod->attach(['customer' => Auth::user()->id]);
+            $subscription = Subscription::create([
+                'customer' => Auth::user()->id,
+                'items' => [['price' => $request->price]],
+            ]);
+
+            return response()->json([
+                'message' => 'Subscription created successfully',
+                'subscription' => $subscription,
+            ], 201);
+        } catch (CardException $e) {
+            return response()->json(['error' => $e->getMessage()], 400);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
