@@ -9,6 +9,8 @@ use App\Http\Requests\Subscription\Coupon\storeRequest;
 use App\Http\Requests\Subscription\Coupon\updateRequest;
 use App\Models\subscription_coupon;
 use Illuminate\Http\Request;
+use Stripe\Coupon;
+use Stripe\Stripe;
 
 class SubscriptionCouponController extends Controller
 {
@@ -88,8 +90,19 @@ class SubscriptionCouponController extends Controller
     }
     public function store(storeRequest $request)
     {
-        $data = $request->validated();
-        subscription_coupon::create($data);
+        Stripe::setApiKey(env('STRIPE_SECRET'));
+        $amount_off = ($request->amount_off * 100);
+        $coupon = Coupon::create([
+            'name' => $request->name,
+            'amount_off' => $amount_off,
+            'currency' => 'usd',
+        ]);
+        subscription_coupon::create([
+            'coupon_id' => $coupon->id,
+            'name' => $coupon->name,
+            'amount' => $coupon->amount_off,
+            'currency' => 'usd',
+        ]);
         return response()->json([
             'success' => true,
             'mes' => 'Store subscriptionCoupon Successfully',

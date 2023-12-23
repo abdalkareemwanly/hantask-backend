@@ -30,7 +30,7 @@ class CheckoutController extends Controller
                 'default',$plan
             )->create($paymentMethod != null ? $paymentMethod->id : '');
             return response()->json([
-                'message' => 'success'
+                'message' => 'Payment completed successfully'
             ]);
         } catch(Exception $e) {
             return response()->json([

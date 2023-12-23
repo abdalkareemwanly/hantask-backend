@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('subscription_coupons', function (Blueprint $table) {
             $table->unsignedBigInteger('id')->autoIncrement();
-            $table->string('code');
-            $table->string('discount')->nullable();
-            $table->string('discount_type')->nullable();
-            $table->string('expire_date')->nullable();
+            $table->string('coupon_id');
+            $table->string('name');
+            $table->string('amount');
+            $table->string('currency');
             $table->string('status')->default(0)->comment('0=archived, 1=unArchived');
             $table->timestamps();
         });

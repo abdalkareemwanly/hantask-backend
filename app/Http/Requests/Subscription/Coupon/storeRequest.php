@@ -24,10 +24,8 @@ class storeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'code' => 'required',
-            'discount' => 'required',
-            'discount_type' => 'required',
-            'expire_date' => 'required|date',
+            'name' => 'required',
+            'amount_off' => 'required',
         ];
     }
     public function failedValidation(Validator $validator)
