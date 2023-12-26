@@ -26,4 +26,8 @@ class User extends Authenticatable
     {
         return $this->hasMany(Chat::class,'recipient_id');
     }
+    public function buyerJobs()
+    {
+        return $this->hasMany(BuyerJob::class,'buyer_id');
+    }
 }

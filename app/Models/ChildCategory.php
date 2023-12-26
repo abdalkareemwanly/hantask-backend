@@ -22,4 +22,8 @@ class ChildCategory extends Model
     {
         return $this->hasMany(Service::class,'child_category_id');
     }
+    public function buyerJobs()
+    {
+        return $this->hasMany(BuyerJob::class,'child_category_id');
+    }
 }

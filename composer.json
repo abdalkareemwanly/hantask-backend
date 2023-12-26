@@ -9,6 +9,7 @@
         "ext-zip": "*",
         "guzzlehttp/guzzle": "^7.2",
         "ichtrojan/laravel-otp": "^1.4",
+        "kreait/firebase-php": "^5.26",
         "laravel/cashier": "^14.14",
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.3",

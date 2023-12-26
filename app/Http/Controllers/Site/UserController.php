@@ -30,6 +30,8 @@ class UserController extends Controller
         $data['password'] = Hash::make($data['password']);
         $data['image'] = $this->saveImage($data['image'], 'uploads/images/users');
         $store = User::create($data);
+        $store->notify(new UserOtpNotification());
+        // Mail::to($request->email)->send(new UserOtpNotification);
         return response()->json([
             'success' => true,
             'mes' => 'Register Successfully',
@@ -48,11 +50,17 @@ class UserController extends Controller
             }
             // Fetch additional user details
             $imagePath = '/uploads/images/users';
+            if($user['user_type'] == 1) {
+                $type = 'buyer';
+            } else {
+                $type = 'seller';
+            }
             $userDetails = [
                 'name' => $user->name,
                 'username' => $user->username,
                 'email' => $user->email,
-                'image' => $imagePath .'/' . $user->image
+                'image' => $imagePath .'/' . $user->image,
+                'user_type' => $type
             ];
 
             $token = $user->createToken('User Token')->plainTextToken;

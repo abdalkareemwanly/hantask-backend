@@ -8,6 +8,7 @@ use App\Http\Controllers\API\ChildController;
 use App\Http\Controllers\API\CityController;
 use App\Http\Controllers\API\CountryController;
 use App\Http\Controllers\API\LanguageController;
+use App\Http\Controllers\API\NotificationController;
 use App\Http\Controllers\API\PlanController;
 use App\Http\Controllers\API\PostController;
 use App\Http\Controllers\API\ProfileController;
@@ -21,11 +22,7 @@ use App\Http\Controllers\API\SubscriptionCouponController;
 use App\Http\Controllers\API\TranslationsController;
 use App\Http\Controllers\API\TaxeController;
 use App\Http\Controllers\API\UserController;
-use App\Http\Controllers\Site\CategoriesController;
-use App\Http\Controllers\Site\ChatController;
-use App\Http\Controllers\Site\CheckoutController;
-use App\Http\Controllers\Site\ServiceController as SiteServiceController;
-use App\Http\Controllers\Site\UserController as SiteUserController;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -78,6 +75,17 @@ Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth
 
 // End Role Controller
 
+// Start Notification Controller
+
+Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth:sanctum'],function(){
+    Route::get('/notifications',[NotificationController::class,'index'])->name('admin.notification.index');
+    Route::post('/notification/store',[NotificationController::class,'store'])->name('admin.notification.store');
+    Route::post('/notification/update/{id}',[NotificationController::class,'update'])->name('admin.notification.update');
+    Route::get('/notification/deleteMethod/{id}',[NotificationController::class,'delete'])->name('admin.notification.delete');
+});
+
+// End Notification Controller
+
 // Start User Controller
 
 Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth:sanctum'],function(){
@@ -90,8 +98,6 @@ Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth
     Route::get('/user/viewArchived/',[UserController::class,'user_archived'])->name('admin.user.user_archived');
     Route::get('/user/unarchiveMethod/{id}',[UserController::class,'unArchived'])->name('admin.user.unArchived');
     Route::get('/user/deleteMethod/{id}',[UserController::class,'delete'])->name('admin.user.delete');
-
-
 });
 
 // End User Controller
@@ -297,37 +303,3 @@ Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth
 
 
 // End API Controllers
-
-// Start Site Controllers
-
-Route::group(['namespace' => 'Site' , 'prefix' => 'site'],function(){
-    Route::post('register',[SiteUserController::class,'register'])->name('site.register');
-    Route::post('login',[SiteUserController::class,'login'])->name('site.login');
-});
-// Start CheckoutController
-Route::group(['namespace' => 'Site' , 'prefix' => 'site' , 'middleware' => 'auth:sanctum'],function(){
-    Route::post('checkout',[CheckoutController::class, 'checkout'])->name('site.user.checkout');
-});
-// End CheckoutController
-
-// Start ChatController
-Route::group(['namespace' => 'Site' , 'prefix' => 'site' , 'middleware' => 'auth:sanctum'],function(){
-    Route::get('getContact',[ChatController::class,'getContact'])->name('site.chat.getContact');
-    Route::get('getMessage/{id}',[ChatController::class,'getMessage'])->name('site.chat.getMessage');
-    Route::post('storeMessage',[ChatController::class,'storeMessage'])->name('site.chat.storeMessage');
-});
-// End ChatController
-
-// Start CategoriesController
-Route::group(['namespace' => 'Site' , 'prefix' => 'site' , 'middleware' => 'auth:sanctum'],function(){
-    Route::get('categories',[CategoriesController::class,'index'])->name('site.categories');
-});
-// End CategoriesController
-
-// Start ServiceController
-Route::group(['namespace' => 'Site' , 'prefix' => 'site' , 'middleware' => 'auth:sanctum'],function(){
-    Route::get('services',[SiteServiceController::class,'index'])->name('site.services');
-});
-// End ServiceController
-
-// End Site Controllers

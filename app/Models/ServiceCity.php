@@ -22,5 +22,9 @@ class ServiceCity extends Model
     {
         return $this->hasMany(Service::class,'service_city_id');
     }
+    public function buyerJobs()
+    {
+        return $this->hasMany(BuyerJob::class,'city_id');
+    }
 
 }

@@ -22,4 +22,8 @@ class Country extends Model
     {
         return $this->hasMany(Tax::class,'country_id');
     }
+    public function buyerJobs()
+    {
+        return $this->hasMany(BuyerJob::class,'country_id');
+    }
 }
