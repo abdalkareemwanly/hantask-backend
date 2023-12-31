@@ -30,4 +30,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(BuyerJob::class,'buyer_id');
     }
+    public function deviceTokens()
+    {
+        return $this->hasMany(DeviceToken::class,'user_id');
+    }
+    public function routeNotificationForFcm($notification = null)
+    {
+        return $this->deviceTokens()->pluck('token')->toArray();
+    }
 }

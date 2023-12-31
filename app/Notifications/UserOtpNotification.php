@@ -21,11 +21,11 @@ class UserOtpNotification extends Notification
      */
     public function __construct()
     {
-        $this->message = 'Use The Below Code Verification Process';
-        $this->subject = 'Verification Needed';
-        $this->formEmail = 'test@gmail.com';
-        $this->mailer = 'smtp';
-        $this->otp = new Otp();
+        $this->message   = 'Use The Below Code Verification Process';
+        $this->subject   = 'Verification Needed';
+        $this->formEmail = 'mohamademrle5@gmail.com';
+        $this->mailer    = 'smtp';
+        $this->otp       = new Otp();
     }
 
     /**
@@ -43,9 +43,10 @@ class UserOtpNotification extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-        $otp = $this->otp->generate($notifiable->email,5,15);
+        $otp = $this->otp->generate($notifiable->email, 'numeric', 60);
         return (new MailMessage)
         ->mailer('smtp')
+        ->from($this->formEmail)
         ->subject($this->subject)
         ->greeting('Hello '.$notifiable->name)
         ->line($this->message)

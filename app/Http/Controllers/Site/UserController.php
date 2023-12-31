@@ -6,15 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Site\User\LoginRequest;
 use App\Http\Requests\Site\User\RegisterRequest;
 use App\Http\Traits\imageTrait;
-use App\Mail\UserMail;
 use App\Models\User;
 use App\Notifications\UserOtpNotification;
 use Exception;
 use Ichtrojan\Otp\Otp;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
-
+use Illuminate\Auth\Events\Verified;
 class UserController extends Controller
 {
     use imageTrait;
@@ -29,9 +26,9 @@ class UserController extends Controller
         $data = $request->validated();
         $data['password'] = Hash::make($data['password']);
         $data['image'] = $this->saveImage($data['image'], 'uploads/images/users');
-        $store = User::create($data);
-        $store->notify(new UserOtpNotification());
-        // Mail::to($request->email)->send(new UserOtpNotification);
+        $user = User::create($data);
+
+        $user->notify(new UserOtpNotification);
         return response()->json([
             'success' => true,
             'mes' => 'Register Successfully',

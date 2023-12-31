@@ -235,7 +235,7 @@ Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth
     Route::post('/seller/update/{id}',[SellerController::class,'update'])->name('admin.seller.update');
     Route::get('/seller/archiveMethod/{id}',[SellerController::class,'archived'])->name('admin.seller.archived');
     Route::get('/seller/viewArchived/',[SellerController::class,'seller_archived'])->name('admin.seller.seller_archived');
-    Route::get('/seller/unarchiveMethod/{id}',[SellerController::class,'unArchived'])->name('admin.user.unArchived');
+    Route::get('/seller/unarchiveMethod/{id}',[SellerController::class,'unArchived'])->name('admin.seller.unArchived');
     Route::get('/seller/changeStatusMethod/{id}',[SellerController::class,'status'])->name('admin.seller.status');
     Route::get('/seller/deleteMethod/{id}',[SellerController::class,'delete'])->name('admin.seller.delete');
 
