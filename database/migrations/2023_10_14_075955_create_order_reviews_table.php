@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Service;
+use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,17 +15,10 @@ return new class extends Migration
     {
         Schema::create('reviews', function (Blueprint $table) {
             $table->bigInteger('id')->autoIncrement();
-            $table->bigInteger('order_id')->nullable();
-            $table->string('type')->nullable();
-            $table->bigInteger('service_id');
-            $table->bigInteger('seller_id');
-            $table->bigInteger('buyer_id');
-            $table->double('rating');
-            $table->string('name');
-            $table->string('email');
-            $table->text('message');
-            $table->bigInteger('status')->default(1);
-
+            $table->foreignIdFor(User::class,'buyer_id');
+            $table->foreignIdFor(Service::class,'service_id');
+            $table->string('seller_id');
+            $table->string('review');
             $table->timestamps();
         });
     }

@@ -30,12 +30,36 @@ class User extends Authenticatable
     {
         return $this->hasMany(BuyerJob::class,'buyer_id');
     }
-    public function deviceTokens()
+    public function posts()
     {
-        return $this->hasMany(DeviceToken::class,'user_id');
+        return $this->hasMany(Post::class,'buyer_id');
     }
-    public function routeNotificationForFcm($notification = null)
+    public function comments()
     {
-        return $this->deviceTokens()->pluck('token')->toArray();
+        return $this->hasMany(Comment::class,'seller_id');
+    }
+    public function reports()
+    {
+        return $this->hasMany(Report::class,'seller_id');
+    }
+    public function postApprovs()
+    {
+        return $this->hasMany(PostApprov::class,'buyer_id');
+    }
+    public function profileVerify()
+    {
+        return $this->hasMany(ProfileVerify::class,'seller_id');
+    }
+    public function notification_sellers()
+    {
+        return $this->hasMany(NotificationSeller::class,'seller_id');
+    }
+    public function notification_buyers()
+    {
+        return $this->hasMany(NotificationBuyer::class,'buyer_id');
+    }
+    public function reviews()
+    {
+        return $this->hasMany(Review::class,'buyer_id');
     }
 }

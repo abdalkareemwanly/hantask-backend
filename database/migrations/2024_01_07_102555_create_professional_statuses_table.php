@@ -11,12 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('post_approvals', function (Blueprint $table) {
+        Schema::create('professional_statuses', function (Blueprint $table) {
             $table->bigInteger('id')->autoIncrement();
-            $table->bigInteger('post_id');
-            $table->bigInteger('customer_id');
-            $table->bigInteger('buyer_id');
-            $table->string('status');
+            $table->string('company_status');
             $table->timestamps();
         });
     }
@@ -26,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('post_approvals');
+        Schema::dropIfExists('professional_statuses');
     }
 };

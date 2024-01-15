@@ -30,4 +30,8 @@ class Service extends Model
     {
         return $this->belongsTo(ServiceCity::class,'service_city_id');
     }
+    public function reviews()
+    {
+        return $this->hasMany(Review::class,'service_id');
+    }
 }

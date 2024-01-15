@@ -1,6 +1,6 @@
 <?php
 
-
+use App\Http\Controllers\Buyer\PostController;
 use App\Http\Controllers\Site\CategoriesController;
 use App\Http\Controllers\Site\ChatController;
 use App\Http\Controllers\Site\CheckoutController;
@@ -39,5 +39,8 @@ Route::group(['namespace' => 'Site' , 'prefix' => 'site' , 'middleware' => 'auth
     Route::get('/services',[ServiceController::class,'index'])->name('site.services');
 });
 // End ServiceController
+
+
+
 
 // End Site Controllers

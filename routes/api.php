@@ -12,6 +12,7 @@ use App\Http\Controllers\API\NotificationController;
 use App\Http\Controllers\API\PlanController;
 use App\Http\Controllers\API\PostController;
 use App\Http\Controllers\API\ProfileController;
+use App\Http\Controllers\API\ReportController;
 use App\Http\Controllers\API\RoleController;
 use App\Http\Controllers\API\SellerController;
 use App\Http\Controllers\API\SellerSubscriptionController;
@@ -22,7 +23,7 @@ use App\Http\Controllers\API\SubscriptionCouponController;
 use App\Http\Controllers\API\TranslationsController;
 use App\Http\Controllers\API\TaxeController;
 use App\Http\Controllers\API\UserController;
-
+use App\Http\Controllers\Buyer\PostController as BuyerPostController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -301,5 +302,12 @@ Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth
 
 // End PostController Controller
 
+// Start Report Controller
+
+Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth:sanctum'],function(){
+    Route::get('/reprots',[ReportController::class,'index'])->name('admin.reprot.index');
+});
+
+// End Report Controller
 
 // End API Controllers

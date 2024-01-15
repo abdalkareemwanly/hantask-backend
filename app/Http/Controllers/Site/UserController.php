@@ -27,8 +27,6 @@ class UserController extends Controller
         $data['password'] = Hash::make($data['password']);
         $data['image'] = $this->saveImage($data['image'], 'uploads/images/users');
         $user = User::create($data);
-
-        $user->notify(new UserOtpNotification);
         return response()->json([
             'success' => true,
             'mes' => 'Register Successfully',
