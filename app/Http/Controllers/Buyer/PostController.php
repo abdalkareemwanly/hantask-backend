@@ -25,12 +25,15 @@ class PostController extends Controller
                 ->where('buyer_id',Auth::user()->id)->paginate(10);
             $nextPageUrl = $paginate->nextPageUrl();
             $data = $paginate->map(function ($row) {
+                $count = Comment::where('post_id',$row->id)->count();
                 return [
                     'id'            => $row->id,
                     'buyer name'    => $row->buyer->name,
                     'title'         => $row->title,
                     'description'   => $row->description,
+                    'status'        => $row->status,
                     'image'         => '/uploads/images/posts/'.$row->image,
+                    'count comment' => $count
                 ];
             });
             return response()->json([
@@ -50,12 +53,15 @@ class PostController extends Controller
                 ->where('buyer_id',Auth::user()->id)->paginate($request->paginate);
             $nextPageUrl = $paginate->nextPageUrl();
             $data = $paginate->map(function ($row) {
+                $count = Comment::where('post_id',$row->id)->count();
                 return [
                     'id'            => $row->id,
                     'buyer name'    => $row->buyer->name,
                     'title'         => $row->title,
                     'description'   => $row->description,
+                    'status'        => $row->status,
                     'image'         => '/uploads/images/posts/'.$row->image,
+                    'count comment' => $count
                 ];
             });
             return response()->json([
@@ -73,12 +79,15 @@ class PostController extends Controller
                 ->where('buyer_id',Auth::user()->id)->paginate(10);
             $nextPageUrl = $paginate->nextPageUrl();
             $data = $paginate->map(function ($row) {
+                $count = Comment::where('post_id',$row->id)->count();
                 return [
                     'id'            => $row->id,
                     'buyer name'    => $row->buyer->name,
                     'title'         => $row->title,
                     'description'   => $row->description,
+                    'status'        => $row->status,
                     'image'         => '/uploads/images/posts/'.$row->image,
+                    'count comment' => $count
                 ];
             });
             return response()->json([
@@ -146,6 +155,27 @@ class PostController extends Controller
             return response()->json([
                 'success' => false,
                 'mes' => 'Approved Post Alread Exsits',
+            ]);
+        }
+    }
+    public function status($id)
+    {
+        $record = Post::find($id);
+        if($record->status == 1) {
+            $update = Post::where('id',$id)->update([
+                'status' => 0
+            ]);
+            return response()->json([
+                'success' => true,
+                'mes' => 'The post has been cancelled successfully',
+            ]);
+        } elseif($record->status == 0) {
+            $update = Post::where('id',$id)->update([
+                'status' => 1
+            ]);
+            return response()->json([
+                'success' => true,
+                'mes' => 'The post has been displayed successfully',
             ]);
         }
     }

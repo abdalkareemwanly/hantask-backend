@@ -22,8 +22,13 @@ class PostImageController extends Controller
             $nextPageUrl = $paginate->nextPageUrl();
             $data = $paginate->map(function ($row) {
                 return [
-                    'id' => $row->id,
-                    'image' => '/uploads/images/posts/images/'.$row->image,
+                    'id'                 => $row->id,
+                    'image'              => '/uploads/images/posts/images/'.$row->image,
+                    'post id'            => $row->post->id,
+                    'buyer name'         => $row->post->buyer->name,
+                    'post title'         => $row->post->title,
+                    'post description'   => $row->post->description,
+                    'post image'         => '/uploads/images/posts/'.$row->post->image,
                 ];
             });
             return response()->json([
@@ -42,8 +47,13 @@ class PostImageController extends Controller
             $nextPageUrl = $paginate->nextPageUrl();
             $data = $paginate->map(function ($row) {
                 return [
-                    'id' => $row->id,
-                    'image' => '/uploads/images/posts/images/'.$row->image,
+                    'id'                 => $row->id,
+                    'image'              => '/uploads/images/posts/images/'.$row->image,
+                    'post id'            => $row->post->id,
+                    'buyer name'         => $row->post->buyer->name,
+                    'post title'         => $row->post->title,
+                    'post description'   => $row->post->description,
+                    'post image'         => '/uploads/images/posts/'.$row->post->image,
                 ];
             });
             return response()->json([

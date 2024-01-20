@@ -19,7 +19,7 @@ class PayoutHistoryController extends Controller
         $payouts = Payout::all();
 
         foreach ($payouts as $payout) {
-            if ($payout->user_id == $user_id) {
+            if ($payout->stripe_id == $user_id) {
                 $data[] = [
                     'id' => $payout->id,
                     'amount' => $payout->amount,

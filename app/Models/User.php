@@ -14,6 +14,18 @@ class User extends Authenticatable
     protected $table = 'users';
     protected $guarded = [];
 
+    public function country()
+    {
+        return $this->belongsTo(Country::class,'country_id');
+    }
+    public function city()
+    {
+        return $this->belongsTo(ServiceCity::class,'service_city');
+    }
+    public function area()
+    {
+        return $this->belongsTo(ServiceArea::class,'service_area');
+    }
     public function services()
     {
         return $this->hasMany(Service::class,'seller_id');
@@ -40,12 +52,9 @@ class User extends Authenticatable
     }
     public function reports()
     {
-        return $this->hasMany(Report::class,'seller_id');
+        return $this->hasMany(Report::class,'buyer_id');
     }
-    public function postApprovs()
-    {
-        return $this->hasMany(PostApprov::class,'buyer_id');
-    }
+
     public function profileVerify()
     {
         return $this->hasMany(ProfileVerify::class,'seller_id');
@@ -61,5 +70,9 @@ class User extends Authenticatable
     public function reviews()
     {
         return $this->hasMany(Review::class,'buyer_id');
+    }
+    public function paymentStatus()
+    {
+        return $this->hasMany(PaymentStatu::class,'seller_id');
     }
 }

@@ -1,10 +1,12 @@
 <?php
 
 use App\Http\Controllers\Seller\ChatController;
+use App\Http\Controllers\Seller\NotificationController;
 use App\Http\Controllers\Seller\PayoutHistoryController;
 use App\Http\Controllers\Seller\PostController;
 use App\Http\Controllers\Seller\ProfileController;
 use App\Http\Controllers\Seller\ProfileVerifyController;
+use App\Http\Controllers\Seller\ReviewController;
 use App\Http\Controllers\Seller\ServiceController;
 use Illuminate\Support\Facades\Route;
 
@@ -65,3 +67,21 @@ Route::group(['namespace' => 'Seller' , 'prefix' => 'seller' , 'middleware' => '
 });
 
 // End PayoutHistory Controller
+
+// Start Review Controller
+
+Route::group(['namespace' => 'Seller' , 'prefix' => 'seller' , 'middleware' => 'auth:sanctum'],function(){
+    Route::get('/reviews',[ReviewController::class,'index'])->name('seller.reviews.index');
+});
+
+// End Review Controller
+
+// Start Notification Controller
+
+Route::group(['namespace' => 'Seller' , 'prefix' => 'seller' , 'middleware' => 'auth:sanctum'],function(){
+    Route::get('/notifications',[NotificationController::class,'index'])->name('seller.notifications.index');
+    Route::get('/notification/pusher',[NotificationController::class,'pusher'])->name('seller.notifications.pusher');
+});
+
+// End Notification Controller
+

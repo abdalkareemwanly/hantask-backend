@@ -10,12 +10,13 @@ class Report extends Model
     use HasFactory;
     protected $table = 'reports';
     protected $guarded = [];
-    public function seller()
+
+    public function comment()
     {
-        return $this->belongsTo(User::class,'seller_id');
+        return $this->belongsTo(Comment::class,'comment_id');
     }
-    public function postApprove()
+    public function buyer()
     {
-        return $this->belongsTo(PostApprov::class,'postApprove_id');
+        return $this->belongsTo(User::class,'buyer_id');
     }
 }

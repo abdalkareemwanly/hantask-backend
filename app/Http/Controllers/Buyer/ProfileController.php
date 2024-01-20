@@ -16,19 +16,31 @@ class ProfileController extends Controller
     public function index()
     {
         $data = [];
-        $buyer = User::where('id',Auth::user()->id)->first();
+        $buyer = User::whereHas('country')->whereHas('city')->whereHas('area')->where('id',Auth::user()->id)->first();
         $imagePath = '/uploads/images/users';
         $data[] = [
-            'id' => $buyer['id'],
-            'name' => $buyer['name'],
-            'username' => $buyer['username'],
-            'email' => $buyer['email'],
-            'phone' => $buyer['phone'],
-            'image' => $imagePath .'/' . $buyer['image']
+            'id' => $buyer->id,
+            'name' => $buyer->name,
+            'username' => $buyer->username,
+            'email' => $buyer->email,
+            'phone' => $buyer->phone,
+            'image' => $imagePath .'/' . $buyer->image,
+            'country' => [
+                'id'   => $buyer->country->id,
+                'name' => $buyer->country->country,
+            ],
+            'city' => [
+                'id'   => $buyer->city->id,
+                'name' => $buyer->city->service_city,
+            ],
+            'area' => [
+                'id'   => $buyer->area->id,
+                'name' => $buyer->area->service_area,
+            ],
         ];
         return response()->json([
-            'mes' => 'success',
-            'data' => $data
+            'mes'     => 'success',
+            'data'    => $data,
         ]);
     }
     public function update(ProfileEditRequest $request)

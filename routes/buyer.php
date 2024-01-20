@@ -1,7 +1,10 @@
 <?php
 
 use App\Http\Controllers\Buyer\ChatController;
+use App\Http\Controllers\Buyer\CommentController;
 use App\Http\Controllers\Buyer\JobController;
+use App\Http\Controllers\Buyer\NotificationController;
+use App\Http\Controllers\Buyer\PaymentStatusController;
 use App\Http\Controllers\Buyer\PostApproveController;
 use App\Http\Controllers\Buyer\PostController;
 use App\Http\Controllers\Buyer\PostImageController;
@@ -28,6 +31,7 @@ Route::group(['namespace' => 'Buyer' , 'prefix' => 'buyer' , 'middleware' => 'au
     Route::post('/post/store',[PostController::class,'store'])->name('buyer.post.store');
     Route::get('/post/comment/{id}',[PostController::class,'comment'])->name('buyer.post.comment');
     Route::post('/post/approve/{id}',[PostController::class,'approve'])->name('buyer.post.approve');
+    Route::get('/post/changeStatusMethod/{id}',[PostController::class,'status'])->name('buyer.post.changeStatusMethod');
     Route::post('/post/update/{id}',[PostController::class,'update'])->name('buyer.post.update');
     Route::get('/post/delete/{id}',[PostController::class,'delete'])->name('buyer.post.delete');
 });
@@ -44,16 +48,15 @@ Route::group(['namespace' => 'Buyer' , 'prefix' => 'buyer' , 'middleware' => 'au
 // End ImagePost Controller
 
 
-
-// Start PostApprove Controller
+// Start PaymentStatus Controller
 
 Route::group(['namespace' => 'Buyer' , 'prefix' => 'buyer' , 'middleware' => 'auth:sanctum'],function(){
-    Route::get('/postApproves',[PostApproveController::class,'index'])->name('buyer.postApprove.index');
-    Route::get('/postApproves/reports/{id}',[PostApproveController::class,'reports'])->name('buyer.postApprove.reports');
-    Route::post('/postApprove/storeReport/{id}',[PostApproveController::class,'storeReport'])->name('buyer.postApprove.storeReport');
+    Route::get('/PaymentStatus',[PaymentStatusController::class,'index'])->name('buyer.PaymentStatus.index');
+    Route::post('/PaymentStatus/store',[PaymentStatusController::class,'store'])->name('buyer.PaymentStatus.store');
 });
 
-// End Post Controller
+// End PaymentStatus Controller
+
 
 // Start Report Controller
 
@@ -77,6 +80,26 @@ Route::group(['namespace' => 'Buyer' , 'prefix' => 'buyer' , 'middleware' => 'au
 });
 
 // End Review Controller
+
+// Start Comment Controller
+
+Route::group(['namespace' => 'Buyer' , 'prefix' => 'buyer' , 'middleware' => 'auth:sanctum'],function(){
+    Route::get('/comments',[CommentController::class,'index'])->name('buyer.comments.index');
+    Route::post('/comment/changeStatusMethod/{id}',[CommentController::class,'status'])->name('buyer.comment.status');
+
+});
+
+// End Comment Controller
+
+// Start Notification Controller
+
+Route::group(['namespace' => 'Buyer' , 'prefix' => 'buyer' , 'middleware' => 'auth:sanctum'],function(){
+    Route::get('/notifications',[NotificationController::class,'index'])->name('buyer.notifications.index');
+
+});
+
+// End Notification Controller
+
 
 
 // Start ChatController

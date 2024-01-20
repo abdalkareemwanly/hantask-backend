@@ -6,6 +6,7 @@ use App\Http\Controllers\API\BrandController;
 use App\Http\Controllers\API\CategoryController;
 use App\Http\Controllers\API\ChildController;
 use App\Http\Controllers\API\CityController;
+use App\Http\Controllers\API\CommentController;
 use App\Http\Controllers\API\CountryController;
 use App\Http\Controllers\API\LanguageController;
 use App\Http\Controllers\API\NotificationController;
@@ -301,6 +302,16 @@ Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth
 });
 
 // End PostController Controller
+
+
+// Start CommentController Controller
+
+Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth:sanctum'],function(){
+    Route::get('/comments',[CommentController::class,'index'])->name('admin.comment.index');
+    Route::get('/comment/deleteMethod/{id}',[CommentController::class,'delete'])->name('admin.comment.delete');
+});
+
+// End CommentController Controller
 
 // Start Report Controller
 

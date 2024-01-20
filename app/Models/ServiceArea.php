@@ -10,6 +10,10 @@ class ServiceArea extends Model
     use HasFactory;
     protected $table = 'service_areas';
     protected $guarded = [];
+    public function user()
+    {
+        return $this->hasMany(User::class,'service_area');
+    }
     public function serviceareas()
     {
         return $this->belongsTo(ServiceCity::class,'service_city_id');

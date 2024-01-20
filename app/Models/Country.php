@@ -10,6 +10,10 @@ class Country extends Model
     use HasFactory;
     protected $table = 'countries';
     protected $guarded = [];
+    public function user()
+    {
+        return $this->hasMany(User::class,'country_id');
+    }
     public function servicecities()
     {
         return $this->hasMany(ServiceCity::class,'country_id');

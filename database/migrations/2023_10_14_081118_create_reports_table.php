@@ -16,8 +16,7 @@ return new class extends Migration
         Schema::create('reports', function (Blueprint $table) {
             $table->bigInteger('id')->autoIncrement();
             $table->foreignIdFor(User::class,'buyer_id');
-            $table->foreignIdFor(Post::class,'postApprove_id');
-            $table->foreignIdFor(User::class,'seller_id');
+            $table->foreignIdFor(Post::class,'comment_id');
             $table->string('report');
             $table->tinyInteger('status')->default(0);
             $table->timestamps();

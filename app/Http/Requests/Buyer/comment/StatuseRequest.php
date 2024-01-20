@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Requests\Buyer\Review;
+namespace App\Http\Requests\Buyer\comment;
 
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class StoreRequest extends FormRequest
+class StatuseRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,11 +24,7 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'buyer_id'        => 'nullable',
-            'service_id'      => 'required',
-            'seller_id'       => 'nullable',
-            'review'          => 'required',
-            'description'     => 'nullable',
+            'status' => 'required'
         ];
     }
     public function failedValidation(Validator $validator)

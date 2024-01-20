@@ -25,10 +25,13 @@ class CheckoutController extends Controller
             $paymentMethod = $user->addPaymentMethod($paymentMethod);
         }
         $plan = $request->plan_id;
+        $paymentId = $request->payment_id;
         try {
             $user->newSubscription(
                 'default',$plan
             )->create($paymentMethod != null ? $paymentMethod->id : '');
+            $user->payment_id= $paymentId;
+            $user->save();
             return response()->json([
                 'message' => 'Payment completed successfully'
             ]);
