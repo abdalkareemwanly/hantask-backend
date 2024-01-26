@@ -30,4 +30,8 @@ class Country extends Model
     {
         return $this->hasMany(BuyerJob::class,'country_id');
     }
+    public function posts()
+    {
+        return $this->hasMany(Post::class,'country_id');
+    }
 }

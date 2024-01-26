@@ -30,7 +30,7 @@ class SubCategoryController extends Controller
                     'name' => $subCategory->name,
                     'description' => $subCategory->description,
                     'slug' => $subCategory->slug,
-                    'image' => '/uploads/images/subCategories'.$subCategory->image,
+                    'image' => '/uploads/images/subCategories/'.$subCategory->image,
                 ];
             });
             return response()->json([

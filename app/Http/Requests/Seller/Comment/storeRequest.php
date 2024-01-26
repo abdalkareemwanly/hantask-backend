@@ -24,7 +24,9 @@ class storeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'comment' => 'required'
+            'comment'    => 'required',
+            'budget'     => 'required',
+            'dead_line'  => 'required|date',
         ];
     }
     public function failedValidation(Validator $validator)

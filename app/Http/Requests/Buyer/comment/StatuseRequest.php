@@ -24,7 +24,8 @@ class StatuseRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'status' => 'required'
+            'status'     => 'nullable',
+            'workStatus' => 'nullable',
         ];
     }
     public function failedValidation(Validator $validator)

@@ -24,10 +24,17 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'buyer_id'    => 'nullable',
-            'title'       => 'required',
-            'description' => 'required',
-            'image'       => 'required|mimes:png,jpg',
+            'category_id'       => 'required',
+            'subcategory_id'    => 'required',
+            'childCategory_id'  => 'required',
+            'country_id'        => 'required',
+            'city_id'           => 'required',
+            'buyer_id'          => 'nullable',
+            'title'             => 'required',
+            'description'       => 'required',
+            'budget'            => 'required',
+            'dead_line'         => 'required|date',
+            'image'             => 'required|mimes:png,jpg',
         ];
     }
     public function failedValidation(Validator $validator)

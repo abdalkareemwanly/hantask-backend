@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Comment;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
@@ -15,8 +16,9 @@ return new class extends Migration
     {
         Schema::create('reports', function (Blueprint $table) {
             $table->bigInteger('id')->autoIncrement();
-            $table->foreignIdFor(User::class,'buyer_id');
-            $table->foreignIdFor(Post::class,'comment_id');
+            $table->foreignIdFor(User::class,'sender_id');
+            $table->foreignIdFor(Post::class,'recipient_id');
+            $table->foreignIdFor(Comment::class,'comment_id');
             $table->string('report');
             $table->tinyInteger('status')->default(0);
             $table->timestamps();

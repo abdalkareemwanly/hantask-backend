@@ -30,5 +30,8 @@ class ServiceCity extends Model
     {
         return $this->hasMany(BuyerJob::class,'city_id');
     }
-
+    public function posts()
+    {
+        return $this->hasMany(Post::class,'city_id');
+    }
 }

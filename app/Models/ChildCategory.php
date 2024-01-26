@@ -26,4 +26,8 @@ class ChildCategory extends Model
     {
         return $this->hasMany(BuyerJob::class,'child_category_id');
     }
+    public function posts()
+    {
+        return $this->hasMany(Post::class,'childCategory_id');
+    }
 }

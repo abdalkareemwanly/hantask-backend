@@ -27,4 +27,24 @@ class Post extends Model
     {
         return $this->hasMany(PostApprov::class,'post_id');
     }
+    public function category()
+    {
+        return $this->belongsTo(Category::class,'category_id');
+    }
+    public function subcategory()
+    {
+        return $this->belongsTo(Subcategory::class,'subcategory_id');
+    }
+    public function childCategory()
+    {
+        return $this->belongsTo(ChildCategory::class,'childCategory_id');
+    }
+    public function country()
+    {
+        return $this->belongsTo(Country::class,'country_id');
+    }
+    public function city()
+    {
+        return $this->belongsTo(ServiceCity::class,'city_id');
+    }
 }

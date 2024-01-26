@@ -25,7 +25,7 @@ class StoreRequest extends FormRequest
     {
         return [
             'post_id' => 'nullable',
-            'image'   => 'required|mimes:png,jpg'
+            'image.*'   => 'required'
         ];
     }
     public function failedValidation(Validator $validator)

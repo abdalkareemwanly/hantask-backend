@@ -6,6 +6,7 @@ use App\Http\Controllers\Seller\PayoutHistoryController;
 use App\Http\Controllers\Seller\PostController;
 use App\Http\Controllers\Seller\ProfileController;
 use App\Http\Controllers\Seller\ProfileVerifyController;
+use App\Http\Controllers\Seller\ReportController;
 use App\Http\Controllers\Seller\ReviewController;
 use App\Http\Controllers\Seller\ServiceController;
 use Illuminate\Support\Facades\Route;
@@ -85,3 +86,13 @@ Route::group(['namespace' => 'Seller' , 'prefix' => 'seller' , 'middleware' => '
 
 // End Notification Controller
 
+// Start Report Controller
+
+Route::group(['namespace' => 'Seller' , 'prefix' => 'seller' , 'middleware' => 'auth:sanctum'],function(){
+    Route::get('/reports',[ReportController::class,'index'])->name('seller.report.index');
+    Route::post('/report/store',[ReportController::class,'store'])->name('seller.report.store');
+    Route::post('/report/update/{id}',[ReportController::class,'update'])->name('seller.report.update');
+    Route::get('/report/delete/{id}',[ReportController::class,'delete'])->name('seller.report.delete');
+});
+
+// End Report Controller

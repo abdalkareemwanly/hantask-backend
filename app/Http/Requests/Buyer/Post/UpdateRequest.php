@@ -24,9 +24,17 @@ class UpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title'       => 'nullable',
-            'description' => 'nullable',
-            'image'       => 'nullable|mimes:png,jpg',
+            'category_id'       => 'nullable',
+            'subcategory_id'    => 'nullable',
+            'childCategory_id'  => 'nullable',
+            'country_id'        => 'nullable',
+            'city_id'           => 'nullable',
+            'buyer_id'          => 'nullable',
+            'title'             => 'nullable',
+            'description'       => 'nullable',
+            'budget'            => 'nullable',
+            'dead_line'         => 'nullable|date',
+            'image'             => 'nullable',
         ];
     }
     public function failedValidation(Validator $validator)

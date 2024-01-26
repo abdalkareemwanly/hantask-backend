@@ -72,8 +72,18 @@ class PostImageController extends Controller
     {
         $data = $request->validated();
         $data['post_id'] = $id;
-        $data['image'] = $this->saveImage($request->image,'uploads/images/posts/images');
-        ImagePost::create($data);
+        if ($request->hasFile('image')) {
+            foreach($request->file('image') as $file) {
+                $imageName = $file->getClientOriginalName();
+                $uniqueImageName = time().rand(99,999).$imageName;
+                $file->move(public_path('uploads/images/posts/images'), $uniqueImageName);
+                ImagePost::create([
+                    'post_id' => $id,
+                    'image'   => $uniqueImageName
+                ]);
+            }
+
+        }
         return response()->json([
             'success' => true,
             'mes' => 'Store Post Image Successfully',

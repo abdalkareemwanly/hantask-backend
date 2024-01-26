@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Buyer\AcceptedCommentController;
 use App\Http\Controllers\Buyer\ChatController;
 use App\Http\Controllers\Buyer\CommentController;
 use App\Http\Controllers\Buyer\JobController;
@@ -29,13 +30,14 @@ Route::group(['prefix' => 'buyer' , 'namespace' => 'Buyer' , 'middleware' => 'au
 Route::group(['namespace' => 'Buyer' , 'prefix' => 'buyer' , 'middleware' => 'auth:sanctum'],function(){
     Route::get('/posts',[PostController::class,'index'])->name('buyer.post');
     Route::post('/post/store',[PostController::class,'store'])->name('buyer.post.store');
-    Route::get('/post/comment/{id}',[PostController::class,'comment'])->name('buyer.post.comment');
-    Route::post('/post/approve/{id}',[PostController::class,'approve'])->name('buyer.post.approve');
+    Route::get('/post/{id}',[PostController::class,'show'])->name('buyer.post.show');
     Route::get('/post/changeStatusMethod/{id}',[PostController::class,'status'])->name('buyer.post.changeStatusMethod');
     Route::post('/post/update/{id}',[PostController::class,'update'])->name('buyer.post.update');
     Route::get('/post/delete/{id}',[PostController::class,'delete'])->name('buyer.post.delete');
 });
+
 // End Post Controller
+
 
 // Start ImagePost Controller
 
@@ -85,11 +87,21 @@ Route::group(['namespace' => 'Buyer' , 'prefix' => 'buyer' , 'middleware' => 'au
 
 Route::group(['namespace' => 'Buyer' , 'prefix' => 'buyer' , 'middleware' => 'auth:sanctum'],function(){
     Route::get('/comments',[CommentController::class,'index'])->name('buyer.comments.index');
-    Route::post('/comment/changeStatusMethod/{id}',[CommentController::class,'status'])->name('buyer.comment.status');
+    Route::get('/comment/changeStatusMethod/{id}',[CommentController::class,'status'])->name('buyer.comment.status');
 
 });
 
 // End Comment Controller
+
+// Start AcceptedComment Controller
+
+Route::group(['namespace' => 'Buyer' , 'prefix' => 'buyer' , 'middleware' => 'auth:sanctum'],function(){
+    Route::get('/acceptedComments',[AcceptedCommentController::class,'index'])->name('buyer.acceptedComments.index');
+    Route::get('/acceptedComment/changeWorkStatusMethod/{id}',[AcceptedCommentController::class,'workStatus'])->name('buyer.acceptedComment.workStatus');
+
+});
+
+// End AcceptedComment Controller
 
 // Start Notification Controller
 

@@ -25,12 +25,21 @@ class UserController extends Controller
     {
         $data = $request->validated();
         $data['password'] = Hash::make($data['password']);
-        $data['image'] = $this->saveImage($data['image'], 'uploads/images/users');
-        $user = User::create($data);
-        return response()->json([
-            'success' => true,
-            'mes' => 'Register Successfully',
-        ]);
+        if(isset($request->image)) {
+            $data['image'] = $this->saveImage($data['image'], 'uploads/images/users');
+            $user = User::create($data);
+            return response()->json([
+                'success' => true,
+                'mes' => 'Register Successfully',
+            ]);
+        } else {
+            $user = User::create($data);
+            return response()->json([
+                'success' => true,
+                'mes' => 'Register Successfully',
+            ]);
+        }
+
     }
     public function login(LoginRequest $request)
     {

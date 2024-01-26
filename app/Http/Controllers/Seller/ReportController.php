@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Buyer;
+namespace App\Http\Controllers\Seller;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PaginatRequest;
@@ -22,9 +22,9 @@ class ReportController extends Controller
                 return [
                     'id' => $row->id,
                     'report' => $row->report,
-                    'seller name' => $row->comment->seller->name,
-                    'seller email' => $row->comment->seller->email,
-                    'seller phone' => $row->comment->seller->phone,
+                    'buyer name' =>  $row->comment->post->buyer->name,
+                    'buyer email' => $row->comment->post->buyer->email,
+                    'buyer phone' => $row->comment->post->buyer->phone,
                 ];
             });
             return response()->json([
@@ -47,9 +47,9 @@ class ReportController extends Controller
                 return [
                     'id' => $row->id,
                     'report' => $row->report,
-                    'seller name' => $row->comment->seller->name,
-                    'seller email' => $row->comment->seller->email,
-                    'seller phone' => $row->comment->seller->phone,
+                    'buyer name' =>  $row->comment->post->buyer->name,
+                    'buyer email' => $row->comment->post->buyer->email,
+                    'buyer phone' => $row->comment->post->buyer->phone,
                 ];
             });
             return response()->json([
@@ -71,9 +71,9 @@ class ReportController extends Controller
                 return [
                     'id' => $row->id,
                     'report' => $row->report,
-                    'seller name' => $row->comment->seller->name,
-                    'seller email' => $row->comment->seller->email,
-                    'seller phone' => $row->comment->seller->phone,
+                    'buyer name' =>  $row->comment->post->buyer->name,
+                    'buyer email' => $row->comment->post->buyer->email,
+                    'buyer phone' => $row->comment->post->buyer->phone,
                 ];
             });
             return response()->json([
@@ -92,13 +92,13 @@ class ReportController extends Controller
     {
         $request->validate([
             'report'       => 'required|string',
-            'recipient_id' => 'required',
+            'comment_id'   => 'required'
         ]);
-        $comment = Comment::where('seller_id',$request->recipient_id)->first();
+        $buyer_id = Comment::whereHas('post')->where('id',$request->comment_id)->first();
         Report::create([
             'sender_id'      => Auth::user()->id,
-            'recipient_id'   => $request->recipient_id,
-            'comment_id'     => $comment->id,
+            'recipient_id'   => $buyer_id->post->buyer_id,
+            'comment_id'     => $request->comment_id,
             'report'         => $request->report
         ]);
         return response()->json([
@@ -113,11 +113,11 @@ class ReportController extends Controller
             'comment_id'   => 'nullable',
             'recipient_id' => 'nullable',
         ]);
-        $comment = Comment::where('seller_id',$request->recipient_id)->first();
+        $buyer_id = Comment::whereHas('post')->where('id',$request->comment_id)->first();
         $record = Report::find($id);
         $record->update([
-            'comment_id'    => $comment->id ?? $record->comment_id,
-            'recipient_id'  => $request->recipient_id ?? $record->recipient_id,
+            'comment_id'    => $request->comment_id ?? $record->comment_id,
+            'recipient_id'  => $buyer_id->post->buyer_id ?? $record->recipient_id,
             'report'        => $request->report ?? $record->report,
         ]);
         return response()->json([

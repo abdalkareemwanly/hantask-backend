@@ -24,7 +24,9 @@ class updateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'comment' => 'nullable'
+            'comment'    => 'nullable',
+            'budget'     => 'nullable',
+            'dead_line'  => 'nullable|date',
         ];
     }
     public function failedValidation(Validator $validator)
