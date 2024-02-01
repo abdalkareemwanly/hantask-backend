@@ -49,6 +49,7 @@ Route::group(['namespace' => 'API' , 'prefix' => 'admin'],function(){
 });
 
 Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth:sanctum'],function(){
+    Route::get('/dashboard',[AdminController::class,'dashboard'])->name('admin.dashboard');
     Route::get('/all',[AdminController::class,'all'])->name('admin.all');
     Route::post('/store',[AdminController::class,'store'])->name('admin.store');
 });
@@ -316,7 +317,11 @@ Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth
 // Start Report Controller
 
 Route::group(['namespace' => 'API' , 'prefix' => 'admin' , 'middleware' => 'auth:sanctum'],function(){
-    Route::get('/reprots',[ReportController::class,'index'])->name('admin.reprot.index');
+    Route::get('/reports',[ReportController::class,'index'])->name('admin.report.index');
+    Route::get('/report/message/{id}',[ReportController::class,'message'])->name('admin.report.message');
+    Route::post('/report/message/store/{id}',[ReportController::class,'storeMessage'])->name('admin.report.storeMessage');
+    Route::post('/report/message/update/{id}',[ReportController::class,'updateMessage'])->name('admin.report.updateMessage');
+    Route::get('/report/message/delete/{id}',[ReportController::class,'deleteMessage'])->name('admin.report.deleteMessage');
 });
 
 // End Report Controller

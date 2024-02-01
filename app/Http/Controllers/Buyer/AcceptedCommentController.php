@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Buyer\comment\StatuseRequest;
 use App\Http\Requests\PaginatRequest;
 use App\Models\Comment;
+use App\Models\Review;
+
 use App\Models\NotificationSeller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -21,6 +23,16 @@ class AcceptedCommentController extends Controller
             ->whereRelation('post','buyer_id',Auth::user()->id)->where('status','1')->paginate(10);
             $nextPageUrl = $paginate->nextPageUrl();
             $data = $paginate->map(function ($row) {
+                $data_review = [];
+                $review = Review::where('comment_id',$row->id)->where('sender_id',Auth::user()->id)->first();
+                if(isset($review)) {
+                    $data_review[] = [
+                        'review'      => $review->review,
+                        'description' => $review->description,
+                    ];
+                } else {
+                    $data_review[] = false;
+                }
                 return [
                     'id'                 => $row->id,
                     'comment'            => $row->comment,
@@ -32,6 +44,7 @@ class AcceptedCommentController extends Controller
                     'seller_email'       => $row->seller->email,
                     'post_title'         => $row->post->title,
                     'post_description'   => $row->post->description,
+                    'data_review'        => $data_review
                 ];
             });
             return response()->json([
@@ -51,6 +64,16 @@ class AcceptedCommentController extends Controller
                 ->whereRelation('post','buyer_id',Auth::user()->id)->where('status','1')->paginate($request->paginate);
             $nextPageUrl = $paginate->nextPageUrl();
             $data = $paginate->map(function ($row) {
+                $data_review = [];
+                $review = Review::where('comment_id',$row->id)->where('sender_id',Auth::user()->id)->first();
+                if(isset($review)) {
+                    $data_review[] = [
+                        'review'      => $review->review,
+                        'description' => $review->description,
+                    ];
+                } else {
+                    $data_review[] = false;
+                }
                 return [
                     'id'                 => $row->id,
                     'comment'            => $row->comment,
@@ -62,6 +85,7 @@ class AcceptedCommentController extends Controller
                     'seller_email'       => $row->seller->email,
                     'post_title'         => $row->post->title,
                     'post_description'   => $row->post->description,
+                    'data_review'        => $data_review
                 ];
             });
             return response()->json([
@@ -80,6 +104,16 @@ class AcceptedCommentController extends Controller
             ->whereRelation('post','buyer_id',Auth::user()->id)->where('status','1')->paginate(10);
             $nextPageUrl = $paginate->nextPageUrl();
             $data = $paginate->map(function ($row) {
+                $data_review = [];
+                $review = Review::where('comment_id',$row->id)->where('sender_id',Auth::user()->id)->first();
+                if(isset($review)) {
+                    $data_review[] = [
+                        'review'      => $review->review,
+                        'description' => $review->description,
+                    ];
+                } else {
+                    $data_review[] = false;
+                }
                 return [
                     'id'                 => $row->id,
                     'comment'            => $row->comment,
@@ -91,6 +125,7 @@ class AcceptedCommentController extends Controller
                     'seller_email'       => $row->seller->email,
                     'post_title'         => $row->post->title,
                     'post_description'   => $row->post->description,
+                    'data_review'        => $data_review
                 ];
             });
             return response()->json([

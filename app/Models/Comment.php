@@ -22,4 +22,8 @@ class Comment extends Model
     {
         return $this->hasMany(Report::class,'comment_id');
     }
+    public function review()
+    {
+        return $this->hasMany(Comment::class,'comment_id');
+    }
 }

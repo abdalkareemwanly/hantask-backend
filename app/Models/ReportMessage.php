@@ -5,13 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class subscription_coupon extends Model
+class ReportMessage extends Model
 {
     use HasFactory;
-    protected $table = 'subscription_coupons';
+    protected $table = 'report_messages';
     protected $guarded = [];
-    public function plan()
+    public function report()
     {
-        return $this->belongsTo(Plan::class,'plan_id');
+        return $this->belongsTo(Report::class,'report_id');
     }
 }

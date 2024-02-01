@@ -1,0 +1,92 @@
+$pusher = new Pusher(
+            env('PUSHER_APP_KEY'),
+            env('PUSHER_APP_SECRET'),
+            env('PUSHER_APP_ID'),
+            ['cluster' => env('PUSHER_APP_CLUSTER')]
+        );
+        $record = Comment::find($id);
+        if($request->status == 1) {
+            $update = $record->update([
+                'status'     => '1',
+                'workStatus' => '1',
+            ]);
+            $message = 'The comment ' .$record->comment. ' has been being processed';
+            $pusher->trigger('hantask', 'pushNotificationEvent', ['message' => $message],['persisted' => true , 'where' => ['seller_id' => $record->seller_id,],]);
+            NotificationSeller::create([
+                'seller_id' => $record->seller_id,
+                'title' => $message,
+            ]);
+            return response()->json([
+                'success' => true,
+                'mes' => 'comment is being processed Successfully',
+            ]);
+        } elseif ($request->status == 2) {
+            $update = $record->update([
+                'status'     => '2',
+                'workStatus' => null,
+            ]);
+            $message = 'The comment ' .$record->comment. ' has been unaccepted';
+            $pusher->trigger('hantask', 'pushNotificationEvent', ['message' => $message],['persisted' => true , 'where' => ['seller_id' => $record->seller_id,],]);
+            NotificationSeller::create([
+                'seller_id' => $record->seller_id,
+                'title' => $message,
+            ]);
+            return response()->json([
+                'success' => true,
+                'mes' => 'comment unaccepted Successfully',
+            ]);
+        }
+
+
+
+         $pusher = new Pusher(
+            env('PUSHER_APP_KEY'),
+            env('PUSHER_APP_SECRET'),
+            env('PUSHER_APP_ID'),
+            ['cluster' => env('PUSHER_APP_CLUSTER')]
+        );
+        $data = $request->validated();
+        $record = Comment::whereHas('seller')->whereHas('post')->where('id',$id)->first();
+        if($data['workStatus'] == 2) {
+            $update = $record->update([
+                'workStatus' => '2',
+            ]);
+            $message = 'The comment ' .$record->comment. ' has been progress';
+            $pusher->trigger('hantask', 'pushNotificationEvent', ['message' => $message],['persisted' => true , 'where' => ['seller_id' => $record->seller_id,],]);
+            NotificationSeller::create([
+                'seller_id' => $record->seller_id,
+                'title' => $message,
+            ]);
+            return response()->json([
+                'success' => true,
+                'mes' => 'comment progress Successfully',
+            ]);
+        } elseif ($data['workStatus'] == 3) {
+            $update = $record->update([
+                'workStatus' => '3',
+            ]);
+            $message = 'The comment ' .$record->comment. ' has been completed';
+            $pusher->trigger('hantask', 'pushNotificationEvent', ['message' => $message],['persisted' => true , 'where' => ['seller_id' => $record->seller_id,],]);
+            NotificationSeller::create([
+                'seller_id' => $record->seller_id,
+                'title' => $message,
+            ]);
+            return response()->json([
+                'success' => true,
+                'mes' => 'comment completed Successfully',
+            ]);
+        }elseif ($data['workStatus'] == 4) {
+            $update = $record->update([
+                'workStatus' => '4',
+            ]);
+            $message = 'The comment ' .$record->comment. ' has been cancelled';
+            $pusher->trigger('hantask', 'pushNotificationEvent', ['message' => $message],['persisted' => true , 'where' => ['seller_id' => $record->seller_id,],]);
+            NotificationSeller::create([
+                'seller_id' => $record->seller_id,
+                'title' => $message,
+            ]);
+            return response()->json([
+                'success' => true,
+                'mes' => 'comment cancelled Successfully',
+            ]);
+        }

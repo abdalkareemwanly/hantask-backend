@@ -24,9 +24,9 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'buyer_id'        => 'nullable',
-            'service_id'      => 'required',
-            'seller_id'       => 'nullable',
+            'sender_id'       => 'nullable',
+            'recipient_id'    => 'required',
+            'comment_id'      => 'required',
             'review'          => 'required',
             'description'     => 'nullable',
         ];

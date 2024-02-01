@@ -18,7 +18,8 @@ class CheckoutController extends Controller
 {
     public function checkout(Request $request)
     {
-        $user = auth()->user();
+        $apiKet = Stripe::setApiKey(env('STRIPE_SECRET'));
+        $user = Auth::user();
         $user->createOrGetStripeCustomer();
         $paymentMethod = $request->payment_method;
         if($paymentMethod != null) {

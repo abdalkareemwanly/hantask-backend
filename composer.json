@@ -21,7 +21,7 @@
         "phpoffice/phpspreadsheet": "^1.29",
         "psr/http-message": "^2.0",
         "pusher/pusher-php-server": "^7.2",
-        "stripe/stripe-php": "^10.21"
+        "stripe/stripe-php": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

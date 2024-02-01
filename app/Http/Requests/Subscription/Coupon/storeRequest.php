@@ -26,6 +26,7 @@ class storeRequest extends FormRequest
         return [
             'name' => 'required',
             'amount_off' => 'required',
+            'plan_id' => 'required'
         ];
     }
     public function failedValidation(Validator $validator)

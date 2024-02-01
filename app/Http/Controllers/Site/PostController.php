@@ -7,6 +7,7 @@ use App\Http\Requests\Seller\Comment\storeRequest;
 use App\Models\Comment;
 use App\Models\ImagePost;
 use App\Models\Post;
+use App\Models\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -39,6 +40,7 @@ class PostController extends Controller
         $row = Post::whereHas('category')->whereHas('subcategory')->whereHas('childCategory')
             ->whereHas('country')->whereHas('city')->where('id',$id)->first();
         $countImage = ImagePost::where('post_id',$id)->get();
+
         foreach($countImage as $image) {
             $images[] = [
                 'id'    => $image->id,
@@ -48,6 +50,25 @@ class PostController extends Controller
         $post = Post::findOrFail($id);
         $buyer_id = $post->buyer_id;
         $count = Post::where('buyer_id', $buyer_id)->count();
+        $comment = Comment::whereHas('post')->where('post_id',$id)->first();
+        $dataComment = '';
+        if(isset($comment)) {
+            $dataComment = true;
+        } else {
+            $dataComment = false;
+        }
+        $view = View::whereHas('post')->where('post_id',$id)->first();
+        if(!isset($view)) {
+            View::create([
+                'post_id' => $id,
+                'view'    => '1'
+            ]);
+        } else {
+            $view->update([
+                'view' => $view->view + 1
+            ]);
+        }
+
         if(isset($image)) {
             $date[] = [
                 'id'                 => $row->id,
@@ -71,7 +92,9 @@ class PostController extends Controller
                 'country_name'       => $row->country->country,
                 'city_id'            => $row->city->id,
                 'city_name'          => $row->city->service_city,
-                'postimages'         =>$image
+                'postimages'         => $image,
+                'dataComment'        => $dataComment,
+                'view_post_count'    => $view->view
             ];
 
         } else {
@@ -97,6 +120,8 @@ class PostController extends Controller
                 'country_name'       => $row->country->country,
                 'city_id'            => $row->city->id,
                 'city_name'          => $row->city->service_city,
+                'dataComment'        => $dataComment,
+                'view_post_count'    => $view->view
             ];
         }
         return response()->json([
@@ -120,4 +145,5 @@ class PostController extends Controller
             'mes' => 'Comment Store Successfully',
         ]);
     }
+
 }

@@ -19,4 +19,8 @@ class Report extends Model
     {
         return $this->belongsTo(User::class,'buyer_id');
     }
+    public function reportMessage()
+    {
+        return $this->hasMany(ReportMessage::class,'report_id');
+    }
 }

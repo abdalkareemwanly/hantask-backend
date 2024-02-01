@@ -4,6 +4,7 @@ use App\Http\Controllers\Site\AddressController;
 use App\Http\Controllers\Site\CategoriesController;
 use App\Http\Controllers\Site\ChatController;
 use App\Http\Controllers\Site\CheckoutController;
+use App\Http\Controllers\Site\CouponController;
 use App\Http\Controllers\Site\Global\CategoryController;
 use App\Http\Controllers\Site\Global\ChildCategoryController;
 use App\Http\Controllers\Site\Global\SubCategoryController;
@@ -19,7 +20,13 @@ Route::group(['namespace' => 'Site' , 'prefix' => 'site'],function(){
 });
 // Start CheckoutController
 Route::group(['namespace' => 'Site' , 'prefix' => 'site'],function(){
-    Route::post('/checkout',[CheckoutController::class, 'checkout'])->name('site.user.checkout');
+    Route::post('/checkout',[CheckoutController::class, 'checkout'])->middleware('auth:sanctum')->name('site.user.checkout');
+});
+// End CheckoutController
+
+// Start CheckoutController
+Route::group(['namespace' => 'Site' , 'prefix' => 'site'],function(){
+    Route::post('/coupons/pay',[CouponController::class, 'payCoupon'])->name('site.user.coupons');
 });
 // End CheckoutController
 
@@ -80,8 +87,5 @@ Route::group(['namespace' => 'Site' , 'prefix' => 'site'],function(){
     Route::post('/post/comment/{id}',[PostController::class,'comment'])->middleware('auth:sanctum')->name('site.post.comment');
 });
 // End Post Controller
-
-
-
 
 // End Site Controllers

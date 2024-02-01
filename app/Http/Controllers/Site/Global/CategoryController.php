@@ -16,6 +16,10 @@ class CategoryController extends Controller
             $data[] = [
                 'id'            => $category->id,
                 'name'          => $category->name,
+                'description'   => $category->description,
+                'slug'          => $category->slug,
+                'image'         => '/uploads/images/categories/'.$category->image,
+                'status'        => $category->status,
             ];
         }
         return response()->json([

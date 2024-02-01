@@ -47,4 +47,8 @@ class Post extends Model
     {
         return $this->belongsTo(ServiceCity::class,'city_id');
     }
+    public function view()
+    {
+        return $this->hasMany(View::class,'post_id');
+    }
 }

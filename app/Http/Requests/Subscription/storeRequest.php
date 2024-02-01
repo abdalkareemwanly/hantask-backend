@@ -27,9 +27,9 @@ class storeRequest extends FormRequest
             'amount'         => 'required',
             'currency'       => 'required',
             'interval'       => 'required',
-            'interval_count' =>  'required',
+            'interval_count' => 'required',
             'name'           => 'required',
-            'image'          => 'nullable|mimes:png,jpg',
+            'image'          => 'nullable',
         ];
     }
     public function failedValidation(Validator $validator)

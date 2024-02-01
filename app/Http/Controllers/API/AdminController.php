@@ -11,12 +11,14 @@ use App\Http\Resources\AdminResource;
 use App\Http\Traits\imageTrait;
 use App\Models\Admin;
 use App\Models\Role_Permission;
+use App\Models\Subscription;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Laravel\Cashier\Subscription as CashierSubscription;
 
 class AdminController extends Controller
 {
@@ -26,6 +28,21 @@ class AdminController extends Controller
         return Admin::pluck('id')->count();
     }
 
+    public function dashboard()
+    {
+        $data = [];
+        $totleSeller = User::where('user_type','0')->count();
+        $totleBuyer = User::where('user_type','1')->count();
+        $totleEarning = CashierSubscription::sum('subscription_price');
+        $query = CashierSubscription::toSql();
+        dd($query);
+        $data[] = [
+            'totleSeller' => $totleSeller,
+            'totleBuyer' => $totleBuyer,
+            'totleEarning' => $totleEarning
+        ];
+        return response()->json($data);
+    }
     public function login(AdminRequest $request)
     {
 

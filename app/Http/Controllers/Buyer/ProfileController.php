@@ -16,7 +16,8 @@ class ProfileController extends Controller
     public function index()
     {
         $data = [];
-        $buyer = User::whereHas('country')->whereHas('city')->whereHas('area')->where('id',Auth::user()->id)->first();
+        $buyer = User::whereHas('country')->whereHas('city')
+                ->whereHas('area')->where('id',Auth::user()->id)->where('user_type','1')->first();
         $imagePath = '/uploads/images/users';
         $data[] = [
             'id' => $buyer->id,
@@ -57,6 +58,9 @@ class ProfileController extends Controller
             'email'         => $request->email ?? $record->email,
             'username'      => $request->username ?? $record->username,
             'phone'         => $request->phone ?? $record->phone,
+            'country_id'    => $request->country_id ?? $record->country_id,
+            'service_city'  => $request->service_city ?? $record->service_city,
+            'service_area'  => $request->service_area ?? $record->service_area,
             'image'         => $data['image'] ?? $record->image,
         ]);
         return response()->json([

@@ -65,6 +65,10 @@ Route::group(['namespace' => 'Buyer' , 'prefix' => 'buyer' , 'middleware' => 'au
 Route::group(['namespace' => 'Buyer' , 'prefix' => 'buyer' , 'middleware' => 'auth:sanctum'],function(){
     Route::get('/reports',[ReportController::class,'index'])->name('buyer.report.index');
     Route::post('/report/store',[ReportController::class,'store'])->name('buyer.report.store');
+    Route::get('/report/message/{id}',[ReportController::class,'message'])->name('buyer.report.message');
+    Route::post('/report/message/store/{id}',[ReportController::class,'storeMessage'])->name('buyer.report.storeMessage');
+    Route::post('/report/message/update/{id}',[ReportController::class,'updateMessage'])->name('buyer.report.updateMessage');
+    Route::get('/report/message/delete/{id}',[ReportController::class,'deleteMessage'])->name('buyer.report.deleteMessage');
     Route::post('/report/update/{id}',[ReportController::class,'update'])->name('buyer.report.update');
     Route::get('/report/delete/{id}',[ReportController::class,'delete'])->name('buyer.report.delete');
 });
@@ -88,7 +92,6 @@ Route::group(['namespace' => 'Buyer' , 'prefix' => 'buyer' , 'middleware' => 'au
 Route::group(['namespace' => 'Buyer' , 'prefix' => 'buyer' , 'middleware' => 'auth:sanctum'],function(){
     Route::get('/comments',[CommentController::class,'index'])->name('buyer.comments.index');
     Route::get('/comment/changeStatusMethod/{id}',[CommentController::class,'status'])->name('buyer.comment.status');
-
 });
 
 // End Comment Controller
@@ -115,6 +118,7 @@ Route::group(['namespace' => 'Buyer' , 'prefix' => 'buyer' , 'middleware' => 'au
 
 
 // Start ChatController
+
 Route::group(['namespace' => 'Buyer' , 'prefix' => 'buyer' , 'middleware' => 'auth:sanctum'],function(){
     Route::get('/getContact',[ChatController::class,'getContact'])->name('buyer.chat.getContact');
     Route::get('/getMessage/{id}',[ChatController::class,'getMessage'])->name('buyer.chat.getMessage');

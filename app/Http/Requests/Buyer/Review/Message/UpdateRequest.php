@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Requests\Buyer;
+namespace App\Http\Requests\Buyer\Review\Message;
 
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class ProfileEditRequest extends FormRequest
+class UpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,13 +24,8 @@ class ProfileEditRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'             => 'nullable|string',
-            'email'            => 'nullable|unique:users,email',
-            'username'         => 'nullable|unique:users,username',
-            'image'            => 'nullable|mimes:png,jpg',
-            'country_id'       => 'nullable',
-            'service_city'     => 'nullable',
-            'service_area'     => 'nullable',
+            'message' => 'nullable',
+            'file'    => 'nullable'
         ];
     }
     public function failedValidation(Validator $validator)

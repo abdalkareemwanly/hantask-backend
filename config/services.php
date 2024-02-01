@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Plan;
+
 return [
 
     /*
@@ -31,7 +33,8 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
     'stripe' => [
-        'secret' => env('STRIPE_SECRET'),
+        'model' => Plan::class,
+        'secret_key' => env('STRIPE_SECRET_KEY'),
     ],
 
 ];

@@ -10,12 +10,8 @@ class Review extends Model
     use HasFactory;
     protected $table = 'reviews';
     protected $guarded = [];
-    public function buyer()
+    public function comment()
     {
-        return $this->belongsTo(User::class,'buyer_id');
-    }
-    public function service()
-    {
-        return $this->belongsTo(Service::class,'service_id');
+        return $this->belongsTo(Comment::class,'comment_id');
     }
 }

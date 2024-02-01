@@ -16,7 +16,7 @@ class ProfileController extends Controller
     public function index()
     {
         $data = [];
-        $seller = User::where('id',Auth::user()->id)->first();
+        $seller = User::where('id',Auth::user()->id)->where('user_type','0')->first();
         $imagePath = '/uploads/images/users';
         $data[] = [
             'id' => $seller['id'],

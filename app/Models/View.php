@@ -5,13 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class subscription_coupon extends Model
+class View extends Model
 {
     use HasFactory;
-    protected $table = 'subscription_coupons';
+    protected $table = 'views';
     protected $guarded = [];
-    public function plan()
+    public function post()
     {
-        return $this->belongsTo(Plan::class,'plan_id');
+        return $this->belongsTo(Post::class,'post_id');
     }
 }

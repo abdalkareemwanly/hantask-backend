@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\Seller\AcceptedCommentController;
 use App\Http\Controllers\Seller\ChatController;
+use App\Http\Controllers\Seller\CommentController;
 use App\Http\Controllers\Seller\NotificationController;
 use App\Http\Controllers\Seller\PayoutHistoryController;
 use App\Http\Controllers\Seller\PostController;
@@ -96,3 +98,19 @@ Route::group(['namespace' => 'Seller' , 'prefix' => 'seller' , 'middleware' => '
 });
 
 // End Report Controller
+
+// Start Comment Controller
+
+Route::group(['namespace' => 'Seller' , 'prefix' => 'seller' , 'middleware' => 'auth:sanctum'],function(){
+    Route::get('/comments',[CommentController::class,'index'])->name('seller.comments.index');
+});
+
+// End Comment Controller
+
+// Start AcceptedComment Controller
+
+Route::group(['namespace' => 'Seller' , 'prefix' => 'seller' , 'middleware' => 'auth:sanctum'],function(){
+    Route::get('/acceptedComments',[AcceptedCommentController::class,'index'])->name('seller.acceptedComments.index');
+});
+
+// End AcceptedComment Controller

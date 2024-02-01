@@ -60,9 +60,11 @@ class UserController extends Controller
                 $type = 'seller';
             }
             $userDetails = [
+                'id' => $user->id,
                 'name' => $user->name,
                 'username' => $user->username,
                 'email' => $user->email,
+                'phone' => $user->phone,
                 'image' => $imagePath .'/' . $user->image,
                 'user_type' => $type
             ];

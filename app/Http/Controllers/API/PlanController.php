@@ -132,9 +132,9 @@ class PlanController extends Controller
     }
     public function status($id)
     {
-        $record = Subscription::find($id);
+        $record = ModelsPlan::find($id);
         if($record->status == 1) {
-            $update = Subscription::where('id',$id)->update([
+            $update = ModelsPlan::where('id',$id)->update([
                 'status' => 0
             ]);
             return response()->json([
@@ -142,7 +142,7 @@ class PlanController extends Controller
                 'mes' => 'Deactivation Completed Successfully',
             ]);
         } elseif($record->status == 0) {
-            $update = Subscription::where('id',$id)->update([
+            $update = ModelsPlan::where('id',$id)->update([
                 'status' => 1
             ]);
             return response()->json([
@@ -153,37 +153,39 @@ class PlanController extends Controller
     }
     public function update(updateRequest $request , $id)
     {
-        $record = Subscription::find($id);
+        $record = ModelsPlan::find($id);
         $data = $request->validated();
         if(request()->hasFile('image')) {
-            File::delete('uploads/images/subscriptions/'.$record->image);
+            File::delete('uploads/images/plans/'.$record->image);
         }
         if(isset($request->image)) {
-            $data['image'] = $this->saveImage($request->image,'uploads/images/subscriptions');
+            $data['image'] = $this->saveImage($request->image,'uploads/images/plans');
         }
         $record->update([
-            'title'     => $request->title ?? $record->title,
-            'type'      => $request->type ?? $record->type,
-            'price'     => $request->price ?? $record->price,
-            'connect'   => $request->connect ?? $record->connect,
-            'image'     => $data['image'] ?? $record->image,
+            'plan_id'         => $request->plan_id ?? $record->plan_id,
+            'name'            => $request->name ?? $record->name,
+            'price'           => $request->price ?? $record->price,
+            'interval'        => $request->interval ?? $record->interval,
+            'currency'        => $request->currency ?? $record->currency,
+            'interval_count'  => $request->interval_count ?? $record->interval_count,
+            'image'           => $data['image'] ?? $record->image,
         ]);
         return response()->json([
             'success' => true,
-            'mes' => 'Update Subscription Successfully',
+            'mes' => 'Update Plan Successfully',
         ]);
     }
     public function delete($id)
     {
-        $record = Subscription::find($id);
-        $path = 'uploads/images/subscriptions/'.$record->image;
+        $record = ModelsPlan::find($id);
+        $path = 'uploads/images/plans/'.$record->image;
         if(File::exists($path)) {
-            File::delete('uploads/images/subscriptions/'.$record->image);
+            File::delete('uploads/images/plans/'.$record->image);
         }
         $record->delete();
         return response()->json([
             'success' => true,
-            'mes' => 'Delete Subscription Successfully',
+            'mes' => 'Delete Plan Successfully',
         ]);
     }
 }

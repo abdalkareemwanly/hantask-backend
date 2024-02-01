@@ -94,13 +94,14 @@ class SubscriptionCouponController extends Controller
         $amount_off = ($request->amount_off * 100);
         $coupon = Coupon::create([
             'name' => $request->name,
-            'amount_off' => $amount_off,
+            'amount_off' => $request->amount_off,
             'currency' => 'usd',
         ]);
         subscription_coupon::create([
             'coupon_id' => $coupon->id,
             'name' => $coupon->name,
             'amount' => $coupon->amount_off,
+            'plan_id' => $request->plan_id,
             'currency' => 'usd',
         ]);
         return response()->json([

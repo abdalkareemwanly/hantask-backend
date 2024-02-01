@@ -8,6 +8,7 @@ use App\Http\Requests\Buyer\Review\UpdateRequest;
 use App\Http\Requests\PaginatRequest;
 use App\Models\Review;
 use App\Models\Service;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -16,20 +17,46 @@ class ReviewController extends Controller
     public function index(PaginatRequest $request)
     {
         if(isset($request->search)) {
-            $paginate = Review::whereHas('buyer')->whereHas('service')
-                    ->where('review','like', '%' . $request->search . '%')
-                    ->where('buyer_id',Auth::user()->id)->paginate(10);
+            $paginate = Review::whereHas('comment')
+            ->where('review','like', '%' . $request->search . '%')
+            ->where('sender_id',Auth::user()->id)->orWhere('recipient_id',Auth::user()->id)->paginate(10);
             $nextPageUrl = $paginate->nextPageUrl();
             $data = $paginate->map(function ($row) {
+                $review_from = [];
+                $review_to = [];
+                if($row->sender_id == Auth::user()->id) {
+                    $review_to = [
+                        'name'  => $row->comment->seller->name,
+                        'email' => $row->comment->seller->email,
+                        'phone' => $row->comment->seller->phone,
+                    ];
+                    $review_from = [
+                        'id' => Auth::user()->id,
+                        'name' => Auth::user()->name,
+                        'email' => Auth::user()->email,
+                    ];
+                } elseif($row->recipient_id == Auth::user()->id) {
+                    $review_to = [
+                        'id' => Auth::user()->id,
+                        'name' => Auth::user()->name,
+                        'email' => Auth::user()->email,
+                    ];
+                    $review_from = [
+
+                        'name'  => $row->comment->seller->name,
+                        'email' => $row->comment->seller->email,
+                        'phone' => $row->comment->seller->phone,
+                    ];
+
+                }
+
                 return [
-                    'id'                  => $row->id,
-                    'seller name'         => $row->service->seller->name,
-                    'seller email'        => $row->service->seller->email,
-                    'service title'       => $row->service->title,
-                    'service slug'        => $row->service->slug,
-                    'service description' => $row->service->description,
-                    'service image'       => '/uploads/images/services/'.$row->service->image,
-                    'review'              => $row->review,
+                    'id' => $row->id,
+                    'review' => $row->review,
+                    'created_at' => $row->created_at,
+                    'comment_id' => $row->comment->id,
+                    'review_to' => $review_to,
+                    'review_from' => $review_from
                 ];
             });
             return response()->json([
@@ -44,20 +71,46 @@ class ReviewController extends Controller
             ]);
         }
         if($request->paginate) {
-            $paginate = Review::whereHas('buyer')->whereHas('service')
-                    ->where('review','like', '%' . $request->search . '%')
-                    ->where('buyer_id',Auth::user()->id)->paginate($request->paginate);
+            $paginate = Review::whereHas('comment')
+            ->where('review','like', '%' . $request->search . '%')
+            ->where('sender_id',Auth::user()->id)->orWhere('recipient_id',Auth::user()->id)->paginate(10);
             $nextPageUrl = $paginate->nextPageUrl();
             $data = $paginate->map(function ($row) {
+                $review_from = [];
+                $review_to = [];
+                if($row->sender_id == Auth::user()->id) {
+                    $review_to = [
+                        'name'  => $row->comment->seller->name,
+                        'email' => $row->comment->seller->email,
+                        'phone' => $row->comment->seller->phone,
+                    ];
+                    $review_from = [
+                        'id' => Auth::user()->id,
+                        'name' => Auth::user()->name,
+                        'email' => Auth::user()->email,
+                    ];
+                } elseif($row->recipient_id == Auth::user()->id) {
+                    $review_to = [
+                        'id' => Auth::user()->id,
+                        'name' => Auth::user()->name,
+                        'email' => Auth::user()->email,
+                    ];
+                    $review_from = [
+
+                        'name'  => $row->comment->seller->name,
+                        'email' => $row->comment->seller->email,
+                        'phone' => $row->comment->seller->phone,
+                    ];
+
+                }
+
                 return [
-                    'id'                  => $row->id,
-                    'seller name'         => $row->service->seller->name,
-                    'seller email'        => $row->service->seller->email,
-                    'service title'       => $row->service->title,
-                    'service slug'        => $row->service->slug,
-                    'service description' => $row->service->description,
-                    'service image'       => '/uploads/images/services/'.$row->service->image,
-                    'review'              => $row->review,
+                    'id' => $row->id,
+                    'review' => $row->review,
+                    'created_at' => $row->created_at,
+                    'comment_id' => $row->comment->id,
+                    'review_to' => $review_to,
+                    'review_from' => $review_from
                 ];
             });
             return response()->json([
@@ -71,18 +124,46 @@ class ReviewController extends Controller
                 'perPage' => $paginate->perPage(),
             ]);
         } else {
-            $paginate = Review::whereHas('buyer')->whereHas('service')->where('buyer_id',Auth::user()->id)->paginate(10);
+            $paginate = Review::whereHas('comment')
+            ->where('review','like', '%' . $request->search . '%')
+            ->where('sender_id',Auth::user()->id)->orWhere('recipient_id',Auth::user()->id)->paginate(10);
             $nextPageUrl = $paginate->nextPageUrl();
             $data = $paginate->map(function ($row) {
+                $review_from = [];
+                $review_to = [];
+                if($row->sender_id == Auth::user()->id) {
+                    $review_to = [
+                        'name'  => $row->comment->seller->name,
+                        'email' => $row->comment->seller->email,
+                        'phone' => $row->comment->seller->phone,
+                    ];
+                    $review_from = [
+                        'id' => Auth::user()->id,
+                        'name' => Auth::user()->name,
+                        'email' => Auth::user()->email,
+                    ];
+                } elseif($row->recipient_id == Auth::user()->id) {
+                    $review_to = [
+                        'id' => Auth::user()->id,
+                        'name' => Auth::user()->name,
+                        'email' => Auth::user()->email,
+                    ];
+                    $review_from = [
+
+                        'name'  => $row->comment->seller->name,
+                        'email' => $row->comment->seller->email,
+                        'phone' => $row->comment->seller->phone,
+                    ];
+
+                }
+
                 return [
-                    'id'                  => $row->id,
-                    'seller name'         => $row->service->seller->name,
-                    'seller email'        => $row->service->seller->email,
-                    'service title'       => $row->service->title,
-                    'service slug'        => $row->service->slug,
-                    'service description' => $row->service->description,
-                    'service image'       => '/uploads/images/services/'.$row->service->image,
-                    'review'              => $row->review,
+                    'id' => $row->id,
+                    'review' => $row->review,
+                    'created_at' => $row->created_at,
+                    'comment_id' => $row->comment->id,
+                    'review_to' => $review_to,
+                    'review_from' => $review_from
                 ];
             });
             return response()->json([
@@ -100,9 +181,7 @@ class ReviewController extends Controller
     public function store(StoreRequest $request)
     {
         $data = $request->validated();
-        $seller_id = Service::where('id',$data['service_id'])->first();
-        $data['buyer_id'] = Auth::user()->id;
-        $data['seller_id'] = $seller_id->seller_id;
+        $data['sender_id'] = Auth::user()->id;
         Review::create($data);
         return response()->json([
             'success' => true,
@@ -111,11 +190,10 @@ class ReviewController extends Controller
     }
     public function update(UpdateRequest $request , $id)
     {
-        $seller = Service::whereHas('seller')->where('id',$request->service_id)->first();
         $record = Review::find($id);
         $record->update([
-            'service_id'      => $request->service_id ?? $record->service_id,
-            'seller_id'       => $seller->seller->id ?? $record->seller_id,
+            'recipient_id'    => $request->recipient_id ?? $record->recipient_id,
+            'comment_id'      => $request->comment_id ?? $record->comment_id,
             'review'          => $request->review ?? $record->review,
             'description'     => $request->description ?? $record->description,
         ]);

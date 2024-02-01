@@ -24,9 +24,10 @@ class UpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'service_id' => 'nullable',
-            'seller_id'  => 'nullable',
-            'review'     => 'nullable',
+            'recipient_id' => 'nullable',
+            'comment_id'   => 'nullable',
+            'review'       => 'nullable',
+            'description'  => 'nullable',
         ];
     }
     public function failedValidation(Validator $validator)

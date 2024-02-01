@@ -10,4 +10,8 @@ class Plan extends Model
     use HasFactory;
     protected $table = 'plans';
     protected $guarded = [];
+    public function coupons()
+    {
+        return $this->hasMany(ServiceCoupon::class,'plan_id');
+    }
 }
