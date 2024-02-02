@@ -21,19 +21,19 @@ class PlanController extends Controller
     public function index(PaginatRequest $request)
     {
         if(isset($request->search)) {
-            $paginate = ModelsPlan::where('title','like', '%' . $request->search . '%')->paginate(10);
+            $paginate = ModelsPlan::where('name','like', '%' . $request->search . '%')->paginate(10);
             $nextPageUrl = $paginate->nextPageUrl();
             $data = $paginate->map(function ($row) {
+                $price = ($row->price/100);
                 return [
                     'id' => $row->id,
                     'image' => '/uploads/images/plans/'.$row->image,
-                    'title' => $row->title,
-                    'type' => $row->type,
-                    'price' => '$'.$row->price,
-                    'connect' => $row->connect,
-                    'service' => $row->service,
-                    'job' => $row->job,
-                    'status' => $row->status,
+                    'plan_id' => $row->plan_id,
+                    'name' => $row->name,
+                    'price' => $price,
+                    'interval' => $row->interval,
+                    'interval_count' => $row->interval_count,
+                    'currency' => $row->currency,
                 ];
             });
             return response()->json([
@@ -51,16 +51,16 @@ class PlanController extends Controller
             $paginate = ModelsPlan::paginate($request->paginate);
             $nextPageUrl = $paginate->nextPageUrl();
             $data = $paginate->map(function ($row) {
+            $price = ($row->price/100);
                 return [
                     'id' => $row->id,
                     'image' => '/uploads/images/plans/'.$row->image,
-                    'title' => $row->title,
-                    'type' => $row->type,
-                    'price' => '$'.$row->price,
-                    'connect' => $row->connect,
-                    'service' => $row->service,
-                    'job' => $row->job,
-                    'status' => $row->status,
+                    'plan_id' => $row->plan_id,
+                    'name' => $row->name,
+                    'price' => $price,
+                    'interval' => $row->interval,
+                    'interval_count' => $row->interval_count,
+                    'currency' => $row->currency,
                 ];
             });
             return response()->json([
@@ -77,16 +77,16 @@ class PlanController extends Controller
             $paginate = ModelsPlan::paginate(10);
             $nextPageUrl = $paginate->nextPageUrl();
             $data = $paginate->map(function ($row) {
+            $price = ($row->price/100);
                 return [
                     'id' => $row->id,
                     'image' => '/uploads/images/plans/'.$row->image,
-                    'title' => $row->title,
-                    'type' => $row->type,
-                    'price' => '$'.$row->price,
-                    'connect' => $row->connect,
-                    'service' => $row->service,
-                    'job' => $row->job,
-                    'status' => $row->status,
+                    'plan_id' => $row->plan_id,
+                    'name' => $row->name,
+                    'price' => $price,
+                    'interval' => $row->interval,
+                    'interval_count' => $row->interval_count,
+                    'currency' => $row->currency,
                 ];
             });
             return response()->json([
@@ -104,7 +104,7 @@ class PlanController extends Controller
     public function store(storeRequest $request)
     {
         $data = $request->validated();
-        Stripe::setApiKey(env('STRIPE_SECRET'));
+        Stripe::setApiKey(config('services.stripe.secret'));
         $amount = ($request->amount * 100);
         $plan = Plan::create([
             'amount'         => $amount,
@@ -179,8 +179,10 @@ class PlanController extends Controller
     {
         $record = ModelsPlan::find($id);
         $path = 'uploads/images/plans/'.$record->image;
-        if(File::exists($path)) {
-            File::delete('uploads/images/plans/'.$record->image);
+        if(isset($record->image)) {
+           if(File::exists($path)) {
+               File::delete('uploads/images/plans/'.$record->image);
+            }
         }
         $record->delete();
         return response()->json([

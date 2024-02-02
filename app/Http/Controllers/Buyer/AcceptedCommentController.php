@@ -7,7 +7,6 @@ use App\Http\Requests\Buyer\comment\StatuseRequest;
 use App\Http\Requests\PaginatRequest;
 use App\Models\Comment;
 use App\Models\Review;
-
 use App\Models\NotificationSeller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -27,11 +26,12 @@ class AcceptedCommentController extends Controller
                 $review = Review::where('comment_id',$row->id)->where('sender_id',Auth::user()->id)->first();
                 if(isset($review)) {
                     $data_review[] = [
+                        'id'          => $review->id,
                         'review'      => $review->review,
                         'description' => $review->description,
                     ];
                 } else {
-                    $data_review[] = false;
+                    $data_review = false;
                 }
                 return [
                     'id'                 => $row->id,
@@ -40,10 +40,14 @@ class AcceptedCommentController extends Controller
                     'dead_line'          => $row->dead_line,
                     'status'             => $row->status,
                     'work_status'        => $row->workStatus,
+                    'seller_id'          => $row->seller->id,
                     'seller_name'        => $row->seller->name,
                     'seller_email'       => $row->seller->email,
                     'post_title'         => $row->post->title,
                     'post_description'   => $row->post->description,
+                    'post_budget'        => $row->post->budget,
+                    'post_deadLine'      => $row->post->dead_line,
+                    'post_image'         => '/uploads/images/posts/'.$row->post->image,
                     'data_review'        => $data_review
                 ];
             });
@@ -68,11 +72,12 @@ class AcceptedCommentController extends Controller
                 $review = Review::where('comment_id',$row->id)->where('sender_id',Auth::user()->id)->first();
                 if(isset($review)) {
                     $data_review[] = [
+                        'id'          => $review->id,
                         'review'      => $review->review,
                         'description' => $review->description,
                     ];
                 } else {
-                    $data_review[] = false;
+                    $data_review = false;
                 }
                 return [
                     'id'                 => $row->id,
@@ -81,10 +86,14 @@ class AcceptedCommentController extends Controller
                     'dead_line'          => $row->dead_line,
                     'status'             => $row->status,
                     'work_status'        => $row->workStatus,
+                    'seller_id'          => $row->seller->id,
                     'seller_name'        => $row->seller->name,
                     'seller_email'       => $row->seller->email,
                     'post_title'         => $row->post->title,
                     'post_description'   => $row->post->description,
+                    'post_budget'        => $row->post->budget,
+                    'post_deadLine'      => $row->post->dead_line,
+                    'post_image'         => '/uploads/images/posts/'.$row->post->image,
                     'data_review'        => $data_review
                 ];
             });
@@ -108,11 +117,12 @@ class AcceptedCommentController extends Controller
                 $review = Review::where('comment_id',$row->id)->where('sender_id',Auth::user()->id)->first();
                 if(isset($review)) {
                     $data_review[] = [
+                        'id'          => $review->id,
                         'review'      => $review->review,
                         'description' => $review->description,
                     ];
                 } else {
-                    $data_review[] = false;
+                    $data_review = false;
                 }
                 return [
                     'id'                 => $row->id,
@@ -121,10 +131,14 @@ class AcceptedCommentController extends Controller
                     'dead_line'          => $row->dead_line,
                     'status'             => $row->status,
                     'work_status'        => $row->workStatus,
+                    'seller_id'          => $row->seller->id,
                     'seller_name'        => $row->seller->name,
                     'seller_email'       => $row->seller->email,
                     'post_title'         => $row->post->title,
                     'post_description'   => $row->post->description,
+                    'post_budget'        => $row->post->budget,
+                    'post_deadLine'      => $row->post->dead_line,
+                    'post_image'         => '/uploads/images/posts/'.$row->post->image,
                     'data_review'        => $data_review
                 ];
             });
@@ -143,12 +157,18 @@ class AcceptedCommentController extends Controller
 
     public function workStatus(StatuseRequest $request , $id)
     {
-        $pusher = new Pusher(
-            env('PUSHER_APP_KEY'),
-            env('PUSHER_APP_SECRET'),
-            env('PUSHER_APP_ID'),
-            ['cluster' => env('PUSHER_APP_CLUSTER')]
-        );
+        $pusherConfig = config('broadcasting.connections.pusher');
+         $options = [
+            'cluster' => $pusherConfig['options']['cluster'],
+            'encrypted' => $pusherConfig['options']['encrypted'],
+        ];
+
+    $pusher = new Pusher(
+        $pusherConfig['key'],
+        $pusherConfig['secret'],
+        $pusherConfig['app_id'],
+        $options
+    );
         $data = $request->validated();
         $record = Comment::whereHas('seller')->whereHas('post')->where('id',$id)->first();
         if($data['workStatus'] == 2) {

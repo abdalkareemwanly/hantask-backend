@@ -26,6 +26,12 @@ class ReportController extends Controller
                 $user = User::where('id',$row->sender_id)->orWhere('id',$row->recipient_id)->first();
                 $report_from = [];
                 $report_to = [];
+                 $buyerDetials[] = [
+                  'id' => $row->comment->post->buyer->id,
+                  'name' => $row->comment->post->buyer->name,
+                  'email' => $row->comment->post->buyer->email,
+                  'phone' => $row->comment->post->buyer->id,
+                ];
                 if($row->sender_id == Auth::user()->id) {
                     $report_to = [
                         'id' => Auth::user()->id,
@@ -57,7 +63,8 @@ class ReportController extends Controller
                     'created_at' => $row->created_at,
                     'comment_id' => $row->comment->id,
                     'report_to' => $report_to,
-                    'report_from' => $report_from
+                    'report_from' => $report_from,
+                    'buyerDetials' => $buyerDetials
                 ];
             });
             return response()->json([
@@ -79,6 +86,12 @@ class ReportController extends Controller
                 $user = User::where('id',$row->sender_id)->orWhere('id',$row->recipient_id)->first();
                 $report_from = [];
                 $report_to = [];
+                $buyerDetials[] = [
+                  'id' => $row->comment->post->buyer->id,
+                  'name' => $row->comment->post->buyer->name,
+                  'email' => $row->comment->post->buyer->email,
+                  'phone' => $row->comment->post->buyer->id,
+                ];
                 if($row->sender_id == Auth::user()->id) {
                     $report_to = [
                         'id' => Auth::user()->id,
@@ -110,7 +123,8 @@ class ReportController extends Controller
                     'created_at' => $row->created_at,
                     'comment_id' => $row->comment->id,
                     'report_to' => $report_to,
-                    'report_from' => $report_from
+                    'report_from' => $report_from,
+                    'buyerDetalis' => $buyerDetials
                 ];
             });
             return response()->json([
@@ -124,13 +138,19 @@ class ReportController extends Controller
                 'perPage' => $paginate->perPage(),
             ]);
         } else {
-            $paginate =  $paginate = Report::where('report','like', '%' . $request->search . '%')
+            $paginate = Report::where('report','like', '%' . $request->search . '%')
                 ->where('sender_id',Auth::user()->id)->orWhere('recipient_id',Auth::user()->id)->paginate(10);
             $nextPageUrl = $paginate->nextPageUrl();
             $data = $paginate->map(function ($row) {
                 $user = User::where('id',$row->sender_id)->orWhere('id',$row->recipient_id)->first();
                 $report_from = [];
                 $report_to = [];
+                 $buyerDetials[] = [
+                  'id' => $row->comment->post->buyer->id,
+                  'name' => $row->comment->post->buyer->name,
+                  'email' => $row->comment->post->buyer->email,
+                  'phone' => $row->comment->post->buyer->id,
+                ];
                 if($row->sender_id == Auth::user()->id) {
                     $report_to = [
                         'id' => Auth::user()->id,
@@ -162,7 +182,8 @@ class ReportController extends Controller
                     'created_at' => $row->created_at,
                     'comment_id' => $row->comment->id,
                     'report_to' => $report_to,
-                    'report_from' => $report_from
+                    'report_from' => $report_from,
+                    'buyerDetalis' => $buyerDetials
                 ];
             });
             return response()->json([

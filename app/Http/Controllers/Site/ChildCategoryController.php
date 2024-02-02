@@ -1,22 +1,21 @@
 <?php
 
-namespace App\Http\Controllers\Site\Global;
+namespace App\Http\Controllers\Site;
 
 use App\Http\Controllers\Controller;
-use App\Models\Category;
+use App\Models\ChildCategory;
 use Illuminate\Http\Request;
 
-class CategoryController extends Controller
+class ChildCategoryController extends Controller
 {
     public function index()
     {
         $data = [];
-        $categorys = Category::all();
-        foreach($categorys as $category) {
+        $childcategorys = ChildCategory::all();
+        foreach($childcategorys as $childcategory) {
             $data[] = [
-                'id'    => $category->id,
-                'name'  => $category->name,
-                
+                'id'   => $childcategory->id,
+                'name' => $childcategory->name,
             ];
         }
         return response()->json([

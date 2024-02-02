@@ -19,16 +19,21 @@ class AcceptedCommentController extends Controller
             $nextPageUrl = $paginate->nextPageUrl();
             $data = $paginate->map(function ($row) {
                 return [
-                    'id'                 => $row->id,
+                   'id'                 => $row->id,
                     'comment'            => $row->comment,
                     'budget'             => $row->budget,
                     'dead_line'          => $row->dead_line,
                     'status'             => $row->status,
                     'work_status'        => $row->workStatus,
-                    'seller_name'        => $row->seller->name,
-                    'seller_email'       => $row->seller->email,
+                    'buyer_id'           => $row->post->buyer->id,
+                    'buyer_name'         => $row->post->buyer->name,
+                    'buyer_email'        => $row->post->buyer->email,
+                    'buyer_phone'        => $row->post->buyer->phone,
                     'post_title'         => $row->post->title,
                     'post_description'   => $row->post->description,
+                    'post_budget'        => $row->post->budget,
+                    'post_dead_line'     => $row->post->dead_line,
+                    'post_image'         => '/uploads/images/posts/'.$row->post->image,
                 ];
             });
             return response()->json([
@@ -55,10 +60,15 @@ class AcceptedCommentController extends Controller
                     'dead_line'          => $row->dead_line,
                     'status'             => $row->status,
                     'work_status'        => $row->workStatus,
-                    'seller_name'        => $row->seller->name,
-                    'seller_email'       => $row->seller->email,
+                    'buyer_id'           => $row->post->buyer->id,
+                    'buyer_name'         => $row->post->buyer->name,
+                    'buyer_email'        => $row->post->buyer->email,
+                    'buyer_phone'        => $row->post->buyer->phone,
                     'post_title'         => $row->post->title,
                     'post_description'   => $row->post->description,
+                    'post_budget'        => $row->post->budget,
+                    'post_dead_line'     => $row->post->dead_line,
+                    'post_image'         => '/uploads/images/posts/'.$row->post->image,
                 ];
             });
             return response()->json([
@@ -84,10 +94,15 @@ class AcceptedCommentController extends Controller
                     'dead_line'          => $row->dead_line,
                     'status'             => $row->status,
                     'work_status'        => $row->workStatus,
-                    'seller_name'        => $row->seller->name,
-                    'seller_email'       => $row->seller->email,
+                    'buyer_id'           => $row->post->buyer->id,
+                    'buyer_name'         => $row->post->buyer->name,
+                    'buyer_email'        => $row->post->buyer->email,
+                    'buyer_phone'        => $row->post->buyer->phone,
                     'post_title'         => $row->post->title,
                     'post_description'   => $row->post->description,
+                    'post_budget'        => $row->post->budget,
+                    'post_dead_line'     => $row->post->dead_line,
+                    'post_image'         => '/uploads/images/posts/'.$row->post->image,
                 ];
             });
             return response()->json([

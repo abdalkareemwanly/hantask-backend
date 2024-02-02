@@ -125,7 +125,7 @@ class CountryController extends Controller
     }
     public function excel()
     {
-        $file = '/uploads/excel/Countrys.xlsx';
+        $file = '/public/uploads/excel/Countrys.xlsx';
         return response()->json([
             'url' => $file
         ]);

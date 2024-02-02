@@ -21,7 +21,6 @@ class CouponController extends Controller
                 'message' => 'Coupon not found',
             ], 400);
         }
-        
         try {
                 if (isset($coupon->amount) && isset($coupon->currency)) {
                 $charge = $user->charge($coupon->amount, $coupon->currency, [
@@ -39,6 +38,10 @@ class CouponController extends Controller
                         'message' => $charge->failure_message,
                     ], 400);
                 }
+                return response()->json([
+                        'success' => true,
+                        'message' => 'Coupon payment successful',
+                    ], 200);
             }
         } catch (\Exception $e) {
             return response()->json([

@@ -28,10 +28,15 @@ class CommentController extends Controller
                     'dead_line'          => $row->dead_line,
                     'status'             => $row->status,
                     'work_status'        => $row->workStatus,
+                    'seller_id'          => $row->seller->id,
                     'seller_name'        => $row->seller->name,
                     'seller_email'       => $row->seller->email,
+                    'seller_phone'       => $row->seller->phone,
                     'post_title'         => $row->post->title,
                     'post_description'   => $row->post->description,
+                    'post_budget'        => $row->post->budget,
+                    'post_deadLine'      => $row->post->dead_line,
+                    'post_image'         => '/uploads/images/posts/'.$row->post->image,
                 ];
             });
             return response()->json([
@@ -57,11 +62,16 @@ class CommentController extends Controller
                     'budget'             => $row->budget,
                     'dead_line'          => $row->dead_line,
                     'status'             => $row->status,
-                    'work_status'         => $row->workStatus,
+                    'work_status'        => $row->workStatus,
+                    'seller_id'          => $row->seller->id,
                     'seller_name'        => $row->seller->name,
                     'seller_email'       => $row->seller->email,
+                    'seller_phone'       => $row->seller->phone,
                     'post_title'         => $row->post->title,
                     'post_description'   => $row->post->description,
+                    'post_budget'        => $row->post->budget,
+                    'post_deadLine'      => $row->post->dead_line,
+                    'post_image'         => '/uploads/images/posts/'.$row->post->image,
                 ];
             });
             return response()->json([
@@ -86,11 +96,16 @@ class CommentController extends Controller
                     'budget'             => $row->budget,
                     'dead_line'          => $row->dead_line,
                     'status'             => $row->status,
-                    'work_status'         => $row->workStatus,
+                    'work_status'        => $row->workStatus,
+                    'seller_id'          => $row->seller->id,
                     'seller_name'        => $row->seller->name,
                     'seller_email'       => $row->seller->email,
+                    'seller_phone'       => $row->seller->phone,
                     'post_title'         => $row->post->title,
                     'post_description'   => $row->post->description,
+                    'post_budget'        => $row->post->budget,
+                    'post_deadLine'      => $row->post->dead_line,
+                    'post_image'         => '/uploads/images/posts/'.$row->post->image,
                 ];
             });
             return response()->json([
@@ -105,14 +120,28 @@ class CommentController extends Controller
             ]);
         }
     }
-    public function status(StatuseRequest $request , $id)
-    {
-        $pusher = new Pusher(
+     public function status(StatuseRequest $request , $id)
+     {
+        /*$pusher = new Pusher(
             env('PUSHER_APP_KEY'),
             env('PUSHER_APP_SECRET'),
             env('PUSHER_APP_ID'),
             ['cluster' => env('PUSHER_APP_CLUSTER')]
-        );
+        );*/
+        $pusherConfig = config('broadcasting.connections.pusher');
+         $options = [
+            'cluster' => $pusherConfig['options']['cluster'],
+            'encrypted' => $pusherConfig['options']['encrypted'],
+        ];
+
+    $pusher = new Pusher(
+        $pusherConfig['key'],
+        $pusherConfig['secret'],
+        $pusherConfig['app_id'],
+        $options
+    );
+
+
         $record = Comment::find($id);
         if($request->status == 1) {
             $update = $record->update([

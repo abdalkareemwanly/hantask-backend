@@ -113,13 +113,10 @@ class PostController extends Controller
     }
     public function storeComment(storeRequest $request ,$id)
     {
-        $data = $request->validated();
         Comment::create([
-            'comment'    => $data['comment'],
-            'budget'     => $data['budget'],
-            'dead_line'  => $data['dead_line'],
-            'post_id'    => $id,
-            'seller_id'  => Auth::user()->id
+            'comment' => $request->comment,
+            'post_id' => $id,
+            'seller_id' => Auth::user()->id
         ]);
         return response()->json([
             'success' => true,
@@ -130,9 +127,7 @@ class PostController extends Controller
     {
         $record = Comment::find($id);
         $record->update([
-            'comment'   => $request->comment ?? $record->comment,
-            'budget'    => $request->budget ?? $record->budget,
-            'dead_line' => $request->dead_line ?? $record->dead_line,
+            'comment' => $request->comment ?? $record->comment,
         ]);
         return response()->json([
             'success' => true,

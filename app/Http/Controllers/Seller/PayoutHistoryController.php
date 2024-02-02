@@ -13,7 +13,7 @@ class PayoutHistoryController extends Controller
     public function index()
     {
         $data = [];
-        $user_id = Auth::user()->id;
+        $user_id = Auth::user()->stripe_account_id;
 
         Stripe::setApiKey(config('services.stripe.secret'));
 

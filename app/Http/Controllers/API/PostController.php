@@ -13,17 +13,30 @@ class PostController extends Controller
     public function index(PaginatRequest $request)
     {
         if(isset($request->search)) {
-            $paginate = Post::whereHas('customer')->where('title','like', '%' . $request->search . '%')->paginate(10);
+            $paginate = Post::whereHas('buyer')->whereHas('category')->whereHas('subcategory')
+                    ->whereHas('childCategory')->whereHas('country')->whereHas('city')
+                    ->where('title','like', '%' . $request->search . '%')>paginate(10);
             $nextPageUrl = $paginate->nextPageUrl();
             $data = $paginate->map(function ($row) {
                 return [
-                    'id' => $row->id,
-                    'customerName' => $row->customer->name,
-                    'title' => $row->title,
-                    'description' => $row->description,
-                    'short description' => $row->short_description,
-                    'image' => '/uploads/images/posts/',$row->image,
-                    'status' => $row->status,
+                    'id'                 => $row->id,
+                    'buyer_name'         => $row->buyer->name,
+                    'title'              => $row->title,
+                    'description'        => $row->description,
+                    'budget'             => $row->budget,
+                    'dead_line'          => $row->dead_line,
+                    'status'             => $row->status,
+                    'image'              => '/uploads/images/posts/'.$row->image,
+                    'category_id'        => $row->category->id,
+                    'category_name'      => $row->category->name,
+                    'subcategory_id'     => $row->subcategory->id,
+                    'subcategory_name'   => $row->subcategory->name,
+                    'childCategory_id'   => $row->childCategory->id,
+                    'childCategory_name' => $row->childCategory->name,
+                    'country_id'         => $row->country->id,
+                    'country_name'       => $row->country->country,
+                    'city_id'            => $row->city->id,
+                    'city_name'          => $row->city->service_city,
                 ];
             });
             return response()->json([
@@ -38,17 +51,30 @@ class PostController extends Controller
             ]);
         }
         if($request->paginate) {
-            $paginate =  Post::whereHas('customer')->paginate($request->paginate);
+            $paginate =  Post::whereHas('buyer')->whereHas('category')->whereHas('subcategory')
+                    ->whereHas('childCategory')->whereHas('country')->whereHas('city')
+                    ->where('title','like', '%' . $request->search . '%')->paginate($request->paginate);
             $nextPageUrl = $paginate->nextPageUrl();
             $data = $paginate->map(function ($row) {
                 return [
-                    'id' => $row->id,
-                    'customerName' => $row->customer->name,
-                    'title' => $row->title,
-                    'description' => $row->description,
-                    'short description' => $row->short_description,
-                    'image' => '/uploads/images/posts/',$row->image,
-                    'status' => $row->status,
+                    'id'                 => $row->id,
+                    'buyer_name'         => $row->buyer->name,
+                    'title'              => $row->title,
+                    'description'        => $row->description,
+                    'budget'             => $row->budget,
+                    'dead_line'          => $row->dead_line,
+                    'status'             => $row->status,
+                    'image'              => '/uploads/images/posts/'.$row->image,
+                    'category_id'        => $row->category->id,
+                    'category_name'      => $row->category->name,
+                    'subcategory_id'     => $row->subcategory->id,
+                    'subcategory_name'   => $row->subcategory->name,
+                    'childCategory_id'   => $row->childCategory->id,
+                    'childCategory_name' => $row->childCategory->name,
+                    'country_id'         => $row->country->id,
+                    'country_name'       => $row->country->country,
+                    'city_id'            => $row->city->id,
+                    'city_name'          => $row->city->service_city,
                 ];
             });
             return response()->json([
@@ -62,17 +88,30 @@ class PostController extends Controller
                 'perPage' => $paginate->perPage(),
             ]);
         } else {
-            $paginate = Post::whereHas('customer')->paginate(10);
+            $paginate = Post::whereHas('buyer')->whereHas('category')->whereHas('subcategory')
+                    ->whereHas('childCategory')->whereHas('country')->whereHas('city')
+                    ->where('title','like', '%' . $request->search . '%')->paginate(10);
             $nextPageUrl = $paginate->nextPageUrl();
             $data = $paginate->map(function ($row) {
                 return [
-                    'id' => $row->id,
-                    'customerName' => $row->customer->name,
-                    'title' => $row->title,
-                    'description' => $row->description,
-                    'short description' => $row->short_description,
-                    'image' => '/uploads/images/posts/',$row->image,
-                    'status' => $row->status,
+                    'id'                 => $row->id,
+                    'buyer_name'         => $row->buyer->name,
+                    'title'              => $row->title,
+                    'description'        => $row->description,
+                    'budget'             => $row->budget,
+                    'dead_line'          => $row->dead_line,
+                    'status'             => $row->status,
+                    'image'              => '/uploads/images/posts/'.$row->image,
+                    'category_id'        => $row->category->id,
+                    'category_name'      => $row->category->name,
+                    'subcategory_id'     => $row->subcategory->id,
+                    'subcategory_name'   => $row->subcategory->name,
+                    'childCategory_id'   => $row->childCategory->id,
+                    'childCategory_name' => $row->childCategory->name,
+                    'country_id'         => $row->country->id,
+                    'country_name'       => $row->country->country,
+                    'city_id'            => $row->city->id,
+                    'city_name'          => $row->city->service_city,
                 ];
             });
             return response()->json([

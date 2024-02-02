@@ -19,7 +19,7 @@ class ReportController extends Controller
                     ->where('sender_id',Auth::user()->id)->orWhere('recipient_id',Auth::user()->id)->paginate(10);
             $nextPageUrl = $paginate->nextPageUrl();
             $data = $paginate->map(function ($row) {
-                $report_from = [
+               $report_from = [
                     'id' => Auth::user()->id,
                     'name' => Auth::user()->name,
                     'email' => Auth::user()->email,

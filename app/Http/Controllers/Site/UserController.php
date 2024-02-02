@@ -39,7 +39,6 @@ class UserController extends Controller
                 'mes' => 'Register Successfully',
             ]);
         }
-
     }
     public function login(LoginRequest $request)
     {
@@ -52,14 +51,15 @@ class UserController extends Controller
                     'message' => 'Invalid credentials',
                 ]);
             }
-            // Fetch additional user details
-            $imagePath = '/uploads/images/users';
-            if($user['user_type'] == 1) {
+            if($user->user_status ==1 && $user->account_state == 1)
+            { 
+              $imagePath = '/uploads/images/users';
+              if($user['user_type'] == 1) {
                 $type = 'buyer';
-            } else {
+              } else {
                 $type = 'seller';
-            }
-            $userDetails = [
+              }
+              $userDetails = [
                 'id' => $user->id,
                 'name' => $user->name,
                 'username' => $user->username,
@@ -77,6 +77,12 @@ class UserController extends Controller
                 'token' => $token,
                 'user' => $userDetails,
             ]);
+          } else {
+             return response()->json([
+                'success' => false,
+                'message' => 'Login Error The account must be activated',
+            ]);
+          }
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,

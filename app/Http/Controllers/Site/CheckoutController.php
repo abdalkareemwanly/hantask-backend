@@ -41,5 +41,5 @@ class CheckoutController extends Controller
                 'message' => 'Error' . $e->getMessage()
             ]);
         }
-    }
+  }
 }

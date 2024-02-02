@@ -42,17 +42,18 @@ class ReviewController extends Controller
                         'email' => Auth::user()->email,
                     ];
                     $review_from = [
-
+                        
                         'name'  => $row->comment->seller->name,
                         'email' => $row->comment->seller->email,
                         'phone' => $row->comment->seller->phone,
                     ];
 
                 }
-
+                
                 return [
                     'id' => $row->id,
                     'review' => $row->review,
+                    'description' => $row->description,
                     'created_at' => $row->created_at,
                     'comment_id' => $row->comment->id,
                     'review_to' => $review_to,
@@ -96,17 +97,18 @@ class ReviewController extends Controller
                         'email' => Auth::user()->email,
                     ];
                     $review_from = [
-
+                        
                         'name'  => $row->comment->seller->name,
                         'email' => $row->comment->seller->email,
                         'phone' => $row->comment->seller->phone,
                     ];
 
                 }
-
+                
                 return [
                     'id' => $row->id,
                     'review' => $row->review,
+                    'description' => $row->description,
                     'created_at' => $row->created_at,
                     'comment_id' => $row->comment->id,
                     'review_to' => $review_to,
@@ -149,17 +151,18 @@ class ReviewController extends Controller
                         'email' => Auth::user()->email,
                     ];
                     $review_from = [
-
+                        
                         'name'  => $row->comment->seller->name,
                         'email' => $row->comment->seller->email,
                         'phone' => $row->comment->seller->phone,
                     ];
 
                 }
-
+                
                 return [
                     'id' => $row->id,
                     'review' => $row->review,
+                    'description' => $row->description,
                     'created_at' => $row->created_at,
                     'comment_id' => $row->comment->id,
                     'review_to' => $review_to,

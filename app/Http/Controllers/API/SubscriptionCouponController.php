@@ -17,15 +17,15 @@ class SubscriptionCouponController extends Controller
     public function index(PaginatRequest $request)
     {
         if(isset($request->search)) {
-            $paginate = subscription_coupon::whereHas('plan')->where('code','like', '%' . $request->search . '%')->paginate(10);
+            $paginate = subscription_coupon::whereHas('plan')->where('name','like', '%' . $request->search . '%')->paginate(10);
             $nextPageUrl = $paginate->nextPageUrl();
             $data = $paginate->map(function ($coupon) {
                 return [
                     'id' => $coupon->id,
-                    'code' => $coupon->code,
-                    'discount' => $coupon->discount,
-                    'discount_type' => $coupon->discount_type,
-                    'expire_date' => $coupon->expire_date,
+                    'name' => $coupon->name,
+                    'amount' => $coupon->amount,
+                    'currency' => $coupon->currency,
+                    'plan_id' => $coupon->plan->id,
                     'status' => $coupon->status,
                 ];
             });
@@ -41,15 +41,15 @@ class SubscriptionCouponController extends Controller
             ]);
         }
         if($request->paginate) {
-            $paginate = subscription_coupon::paginate($request->paginate);
+            $paginate = subscription_coupon::whereHas('plan')->paginate($request->paginate);
             $nextPageUrl = $paginate->nextPageUrl();
             $data = $paginate->map(function ($coupon) {
                 return [
                     'id' => $coupon->id,
-                    'code' => $coupon->code,
-                    'discount' => $coupon->discount,
-                    'discount_type' => $coupon->discount_type,
-                    'expire_date' => $coupon->expire_date,
+                    'name' => $coupon->name,
+                    'amount' => $coupon->amount,
+                    'currency' => $coupon->currency,
+                    'plan_id' => $coupon->plan->id,
                     'status' => $coupon->status,
                 ];
             });
@@ -64,15 +64,15 @@ class SubscriptionCouponController extends Controller
                 'perPage' => $paginate->perPage(),
             ]);
         } else {
-            $paginate = subscription_coupon::paginate(10);
+            $paginate = subscription_coupon::whereHas('plan')->paginate(10);
             $nextPageUrl = $paginate->nextPageUrl();
             $data = $paginate->map(function ($coupon) {
                 return [
                     'id' => $coupon->id,
-                    'code' => $coupon->code,
-                    'discount' => $coupon->discount,
-                    'discount_type' => $coupon->discount_type,
-                    'expire_date' => $coupon->expire_date,
+                    'name' => $coupon->name,
+                    'amount' => $coupon->amount,
+                    'currency' => $coupon->currency,
+                    'plan_id' => $coupon->plan->id,
                     'status' => $coupon->status,
                 ];
             });
@@ -90,7 +90,7 @@ class SubscriptionCouponController extends Controller
     }
     public function store(storeRequest $request)
     {
-        Stripe::setApiKey(env('STRIPE_SECRET'));
+        Stripe::setApiKey(config('services.stripe.secret'));
         $amount_off = ($request->amount_off * 100);
         $coupon = Coupon::create([
             'name' => $request->name,

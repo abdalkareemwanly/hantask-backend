@@ -10,7 +10,6 @@ use App\Models\Post;
 use App\Models\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
 class PostController extends Controller
 {
     public function index()
@@ -40,25 +39,26 @@ class PostController extends Controller
         $row = Post::whereHas('category')->whereHas('subcategory')->whereHas('childCategory')
             ->whereHas('country')->whereHas('city')->where('id',$id)->first();
         $countImage = ImagePost::where('post_id',$id)->get();
-
         foreach($countImage as $image) {
             $images[] = [
                 'id'    => $image->id,
                 'image' => '/uploads/images/posts/images/'.$image->image,
             ];
+
         }
-        $post = Post::findOrFail($id);
-        $buyer_id = $post->buyer_id;
-        $count = Post::where('buyer_id', $buyer_id)->count();
-        $comment = Comment::whereHas('post')->where('post_id',$id)->first();
-        $dataComment = '';
-        if(isset($comment)) {
+         $post = Post::findOrFail($id);
+         $buyer_id = $post->buyer_id;
+         $count = Post::where('buyer_id', $buyer_id)->count();
+         $dataComment = '';
+         $comment = Comment::whereHas('post')->where('post_id',$id)->first();
+          if(isset($comment)) {
             $dataComment = true;
-        } else {
+          } else {
             $dataComment = false;
-        }
-        $view = View::whereHas('post')->where('post_id',$id)->first();
-        if(!isset($view)) {
+           }
+           
+          $view = View::whereHas('post')->where('post_id',$id)->first();
+          if(!isset($view)) {
             View::create([
                 'post_id' => $id,
                 'view'    => '1'
@@ -70,7 +70,7 @@ class PostController extends Controller
         }
 
         if(isset($image)) {
-            $date[] = [
+            $date = [
                 'id'                 => $row->id,
                 'buyer_name'         => $row->buyer->name,
                 'buyer_image'        => '/uploads/images/users/'.$row->buyer->image,
@@ -98,7 +98,7 @@ class PostController extends Controller
             ];
 
         } else {
-            $date[] = [
+            $date = [
                 'id'                 => $row->id,
                 'buyer_name'         => $row->buyer->name,
                 'buyer_image'        => '/uploads/images/users/'.$row->buyer->image,
@@ -145,5 +145,26 @@ class PostController extends Controller
             'mes' => 'Comment Store Successfully',
         ]);
     }
-
+    public function view($id)
+    {
+        $view = View::whereHas('post')->where('post_id',$id)->first();
+        if(!isset($view)) {
+            View::create([
+                'post_id' => $id,
+                'view'    => '1'
+            ]);
+            return response()->json([
+                'success' => true,
+                'mes'     => 'Store View Successfully',
+            ]);
+        } else {
+            $view->update([
+                'view' => $view->view + 1
+            ]);
+            return response()->json([
+                'success' => true,
+                'mes'     => 'Update View Successfully',
+            ]);
+        }
+    }
 }

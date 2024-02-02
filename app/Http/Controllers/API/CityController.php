@@ -115,7 +115,7 @@ class CityController extends Controller
     }
     public function excel()
     {
-        $file = '/uploads/excel/Citys.xlsx';
+        $file = '/public/uploads/excel/Citys.xlsx';
         return response()->json([
             'url' => $file
         ]);

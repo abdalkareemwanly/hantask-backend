@@ -52,29 +52,7 @@ class ReportController extends Controller
                     ];
 
                 }
-                if($row->sender_id == $row->comment->seller->id) {
-                    $report_to = [
-                        'name'  => $row->comment->seller->name,
-                        'email' => $row->comment->seller->email,
-                        'phone' => $row->comment->seller->phone,
-                    ];
-                    $report_from = [
-                        'id' => Auth::user()->id,
-                        'name' => Auth::user()->name,
-                        'email' => Auth::user()->email,
-                    ];
-                } elseif($row->recipient_id == $row->comment->seller->id) {
-                    $report_to = [
-                        'id' => Auth::user()->id,
-                        'name' => Auth::user()->name,
-                        'email' => Auth::user()->email,
-                    ];
-                    $report_from = [
-                        'name'  => $row->comment->seller->name,
-                        'email' => $row->comment->seller->email,
-                        'phone' => $row->comment->seller->phone,
-                    ];
-                }
+                
                 return [
                     'id' => $row->id,
                     'report' => $row->report,
@@ -127,29 +105,7 @@ class ReportController extends Controller
                     ];
 
                 }
-                if($row->sender_id == $row->comment->seller->id) {
-                    $report_to = [
-                        'name'  => $row->comment->seller->name,
-                        'email' => $row->comment->seller->email,
-                        'phone' => $row->comment->seller->phone,
-                    ];
-                    $report_from = [
-                        'id' => Auth::user()->id,
-                        'name' => Auth::user()->name,
-                        'email' => Auth::user()->email,
-                    ];
-                } elseif($row->recipient_id == $row->comment->seller->id) {
-                    $report_to = [
-                        'id' => Auth::user()->id,
-                        'name' => Auth::user()->name,
-                        'email' => Auth::user()->email,
-                    ];
-                    $report_from = [
-                        'name'  => $row->comment->seller->name,
-                        'email' => $row->comment->seller->email,
-                        'phone' => $row->comment->seller->phone,
-                    ];
-                }
+                
                 return [
                     'id' => $row->id,
                     'report' => $row->report,
@@ -201,29 +157,7 @@ class ReportController extends Controller
                     ];
 
                 }
-                if($row->sender_id == $row->comment->seller->id) {
-                    $report_to = [
-                        'name'  => $row->comment->seller->name,
-                        'email' => $row->comment->seller->email,
-                        'phone' => $row->comment->seller->phone,
-                    ];
-                    $report_from = [
-                        'id' => Auth::user()->id,
-                        'name' => Auth::user()->name,
-                        'email' => Auth::user()->email,
-                    ];
-                } elseif($row->recipient_id == $row->comment->seller->id) {
-                    $report_to = [
-                        'id' => Auth::user()->id,
-                        'name' => Auth::user()->name,
-                        'email' => Auth::user()->email,
-                    ];
-                    $report_from = [
-                        'name'  => $row->comment->seller->name,
-                        'email' => $row->comment->seller->email,
-                        'phone' => $row->comment->seller->phone,
-                    ];
-                }
+                
                 return [
                     'id' => $row->id,
                     'report' => $row->report,
@@ -266,52 +200,34 @@ class ReportController extends Controller
     public function message($id)
     {
         $data = [];
+        $reprot = Report::find($id);
         $reprot_messages = ReportMessage::whereHas('report')
             ->whereRelation('report','report_id',$id)
             ->where('sender_id',Auth::user()->id)->orWhere('recipient_id',Auth::user()->id)->get();
-        $report_message_from = [];
-        $report_message_to = [];
+        
         foreach($reprot_messages as $row)
         {
-            $admin = Admin::where('id',$row->sender_id)->orWhere('id',$row->recipient_id)->first();
-            if($row->sender_id == Auth::user()->id) {
-                $report_message_to[] = [
-                    'name'  => $admin->name,
-                    'email' => $admin->email,
-                    'phone' => $admin->phone,
-                ];
-                $report_message_from[] = [
-                    'id'   => Auth::user()->id,
-                    'name' => Auth::user()->name,
-                    'email'=> Auth::user()->email,
-                ];
-            } elseif($row->recipient_id == Auth::user()->id) {
-                $report_message_to[] = [
-                    'id' => Auth::user()->id,
-                    'name' => Auth::user()->name,
-                    'email' => Auth::user()->email,
-                ];
-                $report_message_from[] = [
-                    'name'  => $admin->name,
-                    'email' => $admin->email,
-                    'phone' => $admin->phone,
-                ];
-            }
-            $data[] = [
-                'id'                  => $row->id,
-                'message'             => $row->message,
-                'file'                => '/uploads/images/reports/images/'.$row->file,
-                'report_id'           => $row->report->id,
-                'report_message_to'   => $report_message_to,
-                'report_message_from' => $report_message_from,
-            ];
+          if($row->report_id == $id)
+          {
+        
+            $admin = Admin::where('id',$row->sender_id)->first();
+          
+              $data[] = [
+                  'sender_id'   => $admin ? $admin->id : Auth::user()->id,
+                  'sender_name' => $admin ? $admin->name : Auth::user()->name,
+                  'sender_email' => $admin ? $admin->email : Auth::user()->email,
+                  'id' => $row->id,
+                  'message'   => $row->message,
+                  'file'     => '/uploads/images/reports/images/' . $row->file
+             ];
+          }
         }
-        return response()->json([
-            'success' => true,
-            'mes'     => 'success',
-            'data'    => $data
-        ]);
-    }
+         return response()->json([
+              'success' => true,
+              'mes'     => 'success',
+              'data'    => $data
+          ]);
+     }
     public function storeMessage(StoreRequest $request , $id)
     {
         $admin = Admin::where('accepted_report','1')->first();
@@ -319,7 +235,6 @@ class ReportController extends Controller
         $data['sender_id'] = Auth::user()->id;
         $data['report_id'] = $id;
         $data['recipient_id'] = $admin->id;
-        $data['file'] = $this->saveImage($request->file('file'),'uploads/images/reports/images');
         if($data['file']) {
             $data['file'] = $this->saveImage($request->file('file'),'uploads/images/reports/images');
             ReportMessage::create($data);
@@ -334,7 +249,6 @@ class ReportController extends Controller
                 'mes'     => 'Store ReportMessage Successfully'
             ]);
         }
-
     }
     public function updateMessage(UpdateRequest $request , $id)
     {

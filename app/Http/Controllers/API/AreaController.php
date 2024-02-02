@@ -125,7 +125,7 @@ class AreaController extends Controller
     }
     public function excel()
     {
-        $file = '/uploads/excel/Ares.xlsx';
+        $file = '/public/uploads/excel/Ares.xlsx';
         return response()->json([
             'url' => $file
         ]);

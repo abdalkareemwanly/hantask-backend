@@ -10,12 +10,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
-
+use App\Http\Traits\imageTrait;
 class ProfileController extends Controller
 {
+    use imageTrait;
     public function index()
     {
-        $data = [];
+       $data = [];
         $buyer = User::whereHas('country')->whereHas('city')
                 ->whereHas('area')->where('id',Auth::user()->id)->where('user_type','1')->first();
         $imagePath = '/uploads/images/users';
