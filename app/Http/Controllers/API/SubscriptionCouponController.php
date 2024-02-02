@@ -17,7 +17,7 @@ class SubscriptionCouponController extends Controller
     public function index(PaginatRequest $request)
     {
         if(isset($request->search)) {
-            $paginate = subscription_coupon::where('code','like', '%' . $request->search . '%')->paginate(10);
+            $paginate = subscription_coupon::whereHas('plan')->where('code','like', '%' . $request->search . '%')->paginate(10);
             $nextPageUrl = $paginate->nextPageUrl();
             $data = $paginate->map(function ($coupon) {
                 return [

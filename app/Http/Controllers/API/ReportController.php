@@ -72,7 +72,7 @@ class ReportController extends Controller
             ]);
         }
         if($request->paginate) {
-            $paginate =  $paginate = Report::where('report','like', '%' . $request->search . '%')
+            $paginate =  Report::where('report','like', '%' . $request->search . '%')
                 ->where('sender_id',Auth::user()->id)->orWhere('recipient_id',Auth::user()->id)->paginate($request->paginate);
             $nextPageUrl = $paginate->nextPageUrl();
             $data = $paginate->map(function ($row) {

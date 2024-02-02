@@ -99,6 +99,18 @@ Route::group(['namespace' => 'Seller' , 'prefix' => 'seller' , 'middleware' => '
 
 // End Report Controller
 
+// Start Review Controller
+
+Route::group(['namespace' => 'Seller' , 'prefix' => 'seller' , 'middleware' => 'auth:sanctum'],function(){
+    Route::get('/reviews',[ReviewController::class,'index'])->name('seller.reviews.index');
+    Route::post('/review/store',[ReviewController::class,'store'])->name('seller.reviews.store');
+    Route::post('/review/update/{id}',[ReviewController::class,'update'])->name('seller.reviews.update');
+    Route::get('/review/delete/{id}',[ReviewController::class,'delete'])->name('seller.reviews.delete');
+
+});
+
+// End Review Controller
+
 // Start Comment Controller
 
 Route::group(['namespace' => 'Seller' , 'prefix' => 'seller' , 'middleware' => 'auth:sanctum'],function(){
